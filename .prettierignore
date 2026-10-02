@@ -1,0 +1,12 @@
+node_modules
+.next
+pnpm-lock.yaml
+uv.lock
+CLAUDE.md
+docs/screenshots
+apps/web/playwright-report
+apps/web/test-results
+apps/api
+apps/worker
+packages/nlp
+*.py

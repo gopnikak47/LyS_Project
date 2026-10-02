@@ -1,0 +1,49 @@
+# --- Bí mật & môi trường ---
+.env
+.env.*
+!.env.example
+
+# --- Node / Next.js ---
+node_modules/
+.next/
+out/
+.turbo/
+*.tsbuildinfo
+next-env.d.ts
+.pnpm-store/
+npm-debug.log*
+pnpm-debug.log*
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+.venv/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+*.egg-info/
+dist/
+build/
+
+# --- Kiểm thử E2E ---
+apps/web/test-results/
+apps/web/playwright-report/
+apps/web/coverage/
+
+# --- Dữ liệu cục bộ ---
+/var/
+/storage/
+/backups/
+packages/nlp/models/
+packages/nlp/data/raw/
+
+# --- Hệ điều hành / IDE ---
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json

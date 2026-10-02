@@ -1,0 +1,18 @@
+[project]
+name = "lys-nlp"
+version = "0.1.0"
+description = "Pipeline NLP tiếng Việt: tiền xử lý, cảm xúc, chủ đề, cảnh báo khẩn cấp"
+requires-python = ">=3.11,<3.12"
+# Phụ thuộc nặng (torch, transformers, underthesea…) bổ sung ở Giai đoạn 6
+# dưới dạng extra `ml` để image API không phải kéo theo.
+dependencies = []
+
+[project.optional-dependencies]
+ml = []
+
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/lys_nlp"]

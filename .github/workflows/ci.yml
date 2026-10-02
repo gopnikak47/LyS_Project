@@ -1,0 +1,112 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    name: Backend (ruff · mypy · pytest)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10
+        with:
+          enable-cache: true
+      - name: Cài phụ thuộc
+        run: uv sync --frozen --all-packages
+      - name: Ruff lint
+        run: uv run ruff check .
+      - name: Ruff format
+        run: uv run ruff format --check .
+      - name: Mypy
+        run: uv run mypy apps/api/app apps/worker/worker packages/nlp/src apps/api/tests apps/worker/tests packages/nlp/tests
+      - name: Pytest
+        run: uv run pytest --cov=app --cov=worker --cov=lys_nlp --cov-report=term-missing
+
+  frontend:
+    name: Frontend (eslint · tsc · vitest · build · e2e)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: pnpm
+      - name: Cài phụ thuộc
+        run: pnpm install --frozen-lockfile
+      - name: Kiểm tra định dạng (Prettier)
+        run: pnpm format:check
+      - name: Kiểm tra bản dịch vi/en
+        run: pnpm --filter @lys/shared test
+      - name: ESLint
+        run: pnpm --filter @lys/web lint
+      - name: TypeScript
+        run: pnpm --filter @lys/web typecheck
+      - name: Vitest
+        run: pnpm --filter @lys/web test
+      - name: Build
+        run: pnpm --filter @lys/web build
+      - name: Cài Chromium cho Playwright
+        run: pnpm --filter @lys/web exec playwright install --with-deps chromium
+      - name: Playwright E2E (375 / 768 / 1280)
+        run: pnpm --filter @lys/web exec playwright test --project=mobile-375 --project=tablet-768 --project=desktop-1280
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: playwright-report
+          path: apps/web/playwright-report
+          retention-days: 7
+
+  audit:
+    name: Dependency audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: pnpm
+      - name: pip-audit (Python)
+        run: |
+          uv export --frozen --all-packages --no-dev --no-emit-workspace --no-hashes -o /tmp/requirements.txt
+          uvx pip-audit --strict -r /tmp/requirements.txt
+      - name: pnpm audit (Node)
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm audit --prod --audit-level high
+
+  docker:
+    name: Docker build
+    runs-on: ubuntu-latest
+    needs: [backend, frontend]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: docker/setup-buildx-action@v4
+      - name: Build backend image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: infra/docker/python.Dockerfile
+          push: false
+          cache-from: type=gha,scope=backend
+          cache-to: type=gha,mode=max,scope=backend
+      - name: Build web image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: infra/docker/web.Dockerfile
+          push: false
+          cache-from: type=gha,scope=web
+          cache-to: type=gha,mode=max,scope=web

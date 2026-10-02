@@ -1,0 +1,294 @@
+{
+  "common": {
+    "skipToContent": "Skip to main content",
+    "loading": "Loading…",
+    "save": "Save",
+    "cancel": "Cancel",
+    "create": "Create",
+    "edit": "Edit",
+    "delete": "Delete",
+    "duplicate": "Duplicate",
+    "search": "Search",
+    "filter": "Filter",
+    "retry": "Retry",
+    "close": "Close",
+    "openMenu": "Open menu",
+    "moreActions": "More actions",
+    "demoData": "Demo data",
+    "language": "Language",
+    "languages": {
+      "vi": "Tiếng Việt",
+      "en": "English"
+    },
+    "theme": {
+      "toggle": "Toggle light/dark theme",
+      "light": "Light",
+      "dark": "Dark"
+    }
+  },
+  "states": {
+    "emptyTitle": "No data yet",
+    "emptyDescription": "Data will appear here once the first response arrives.",
+    "errorTitle": "Couldn't load data",
+    "errorDescription": "Something went wrong. Please try again in a few minutes.",
+    "notFoundTitle": "Page not found",
+    "notFoundDescription": "The page you are looking for may have been removed or the link is incorrect.",
+    "backHome": "Back to home",
+    "comingSoonTitle": "This feature is under construction",
+    "comingSoonDescription": "This screen will be available in stage {stage} of the roadmap."
+  },
+  "sentiment": {
+    "positive": "Positive",
+    "negative": "Negative",
+    "neutral": "Neutral",
+    "urgent": "Urgent",
+    "confidence": "Confidence {value}%"
+  },
+  "marketing": {
+    "nav": {
+      "label": "Main navigation",
+      "features": "Features",
+      "pricing": "Pricing",
+      "guide": "Guides",
+      "contact": "Contact",
+      "login": "Log in",
+      "signupFree": "Sign up free"
+    },
+    "hero": {
+      "eyebrow": "Surveys + Vietnamese sentiment analysis",
+      "title": "Listen to customers and instantly understand what they mean",
+      "subtitle": "Build a survey in minutes, share it by link or QR code, and let AI classify sentiment, topics and responses that need urgent attention.",
+      "cta": "Create a free survey now",
+      "secondaryCta": "See how it works",
+      "note": "No credit card required · Full-featured trial"
+    },
+    "preview": {
+      "label": "Dashboard preview illustration",
+      "responses": "Responses",
+      "csat": "Average CSAT",
+      "positiveRate": "Positive",
+      "urgent": "Needs action",
+      "trend": "8-week trend",
+      "sample1": "Delicious food, very friendly staff!",
+      "sample2": "Food took a while but the space is lovely.",
+      "sample3": "Got a stomach ache after eating, please check the kitchen."
+    },
+    "features": {
+      "title": "Explore features",
+      "subtitle": "Everything you need to collect and understand customer feedback in one place.",
+      "design": {
+        "label": "Design & Customize",
+        "title": "Surveys that match your brand",
+        "description": "Change backgrounds, colors, fonts, logo and layout in a few clicks. Preview instantly on phone and desktop.",
+        "point1": "Drag and drop to reorder questions",
+        "point2": "Live preview across devices",
+        "point3": "Autosave drafts, easy undo"
+      },
+      "questionTypes": {
+        "label": "Question types",
+        "title": "The right question type for every case",
+        "description": "Star ratings, satisfaction scales, NPS, single choice, multiple choice, free-text comments and more.",
+        "point1": "1–5 star ratings and CSAT smileys",
+        "point2": "Single / multiple choice with shuffling",
+        "point3": "Text comments with character limits"
+      },
+      "settings": {
+        "label": "Settings",
+        "title": "Control how responses are collected",
+        "description": "Required questions, open/close schedules, response limits and automatic spam protection.",
+        "point1": "Public links and per-branch QR codes",
+        "point2": "Limits per device, IP or total responses",
+        "point3": "Thank-you vouchers on completion"
+      },
+      "logic": {
+        "label": "Logic",
+        "title": "Ask the right person the right question",
+        "description": "Branch on answers, show or hide questions by condition, and simulate paths before publishing.",
+        "point1": "Visual AND/OR conditions",
+        "point2": "Carry choices forward",
+        "point3": "Detect loops and unreachable branches"
+      },
+      "nlp": {
+        "label": "NLP analysis",
+        "title": "AI that understands Vietnamese, slang included",
+        "description": "Automatically classify sentiment, tag industry topics and flag urgent issues so you can resolve complaints in time.",
+        "point1": "Positive / Negative / Neutral sentiment",
+        "point2": "Custom topics per survey workspace",
+        "point3": "Correct labels so the model keeps improving"
+      }
+    },
+    "steps": {
+      "title": "Create a survey in 3 steps",
+      "setup": {
+        "title": "Set up",
+        "description": "Pick a template or start from scratch, add questions and customize the look."
+      },
+      "share": {
+        "title": "Share",
+        "description": "Send a link, print a QR code for the counter or embed it on your website."
+      },
+      "report": {
+        "title": "View reports",
+        "description": "Track metrics, topic trends and urgent responses in real time."
+      }
+    },
+    "stats": {
+      "title": "Built for customer care teams",
+      "questionTypes": "question types",
+      "industries": "industry topic sets",
+      "sentiments": "sentiment labels",
+      "channels": "distribution channels",
+      "note": "Figures describe product capabilities, not customer metrics."
+    },
+    "faq": {
+      "title": "Frequently asked questions",
+      "q1": "Do customers need to log in to answer a survey?",
+      "a1": "No. Customers just open the link or scan the QR code and answer right on their phone.",
+      "q2": "How does Vietnamese sentiment analysis work?",
+      "a2": "Text is normalized (diacritics, slang, emoji) and then passed through a Vietnamese language model to classify sentiment and topics. You can correct labels so the model learns.",
+      "q3": "Can my company's data mix with other companies' data?",
+      "a3": "No. Data is isolated per company at multiple layers, including the database layer.",
+      "q4": "Can I export reports?",
+      "a4": "Yes. Export multi-sheet Excel files and PDFs with charts for any time range."
+    },
+    "cta": {
+      "title": "Ready to listen to your customers?",
+      "button": "Start for free"
+    },
+    "footer": {
+      "tagline": "Survey and Vietnamese customer feedback analytics platform.",
+      "product": "Product",
+      "resources": "Resources",
+      "company": "Company",
+      "templates": "Survey templates",
+      "docs": "Documentation",
+      "privacy": "Privacy policy",
+      "terms": "Terms of use",
+      "about": "About",
+      "rights": "© {year} {appName}. All rights reserved."
+    }
+  },
+  "app": {
+    "nav": {
+      "label": "Main navigation",
+      "createSurvey": "Create survey",
+      "mySurveys": "My surveys",
+      "profile": "Profile",
+      "billing": "Plans & Billing",
+      "admin": "Management",
+      "uiKit": "UI kit"
+    },
+    "workspace": {
+      "label": "Survey workspace",
+      "switch": "Switch workspace",
+      "create": "Create new workspace"
+    },
+    "user": {
+      "menu": "Account",
+      "profile": "Profile",
+      "logout": "Log out"
+    }
+  },
+  "surveys": {
+    "title": "My surveys",
+    "subtitle": "Manage, share and track results of surveys in this workspace.",
+    "create": "Create survey",
+    "searchPlaceholder": "Search by survey name…",
+    "statusFilter": "Status",
+    "allStatuses": "All statuses",
+    "status": {
+      "draft": "Draft",
+      "published": "Open",
+      "closed": "Closed",
+      "archived": "Archived"
+    },
+    "responses": "{count, plural, =0 {No responses yet} one {# response} other {# responses}}",
+    "csat": "CSAT {value}",
+    "createdAt": "Created {date}",
+    "menu": {
+      "edit": "Edit survey",
+      "duplicate": "Duplicate",
+      "share": "Get link / QR",
+      "close": "Close survey",
+      "delete": "Delete"
+    },
+    "demoNotice": "Showing demo data. The real list will be connected to the API in stage 4.",
+    "emptyTitle": "You have no surveys yet",
+    "emptyDescription": "Start from scratch, use a template or import from Excel."
+  },
+  "uiKit": {
+    "title": "UI kit",
+    "subtitle": "Shared components of the design system. Reference page for developers.",
+    "buttons": "Buttons",
+    "badges": "Sentiment & topic labels",
+    "kpis": "KPI cards",
+    "table": "Responses table",
+    "form": "Form",
+    "skeleton": "Loading state",
+    "states": "Empty & error states",
+    "primary": "Primary",
+    "secondary": "Secondary",
+    "outline": "Outline",
+    "ghost": "Ghost",
+    "destructive": "Destructive",
+    "kpi": {
+      "total": "Total responses",
+      "csat": "Average CSAT",
+      "positive": "Positive rate",
+      "urgent": "Urgent alerts",
+      "vsPrevious": "vs previous period"
+    },
+    "columns": {
+      "content": "Content",
+      "rating": "Stars",
+      "sentiment": "Sentiment",
+      "topics": "Topics",
+      "source": "Source",
+      "time": "Time"
+    },
+    "ratingLabel": "{value} out of 5 stars",
+    "pinnedUrgent": "Pinned because urgent",
+    "formDemo": {
+      "name": "Survey name",
+      "namePlaceholder": "e.g. Satisfaction survey – District 1 branch",
+      "description": "Description",
+      "descriptionHint": "Shown at the top of the survey, max 300 characters.",
+      "industry": "Industry",
+      "industryPlaceholder": "Choose an industry",
+      "anonymous": "Allow anonymous responses",
+      "submit": "Try saving",
+      "submitted": "Valid! (demo form, not sent to the server)"
+    },
+    "industries": {
+      "restaurant": "Restaurant",
+      "it": "Information technology",
+      "hotel": "Hotel",
+      "retail": "Retail",
+      "education": "Education",
+      "healthcare": "Healthcare"
+    }
+  },
+  "auth": {
+    "loginTitle": "Log in",
+    "loginSubtitle": "Welcome back to {appName}.",
+    "registerTitle": "Register your business",
+    "registerSubtitle": "Create a space for your business in under a minute.",
+    "email": "Email",
+    "password": "Password",
+    "companyName": "Company name",
+    "fullName": "Full name",
+    "forgotPassword": "Forgot password?",
+    "submitLogin": "Log in",
+    "submitRegister": "Create account",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "notReady": "Login/registration will work starting in stage 2."
+  },
+  "validation": {
+    "required": "This field is required.",
+    "email": "Invalid email address.",
+    "minLength": "At least {min} characters required.",
+    "maxLength": "Maximum {max} characters.",
+    "select": "Please choose an option."
+  }
+}

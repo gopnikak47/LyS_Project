@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /surveys
+Disallow: /ui-kit
+Disallow: /profile
+Disallow: /billing
+Disallow: /admin
+Disallow: /api/

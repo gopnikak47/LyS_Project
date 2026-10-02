@@ -1,0 +1,75 @@
+# Gốc workspace Python (uv). Không phải package — chỉ gom các thành viên
+# và cấu hình công cụ dùng chung (ruff, mypy, pytest).
+[project]
+name = "lys-workspace"
+version = "0.0.0"
+requires-python = ">=3.11,<3.12"
+dependencies = []
+
+[tool.uv]
+package = false
+
+[tool.uv.workspace]
+members = ["apps/api", "apps/worker", "packages/nlp"]
+
+[tool.uv.sources]
+lys-api = { workspace = true }
+lys-worker = { workspace = true }
+lys-nlp = { workspace = true }
+
+[dependency-groups]
+dev = [
+  "lys-api",
+  "lys-worker",
+  "lys-nlp",
+  "ruff>=0.16,<0.17",
+  "mypy>=2.4,<3",
+  "pytest>=9.1,<10",
+  "pytest-asyncio>=1.4,<2",
+  "pytest-cov>=7.1,<8",
+  "httpx2>=2.13,<3",
+  "pip-audit>=2.10,<3",
+  "celery-types>=0.23",
+]
+
+# ---------------------------------------------------------------- ruff
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+extend-exclude = ["**/alembic/versions"]
+
+[tool.ruff.lint]
+select = [
+  "E", "W", "F", "I", "B", "UP", "N", "S", "C4", "SIM", "RUF", "ASYNC", "PT", "RET", "TID",
+]
+ignore = [
+  "RUF001", "RUF002", "RUF003", # cho phép ký tự tiếng Việt trong chuỗi/comment/docstring
+]
+
+[tool.ruff.lint.per-file-ignores]
+"**/tests/**" = ["S101", "S105", "S106"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["app", "worker", "lys_nlp"]
+
+# ---------------------------------------------------------------- mypy
+[tool.mypy]
+python_version = "3.11"
+strict = true
+warn_unreachable = true
+plugins = ["pydantic.mypy"]
+mypy_path = ["apps/api", "apps/worker", "packages/nlp/src"]
+explicit_package_bases = true
+exclude = ["alembic/versions/"]
+
+[[tool.mypy.overrides]]
+module = ["kombu.*"]
+ignore_missing_imports = true
+
+# ---------------------------------------------------------------- pytest
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+testpaths = ["apps/api/tests", "apps/worker/tests", "packages/nlp/tests"]
+addopts = "-ra --strict-markers --import-mode=importlib"
+filterwarnings = ["error::DeprecationWarning:app.*"]

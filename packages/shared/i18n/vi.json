@@ -1,0 +1,294 @@
+{
+  "common": {
+    "skipToContent": "Bỏ qua, tới nội dung chính",
+    "loading": "Đang tải…",
+    "save": "Lưu",
+    "cancel": "Hủy",
+    "create": "Tạo mới",
+    "edit": "Sửa",
+    "delete": "Xóa",
+    "duplicate": "Nhân bản",
+    "search": "Tìm kiếm",
+    "filter": "Lọc",
+    "retry": "Thử lại",
+    "close": "Đóng",
+    "openMenu": "Mở menu",
+    "moreActions": "Thao tác khác",
+    "demoData": "Dữ liệu minh họa",
+    "language": "Ngôn ngữ",
+    "languages": {
+      "vi": "Tiếng Việt",
+      "en": "English"
+    },
+    "theme": {
+      "toggle": "Đổi giao diện sáng/tối",
+      "light": "Sáng",
+      "dark": "Tối"
+    }
+  },
+  "states": {
+    "emptyTitle": "Chưa có dữ liệu",
+    "emptyDescription": "Dữ liệu sẽ xuất hiện ở đây khi có phản hồi đầu tiên.",
+    "errorTitle": "Không tải được dữ liệu",
+    "errorDescription": "Đã có lỗi xảy ra. Vui lòng thử lại sau ít phút.",
+    "notFoundTitle": "Không tìm thấy trang",
+    "notFoundDescription": "Trang bạn tìm có thể đã bị xóa hoặc đường dẫn không đúng.",
+    "backHome": "Về trang chủ",
+    "comingSoonTitle": "Tính năng đang được xây dựng",
+    "comingSoonDescription": "Màn hình này sẽ hoạt động ở Giai đoạn {stage} của lộ trình."
+  },
+  "sentiment": {
+    "positive": "Tích cực",
+    "negative": "Tiêu cực",
+    "neutral": "Trung lập",
+    "urgent": "Khẩn cấp",
+    "confidence": "Độ tin cậy {value}%"
+  },
+  "marketing": {
+    "nav": {
+      "label": "Điều hướng chính",
+      "features": "Tính năng",
+      "pricing": "Bảng giá",
+      "guide": "Hướng dẫn",
+      "contact": "Liên hệ",
+      "login": "Đăng nhập",
+      "signupFree": "Đăng ký miễn phí"
+    },
+    "hero": {
+      "eyebrow": "Khảo sát + phân tích cảm xúc tiếng Việt",
+      "title": "Lắng nghe khách hàng, hiểu ngay điều họ muốn nói",
+      "subtitle": "Tạo khảo sát trong vài phút, chia sẻ qua link hoặc mã QR, và để AI tự phân loại cảm xúc, chủ đề cùng các phản hồi cần xử lý gấp.",
+      "cta": "Tạo khảo sát miễn phí ngay",
+      "secondaryCta": "Xem cách hoạt động",
+      "note": "Không cần thẻ thanh toán · Dùng thử đầy đủ tính năng"
+    },
+    "preview": {
+      "label": "Ảnh minh họa bảng điều khiển",
+      "responses": "Phản hồi",
+      "csat": "CSAT trung bình",
+      "positiveRate": "Tích cực",
+      "urgent": "Cần xử lý",
+      "trend": "Xu hướng 8 tuần",
+      "sample1": "Món ăn ngon, nhân viên rất nhiệt tình!",
+      "sample2": "Chờ món hơi lâu nhưng không gian đẹp.",
+      "sample3": "Ăn xong bị đau bụng, cần kiểm tra lại bếp."
+    },
+    "features": {
+      "title": "Khám phá tính năng",
+      "subtitle": "Mọi thứ bạn cần để thu thập và hiểu phản hồi khách hàng ở cùng một nơi.",
+      "design": {
+        "label": "Thiết kế & Tùy chỉnh",
+        "title": "Khảo sát mang đúng phong cách thương hiệu",
+        "description": "Đổi hình nền, màu sắc, phông chữ, logo và bố cục chỉ với vài cú nhấp. Xem trước ngay trên điện thoại và máy tính.",
+        "point1": "Kéo thả để sắp xếp câu hỏi",
+        "point2": "Xem trước trực tiếp trên nhiều thiết bị",
+        "point3": "Lưu nháp tự động, hoàn tác dễ dàng"
+      },
+      "questionTypes": {
+        "label": "Loại câu hỏi",
+        "title": "Đủ loại câu hỏi cho mọi tình huống",
+        "description": "Đánh giá sao, mức độ hài lòng, NPS, chọn một, chọn nhiều, nhận xét tự do và nhiều loại khác.",
+        "point1": "Đánh giá sao 1–5 và mặt cười CSAT",
+        "point2": "Chọn một / chọn nhiều có xáo trộn",
+        "point3": "Nhận xét văn bản có giới hạn ký tự"
+      },
+      "settings": {
+        "label": "Thiết lập",
+        "title": "Kiểm soát cách khảo sát được thu thập",
+        "description": "Câu hỏi bắt buộc, lịch mở/đóng, giới hạn lượt trả lời và chống spam tự động.",
+        "point1": "Link công khai và mã QR theo chi nhánh",
+        "point2": "Giới hạn theo thiết bị, IP hoặc tổng số lượt",
+        "point3": "Voucher cảm ơn sau khi hoàn thành"
+      },
+      "logic": {
+        "label": "Logic",
+        "title": "Hỏi đúng người, đúng câu",
+        "description": "Rẽ nhánh theo câu trả lời, ẩn/hiện câu hỏi theo điều kiện và mô phỏng đường đi trước khi phát hành.",
+        "point1": "Điều kiện AND/OR trực quan",
+        "point2": "Mang lựa chọn sang câu sau",
+        "point3": "Kiểm tra vòng lặp và nhánh không tới được"
+      },
+      "nlp": {
+        "label": "Phân tích NLP",
+        "title": "AI hiểu tiếng Việt, kể cả teencode",
+        "description": "Tự động phân loại cảm xúc, gắn chủ đề theo ngành và gắn cờ khẩn cấp để bạn xử lý khiếu nại kịp thời.",
+        "point1": "Cảm xúc Tích cực / Tiêu cực / Trung lập",
+        "point2": "Chủ đề riêng cho từng không gian khảo sát",
+        "point3": "Hiệu chỉnh nhãn để mô hình ngày càng chính xác"
+      }
+    },
+    "steps": {
+      "title": "Tạo khảo sát trong 3 bước",
+      "setup": {
+        "title": "Thiết lập",
+        "description": "Chọn mẫu có sẵn hoặc bắt đầu từ trang trắng, thêm câu hỏi và tùy chỉnh giao diện."
+      },
+      "share": {
+        "title": "Chia sẻ",
+        "description": "Gửi link, in mã QR đặt tại quầy hoặc nhúng vào website của bạn."
+      },
+      "report": {
+        "title": "Xem báo cáo",
+        "description": "Theo dõi chỉ số, xu hướng chủ đề và các phản hồi cần xử lý gấp theo thời gian thực."
+      }
+    },
+    "stats": {
+      "title": "Thiết kế cho đội ngũ chăm sóc khách hàng",
+      "questionTypes": "loại câu hỏi",
+      "industries": "bộ chủ đề theo ngành",
+      "sentiments": "nhãn cảm xúc",
+      "channels": "kênh phát hành",
+      "note": "Số liệu mô tả khả năng của sản phẩm, không phải số liệu khách hàng."
+    },
+    "faq": {
+      "title": "Câu hỏi thường gặp",
+      "q1": "Khách hàng có cần đăng nhập để trả lời khảo sát không?",
+      "a1": "Không. Khách chỉ cần mở link hoặc quét mã QR là có thể trả lời ngay trên điện thoại.",
+      "q2": "Hệ thống phân tích cảm xúc tiếng Việt như thế nào?",
+      "a2": "Văn bản được chuẩn hóa (dấu, teencode, emoji) rồi đưa qua mô hình ngôn ngữ tiếng Việt để phân loại cảm xúc và chủ đề. Bạn có thể sửa nhãn để mô hình học thêm.",
+      "q3": "Dữ liệu của doanh nghiệp tôi có bị lẫn với doanh nghiệp khác không?",
+      "a3": "Không. Dữ liệu được cô lập theo từng doanh nghiệp ở nhiều lớp, kể cả ở tầng cơ sở dữ liệu.",
+      "q4": "Tôi có thể xuất báo cáo không?",
+      "a4": "Có. Bạn có thể xuất Excel nhiều trang tính và PDF có biểu đồ cho bất kỳ khoảng thời gian nào."
+    },
+    "cta": {
+      "title": "Sẵn sàng lắng nghe khách hàng của bạn?",
+      "button": "Bắt đầu miễn phí"
+    },
+    "footer": {
+      "tagline": "Nền tảng khảo sát và phân tích phản hồi khách hàng tiếng Việt.",
+      "product": "Sản phẩm",
+      "resources": "Tài nguyên",
+      "company": "Công ty",
+      "templates": "Mẫu khảo sát",
+      "docs": "Tài liệu",
+      "privacy": "Chính sách bảo mật",
+      "terms": "Điều khoản sử dụng",
+      "about": "Giới thiệu",
+      "rights": "© {year} {appName}. Bảo lưu mọi quyền."
+    }
+  },
+  "app": {
+    "nav": {
+      "label": "Điều hướng chính",
+      "createSurvey": "Tạo khảo sát",
+      "mySurveys": "Khảo sát của tôi",
+      "profile": "Trang cá nhân",
+      "billing": "Gói & Thanh toán",
+      "admin": "Quản lý",
+      "uiKit": "Thư viện giao diện"
+    },
+    "workspace": {
+      "label": "Không gian khảo sát",
+      "switch": "Chuyển không gian",
+      "create": "Tạo không gian mới"
+    },
+    "user": {
+      "menu": "Tài khoản",
+      "profile": "Trang cá nhân",
+      "logout": "Đăng xuất"
+    }
+  },
+  "surveys": {
+    "title": "Khảo sát của tôi",
+    "subtitle": "Quản lý, chia sẻ và theo dõi kết quả các khảo sát trong không gian này.",
+    "create": "Tạo khảo sát",
+    "searchPlaceholder": "Tìm theo tên khảo sát…",
+    "statusFilter": "Trạng thái",
+    "allStatuses": "Tất cả trạng thái",
+    "status": {
+      "draft": "Bản nháp",
+      "published": "Đang mở",
+      "closed": "Đã đóng",
+      "archived": "Lưu trữ"
+    },
+    "responses": "{count, plural, =0 {Chưa có phản hồi} other {# phản hồi}}",
+    "csat": "CSAT {value}",
+    "createdAt": "Tạo ngày {date}",
+    "menu": {
+      "edit": "Sửa khảo sát",
+      "duplicate": "Nhân bản",
+      "share": "Lấy link / QR",
+      "close": "Đóng khảo sát",
+      "delete": "Xóa"
+    },
+    "demoNotice": "Đang hiển thị dữ liệu minh họa. Danh sách thật sẽ được nối với API ở Giai đoạn 4.",
+    "emptyTitle": "Bạn chưa có khảo sát nào",
+    "emptyDescription": "Bắt đầu từ trang trắng, dùng mẫu có sẵn hoặc import từ Excel."
+  },
+  "uiKit": {
+    "title": "Thư viện giao diện",
+    "subtitle": "Các thành phần dùng chung của hệ thống thiết kế. Trang tham chiếu cho nhà phát triển.",
+    "buttons": "Nút bấm",
+    "badges": "Nhãn cảm xúc & chủ đề",
+    "kpis": "Thẻ chỉ số",
+    "table": "Bảng phản hồi",
+    "form": "Biểu mẫu",
+    "skeleton": "Trạng thái đang tải",
+    "states": "Trạng thái rỗng & lỗi",
+    "primary": "Chính",
+    "secondary": "Phụ",
+    "outline": "Viền",
+    "ghost": "Trong suốt",
+    "destructive": "Nguy hiểm",
+    "kpi": {
+      "total": "Tổng phản hồi",
+      "csat": "CSAT trung bình",
+      "positive": "Tỷ lệ tích cực",
+      "urgent": "Cảnh báo khẩn",
+      "vsPrevious": "so với kỳ trước"
+    },
+    "columns": {
+      "content": "Nội dung",
+      "rating": "Sao",
+      "sentiment": "Cảm xúc",
+      "topics": "Chủ đề",
+      "source": "Nguồn",
+      "time": "Thời gian"
+    },
+    "ratingLabel": "{value} trên 5 sao",
+    "pinnedUrgent": "Ghim đầu do khẩn cấp",
+    "formDemo": {
+      "name": "Tên khảo sát",
+      "namePlaceholder": "Ví dụ: Khảo sát hài lòng chi nhánh Quận 1",
+      "description": "Mô tả",
+      "descriptionHint": "Hiển thị ở đầu khảo sát, tối đa 300 ký tự.",
+      "industry": "Ngành",
+      "industryPlaceholder": "Chọn ngành",
+      "anonymous": "Cho phép trả lời ẩn danh",
+      "submit": "Lưu thử",
+      "submitted": "Hợp lệ! (biểu mẫu minh họa, chưa gửi lên máy chủ)"
+    },
+    "industries": {
+      "restaurant": "Nhà hàng",
+      "it": "Công nghệ thông tin",
+      "hotel": "Khách sạn",
+      "retail": "Bán lẻ",
+      "education": "Giáo dục",
+      "healthcare": "Y tế"
+    }
+  },
+  "auth": {
+    "loginTitle": "Đăng nhập",
+    "loginSubtitle": "Chào mừng bạn quay lại {appName}.",
+    "registerTitle": "Đăng ký doanh nghiệp",
+    "registerSubtitle": "Tạo không gian cho doanh nghiệp của bạn trong chưa đầy một phút.",
+    "email": "Email",
+    "password": "Mật khẩu",
+    "companyName": "Tên doanh nghiệp",
+    "fullName": "Họ và tên",
+    "forgotPassword": "Quên mật khẩu?",
+    "submitLogin": "Đăng nhập",
+    "submitRegister": "Tạo tài khoản",
+    "noAccount": "Chưa có tài khoản?",
+    "hasAccount": "Đã có tài khoản?",
+    "notReady": "Đăng nhập/đăng ký sẽ hoạt động từ Giai đoạn 2."
+  },
+  "validation": {
+    "required": "Vui lòng nhập trường này.",
+    "email": "Email không hợp lệ.",
+    "minLength": "Cần tối thiểu {min} ký tự.",
+    "maxLength": "Tối đa {max} ký tự.",
+    "select": "Vui lòng chọn một mục."
+  }
+}

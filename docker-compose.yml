@@ -1,0 +1,205 @@
+# =====================================================================
+#  Chạy toàn bộ hệ thống:  docker compose up -d --build
+#  Truy cập:               http://localhost:8080  (nginx)
+#  Email dev (Mailpit):    http://localhost:8025
+#
+#  Biến môi trường đọc từ file `.env` ở gốc repo (xem `.env.example`);
+#  thiếu file `.env` vẫn chạy được với giá trị mặc định cho môi trường dev.
+#  Tên host nội bộ (postgres, redis, mailpit) được cố định ở đây, không lấy từ .env.
+# =====================================================================
+name: lys
+
+x-backend-build: &backend-build
+  context: .
+  dockerfile: infra/docker/python.Dockerfile
+
+x-backend-env: &backend-env
+  APP_NAME: ${APP_NAME:-LyS Survey}
+  APP_ENV: ${APP_ENV:-development}
+  LOG_LEVEL: ${LOG_LEVEL:-INFO}
+  LOG_JSON: ${LOG_JSON:-true}
+  PUBLIC_BASE_URL: ${PUBLIC_BASE_URL:-http://localhost:8080}
+  SECRET_KEY: ${SECRET_KEY:-change-me}
+  HASH_SALT: ${HASH_SALT:-change-me-too}
+  ACCESS_TOKEN_TTL_MINUTES: ${ACCESS_TOKEN_TTL_MINUTES:-15}
+  REFRESH_TOKEN_TTL_DAYS: ${REFRESH_TOKEN_TTL_DAYS:-14}
+  BCRYPT_ROUNDS: ${BCRYPT_ROUNDS:-12}
+  CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:8080}
+  POSTGRES_DB: ${POSTGRES_DB:-lys}
+  POSTGRES_USER: ${POSTGRES_USER:-lys}
+  POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-lys_dev_password}
+  POSTGRES_HOST: postgres
+  POSTGRES_PORT: 5432
+  REDIS_URL: redis://redis:6379/0
+  CELERY_BROKER_URL: redis://redis:6379/1
+  CELERY_RESULT_BACKEND: redis://redis:6379/2
+  SMTP_HOST: mailpit
+  SMTP_PORT: 1025
+  SMTP_FROM: ${SMTP_FROM:-LyS Survey <no-reply@lys.local>}
+  STORAGE_BACKEND: local
+  STORAGE_LOCAL_ROOT: /data/storage
+  NLP_MODEL_DIR: /data/models
+
+x-backend-depends: &backend-depends
+  postgres:
+    condition: service_healthy
+  redis:
+    condition: service_healthy
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-lys}
+      POSTGRES_USER: ${POSTGRES_USER:-lys}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-lys_dev_password}
+      TZ: Asia/Ho_Chi_Minh
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "127.0.0.1:${POSTGRES_HOST_PORT:-5432}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    # appendonly: hàng đợi bền khi Redis khởi động lại.
+    command: ["redis-server", "--appendonly", "yes", "--save", "60", "1000"]
+    volumes:
+      - redisdata:/data
+    ports:
+      - "127.0.0.1:${REDIS_HOST_PORT:-6379}:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  mailpit:
+    # Thay cho MailHog: cùng cổng SMTP 1025 / UI 8025, còn được bảo trì, có bản ARM.
+    image: axllent/mailpit:v1.27
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${MAIL_UI_HOST_PORT:-8025}:8025"
+      - "127.0.0.1:${SMTP_HOST_PORT:-1025}:1025"
+
+  api:
+    build: *backend-build
+    image: lys/backend:${IMAGE_TAG:-dev}
+    restart: unless-stopped
+    environment:
+      <<: *backend-env
+      # Chỉ nginx nội bộ đứng trước API nên tin header X-Forwarded-*.
+      FORWARDED_ALLOW_IPS: "*"
+    volumes:
+      - storage:/data/storage
+    depends_on: *backend-depends
+    stop_grace_period: 30s
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=2)"
+      interval: 10s
+      timeout: 3s
+      start_period: 15s
+      retries: 5
+
+  worker:
+    build: *backend-build
+    image: lys/backend:${IMAGE_TAG:-dev}
+    restart: unless-stopped
+    command:
+      [
+        "celery",
+        "-A",
+        "worker.celery_app",
+        "worker",
+        "-Q",
+        "default,nlp",
+        "--concurrency",
+        "${WORKER_CONCURRENCY:-2}",
+        "-l",
+        "INFO",
+      ]
+    environment: *backend-env
+    volumes:
+      - storage:/data/storage
+    depends_on: *backend-depends
+    # Celery xử lý SIGTERM: chạy nốt task đang làm rồi mới thoát (warm shutdown).
+    stop_grace_period: 60s
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "celery -A worker.celery_app inspect ping -d celery@$$HOSTNAME --timeout 5 | grep -q pong",
+        ]
+      interval: 30s
+      timeout: 15s
+      start_period: 20s
+      retries: 3
+
+  beat:
+    build: *backend-build
+    image: lys/backend:${IMAGE_TAG:-dev}
+    restart: unless-stopped
+    command:
+      [
+        "celery",
+        "-A",
+        "worker.celery_app",
+        "beat",
+        "-l",
+        "INFO",
+        "--schedule",
+        "/tmp/celerybeat-schedule",
+      ]
+    environment: *backend-env
+    depends_on: *backend-depends
+
+  web:
+    build:
+      context: .
+      dockerfile: infra/docker/web.Dockerfile
+      args:
+        NEXT_PUBLIC_APP_NAME: ${APP_NAME:-LyS Survey}
+        NEXT_PUBLIC_API_BASE_URL: /api
+    image: lys/web:${IMAGE_TAG:-dev}
+    restart: unless-stopped
+    environment:
+      API_INTERNAL_URL: http://api:8000
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:3000/healthz || exit 1"]
+      interval: 10s
+      timeout: 3s
+      start_period: 15s
+      retries: 5
+
+  nginx:
+    image: nginx:1.29-alpine
+    restart: unless-stopped
+    volumes:
+      - ./infra/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "${HTTP_PORT:-8080}:80"
+    depends_on:
+      api:
+        condition: service_healthy
+      web:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1/nginx-health || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  pgdata:
+  redisdata:
+  storage:

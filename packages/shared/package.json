@@ -1,0 +1,17 @@
+{
+  "name": "@lys/shared",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Hằng số, nhãn và bản dịch dùng chung giữa web và API",
+  "exports": {
+    ".": "./src/index.ts",
+    "./sentiments.json": "./src/sentiments.json",
+    "./i18n/*.json": "./i18n/*.json"
+  },
+  "scripts": {
+    "lint": "node ./scripts/check-i18n.mjs",
+    "typecheck": "echo \"(dùng chung tsconfig của web)\"",
+    "test": "node ./scripts/check-i18n.mjs"
+  }
+}

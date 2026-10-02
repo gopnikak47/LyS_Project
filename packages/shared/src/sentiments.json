@@ -1,0 +1,5 @@
+[
+  { "value": "positive", "tone": "positive" },
+  { "value": "negative", "tone": "negative" },
+  { "value": "neutral", "tone": "neutral" }
+]
