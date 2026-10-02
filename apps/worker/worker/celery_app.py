@@ -20,7 +20,7 @@ celery_app = Celery(
     "lys",
     broker=settings.celery_broker_url,
     backend=settings.celery_result_backend,
-    include=["worker.tasks.system", "worker.tasks.email", "worker.tasks.nlp", "worker.tasks.imports"],
+    include=["worker.tasks.system", "worker.tasks.email", "worker.tasks.nlp", "worker.tasks.imports", "worker.tasks.exports"],
 )
 
 celery_app.conf.update(
@@ -46,6 +46,7 @@ celery_app.conf.update(
     task_send_sent_event=True,
     # --- Lịch chạy định kỳ (beat). Các job bù NLP / sao lưu bổ sung ở giai đoạn sau.
     beat_schedule={
+        "export-recovery": {"task": "worker.tasks.exports.scan", "schedule": 30.0},
         "import-recovery": {"task": "worker.tasks.imports.scan", "schedule": 30.0},
         "nlp-recovery": {"task": "worker.tasks.nlp.scan_pending", "schedule": 300.0},
         "system-heartbeat": {

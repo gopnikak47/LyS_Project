@@ -39,6 +39,7 @@ FROM python:${PYTHON_VERSION}-slim AS runtime
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PATH="/app/.venv/bin:${PATH}"
+RUN apt-get update && apt-get install -y --no-install-recommends fonts-dejavu-core && rm -rf /var/lib/apt/lists/*
 RUN groupadd --gid 10001 app \
  && useradd --uid 10001 --gid app --create-home app \
  && mkdir -p /data/storage /data/models \

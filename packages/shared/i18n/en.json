@@ -188,7 +188,8 @@
       "admin": "Management",
       "uiKit": "UI kit",
       "topics": "Topics",
-      "responses": "Feedback"
+      "responses": "Feedback",
+      "reports": "Reports"
     },
     "workspace": {
       "label": "Survey workspace",
@@ -608,6 +609,42 @@
       "sentiment": "Sentiment",
       "topics": "Topics",
       "urgent": "Urgent"
+    }
+  },
+  "dashboard": {
+    "title": "Analytics & reports",
+    "export": "Export {kind}",
+    "start": "From date",
+    "end": "Before date",
+    "survey": "Survey",
+    "allSurveys": "All surveys",
+    "period": "Period",
+    "loading": "Loading…",
+    "download": "Download report",
+    "exportFailed": "Export failed",
+    "exportPending": "Report is processing in the background…",
+    "total": "Total responses",
+    "csat": "Average CSAT",
+    "urgent": "Urgent alerts",
+    "completion": "Completion rate",
+    "sentimentsTitle": "Sentiment distribution",
+    "sentimentsNote": "Based on analyzed text answers; excludes responses without comments.",
+    "trends": "Responses over time",
+    "empty": "No data yet.",
+    "topics": "Topic trends",
+    "anomalyNote": "Flag when the final period has ≥5 comments and more than twice the previous populated period.",
+    "spike": "Unusual increase",
+    "praise": "Common words in praise",
+    "complaints": "Common words in complaints",
+    "periods": {
+      "week": "Week",
+      "month": "Month",
+      "quarter": "Quarter"
+    },
+    "sentiments": {
+      "positive": "Positive",
+      "negative": "Negative",
+      "neutral": "Neutral"
     }
   }
 }

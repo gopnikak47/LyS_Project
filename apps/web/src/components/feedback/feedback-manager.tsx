@@ -21,6 +21,7 @@ export function FeedbackManager() {
   const canEdit = useCan("label:edit");
   const canExport = useCan("data:export");
   const [search, setSearch] = useState("");
+  useEffect(() => {const p = new URLSearchParams(window.location.search); setSearch(p.get("search") || ""); setSentiment(p.get("sentiment") || ""); setTopic(p.get("topic_id") || "");}, []);
   const [sentiment, setSentiment] = useState("");
   const [urgent, setUrgent] = useState(false);
   const [topic, setTopic] = useState("");

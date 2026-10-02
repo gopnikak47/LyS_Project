@@ -188,7 +188,8 @@
       "admin": "Quản lý",
       "uiKit": "Thư viện giao diện",
       "topics": "Chủ đề",
-      "responses": "Phản hồi"
+      "responses": "Phản hồi",
+      "reports": "Báo cáo"
     },
     "workspace": {
       "label": "Không gian khảo sát",
@@ -608,6 +609,42 @@
       "sentiment": "Cảm xúc",
       "topics": "Chủ đề",
       "urgent": "Khẩn cấp"
+    }
+  },
+  "dashboard": {
+    "title": "Thống kê & báo cáo",
+    "export": "Xuất {kind}",
+    "start": "Từ ngày",
+    "end": "Đến trước ngày",
+    "survey": "Khảo sát",
+    "allSurveys": "Tất cả khảo sát",
+    "period": "Kỳ thống kê",
+    "loading": "Đang tải…",
+    "download": "Tải báo cáo",
+    "exportFailed": "Xuất báo cáo thất bại",
+    "exportPending": "Báo cáo đang được xử lý nền…",
+    "total": "Tổng phản hồi",
+    "csat": "CSAT trung bình",
+    "urgent": "Cảnh báo khẩn cấp",
+    "completion": "Tỷ lệ hoàn thành",
+    "sentimentsTitle": "Phân bố cảm xúc",
+    "sentimentsNote": "Tính trên nhận xét văn bản đã phân tích, không tính phản hồi không có nhận xét.",
+    "trends": "Phản hồi theo thời gian",
+    "empty": "Chưa có dữ liệu.",
+    "topics": "Xu hướng chủ đề",
+    "anomalyNote": "Cảnh báo khi số nhận xét kỳ cuối ≥5 và hơn gấp đôi kỳ trước có dữ liệu.",
+    "spike": "Tăng bất thường",
+    "praise": "Từ thường xuất hiện trong lời khen",
+    "complaints": "Từ thường xuất hiện trong lời chê",
+    "periods": {
+      "week": "Tuần",
+      "month": "Tháng",
+      "quarter": "Quý"
+    },
+    "sentiments": {
+      "positive": "Tích cực",
+      "negative": "Tiêu cực",
+      "neutral": "Trung lập"
     }
   }
 }
