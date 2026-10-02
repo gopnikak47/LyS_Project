@@ -186,13 +186,15 @@
       "profile": "Trang cá nhân",
       "billing": "Gói & Thanh toán",
       "admin": "Quản lý",
-      "uiKit": "Thư viện giao diện"
+      "uiKit": "Thư viện giao diện",
+      "topics": "Chủ đề"
     },
     "workspace": {
       "label": "Không gian khảo sát",
       "switch": "Chuyển không gian",
       "create": "Tạo không gian mới",
-      "empty": "Chưa có không gian khảo sát"
+      "empty": "Chưa có không gian khảo sát",
+      "topics": "Quản lý chủ đề"
     },
     "user": {
       "menu": "Tài khoản",
@@ -411,5 +413,46 @@
     "changePassword": "Đổi mật khẩu",
     "passwordChanged": "Đã đổi mật khẩu. Các thiết bị khác đã được đăng xuất.",
     "memberships": "Doanh nghiệp của bạn"
+  },
+  "topics": {
+    "title": "Chủ đề phân tích",
+    "subtitle": "Bộ nhãn chủ đề của không gian “{workspace}”. Mô tả và từ khóa giúp AI gán chủ đề chính xác hơn.",
+    "add": "Thêm chủ đề",
+    "edit": "Sửa chủ đề",
+    "name": "Tên chủ đề",
+    "description": "Mô tả ngắn",
+    "descriptionHint": "Một câu mô tả chủ đề — dùng làm mẫu cho phân loại tự động.",
+    "keywords": "Từ khóa gợi ý",
+    "keywordsHint": "Phân tách bằng dấu phẩy, ví dụ: ship, giao trễ, đóng gói",
+    "color": "Màu",
+    "active": "Đang dùng",
+    "inactive": "Đã tắt",
+    "usage": "{count, plural, =0 {Chưa gắn phản hồi nào} other {# phản hồi}}",
+    "version": "Phiên bản {version}",
+    "dragHandle": "Kéo để sắp xếp lại “{name}”",
+    "reordered": "Đã lưu thứ tự",
+    "created": "Đã thêm chủ đề",
+    "deleted": "Đã xóa chủ đề",
+    "deleteTitle": "Xóa chủ đề “{name}”?",
+    "deleteDescription": "Chủ đề sẽ bị gỡ khỏi {count, plural, =0 {mọi phản hồi} other {# phản hồi đang gắn}}. Không thể hoàn tác.",
+    "select": "Chọn “{name}”",
+    "mergeSelected": "Gộp {count} chủ đề đã chọn",
+    "mergeTitle": "Gộp chủ đề",
+    "mergeDescription": "Các chủ đề đã chọn sẽ được gộp vào chủ đề đích: phản hồi được chuyển nhãn, từ khóa được hợp nhất.",
+    "mergeTarget": "Gộp vào",
+    "merge": "Gộp",
+    "merged": "Đã gộp chủ đề",
+    "template": "Dùng bộ mẫu theo ngành",
+    "templateTitle": "Bộ chủ đề mẫu theo ngành",
+    "templateAppend": "Thêm vào bộ hiện có",
+    "templateReplace": "Thay thế toàn bộ",
+    "templateApplied": "Đã áp dụng bộ mẫu",
+    "reanalyze": "Phân tích lại phản hồi cũ",
+    "reanalyzeTitle": "Phân tích lại toàn bộ phản hồi?",
+    "reanalyzeDescription": "Hệ thống sẽ chạy nền để gán lại cảm xúc và chủ đề theo bộ chủ đề hiện tại. Có thể mất vài phút.",
+    "reanalyzeQueued": "Đã xếp lịch phân tích lại {count} phản hồi",
+    "emptyTitle": "Chưa có chủ đề nào",
+    "emptyDescription": "Thêm chủ đề thủ công hoặc dùng bộ mẫu theo ngành để bắt đầu.",
+    "noWorkspace": "Hãy chọn hoặc tạo một không gian khảo sát trước."
   }
 }

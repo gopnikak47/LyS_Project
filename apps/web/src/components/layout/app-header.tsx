@@ -17,6 +17,7 @@ export function AppHeader({ session }: { session: Session }) {
   const items = [
     can("survey:edit") && { href: "/surveys/new", label: t("createSurvey") },
     { href: "/surveys", label: t("mySurveys") },
+    { href: "/topics", label: t("topics") },
     { href: "/profile", label: t("profile") },
     can("tenant:manage") && { href: "/billing", label: t("billing") },
     can("member:manage") && { href: "/admin", label: t("admin") },

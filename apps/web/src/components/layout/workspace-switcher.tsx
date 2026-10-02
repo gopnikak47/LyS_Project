@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { Check, ChevronsUpDown, Plus } from "lucide-react";
+import { Check, ChevronsUpDown, Plus, Tags } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -52,9 +52,15 @@ export function WorkspaceSwitcher() {
             {ws.id === workspace?.id && <Check aria-hidden />}
           </DropdownMenuItem>
         ))}
+        <DropdownMenuSeparator />
+        <DropdownMenuItem asChild>
+          <Link href="/topics">
+            <Tags aria-hidden />
+            {t("topics")}
+          </Link>
+        </DropdownMenuItem>
         {canManage && (
           <>
-            <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
               <Link href="/admin?tab=workspaces">
                 <Plus aria-hidden />

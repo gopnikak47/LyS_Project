@@ -14,6 +14,7 @@ const PROTECTED = [
   "/ui-kit",
   "/reports",
   "/responses",
+  "/topics",
 ];
 
 export function proxy(request: NextRequest) {

@@ -186,13 +186,15 @@
       "profile": "Profile",
       "billing": "Plans & Billing",
       "admin": "Management",
-      "uiKit": "UI kit"
+      "uiKit": "UI kit",
+      "topics": "Topics"
     },
     "workspace": {
       "label": "Survey workspace",
       "switch": "Switch workspace",
       "create": "Create new workspace",
-      "empty": "No survey workspaces yet"
+      "empty": "No survey workspaces yet",
+      "topics": "Manage topics"
     },
     "user": {
       "menu": "Account",
@@ -411,5 +413,46 @@
     "changePassword": "Change password",
     "passwordChanged": "Password changed. Other devices have been logged out.",
     "memberships": "Your companies"
+  },
+  "topics": {
+    "title": "Analysis topics",
+    "subtitle": "Topic labels of workspace “{workspace}”. Descriptions and keywords help the AI assign topics accurately.",
+    "add": "Add topic",
+    "edit": "Edit topic",
+    "name": "Topic name",
+    "description": "Short description",
+    "descriptionHint": "One sentence describing the topic — used as a prototype for automatic classification.",
+    "keywords": "Suggested keywords",
+    "keywordsHint": "Comma separated, e.g. shipping, late delivery, packaging",
+    "color": "Color",
+    "active": "Active",
+    "inactive": "Disabled",
+    "usage": "{count, plural, =0 {No responses yet} one {# response} other {# responses}}",
+    "version": "Version {version}",
+    "dragHandle": "Drag to reorder “{name}”",
+    "reordered": "Order saved",
+    "created": "Topic added",
+    "deleted": "Topic deleted",
+    "deleteTitle": "Delete topic “{name}”?",
+    "deleteDescription": "The topic will be removed from {count, plural, =0 {all responses} one {# tagged response} other {# tagged responses}}. This cannot be undone.",
+    "select": "Select “{name}”",
+    "mergeSelected": "Merge {count} selected topics",
+    "mergeTitle": "Merge topics",
+    "mergeDescription": "Selected topics will be merged into the target: responses are relabeled and keywords combined.",
+    "mergeTarget": "Merge into",
+    "merge": "Merge",
+    "merged": "Topics merged",
+    "template": "Use an industry template",
+    "templateTitle": "Industry topic templates",
+    "templateAppend": "Add to current set",
+    "templateReplace": "Replace all",
+    "templateApplied": "Template applied",
+    "reanalyze": "Re-analyze past responses",
+    "reanalyzeTitle": "Re-analyze all responses?",
+    "reanalyzeDescription": "Sentiment and topics will be reassigned in the background using the current topic set. This may take a few minutes.",
+    "reanalyzeQueued": "Queued re-analysis of {count} responses",
+    "emptyTitle": "No topics yet",
+    "emptyDescription": "Add topics manually or start from an industry template.",
+    "noWorkspace": "Please select or create a survey workspace first."
   }
 }

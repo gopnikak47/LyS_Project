@@ -64,3 +64,17 @@
   **Trang cá nhân** (hồ sơ, ngôn ngữ, đổi mật khẩu).
 - Test: backend 81 (gồm 2 test ghi đồng thời), Vitest 23, Playwright 30 (375/768/1280 + axe) +
   15 ảnh chụp.
+
+## Giai đoạn 3 — chi tiết
+
+**Tiêu chí hoàn thành:** CRUD chủ đề, bộ mẫu theo ngành.
+
+| FR               | Nội dung                                                                                                                                                                   | Trạng thái |
+| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
+| FR-12            | Thêm/sửa/xóa/gộp/bật-tắt/sắp xếp (kéo thả) chủ đề, màu, từ khóa, mô tả; 6 bộ mẫu ngành (nhà hàng, IT, khách sạn, bán lẻ, giáo dục, y tế); áp dụng mẫu (thêm hoặc thay thế) | ✅         |
+| FR-13 (cấu hình) | `load_topic_catalog` chỉ nạp chủ đề đang bật của đúng workspace + tenant; có test chứng minh không lẫn ngành/tenant                                                        | ✅         |
+
+- Xóa/gộp chủ đề cập nhật luôn nhãn trên phản hồi đã phân tích (không để ID mồ côi, không trùng).
+- Mỗi thay đổi tăng `topic_sets.version`; nút "Phân tích lại" đánh dấu `pending` và xếp job
+  `worker.tasks.nlp.reanalyze_workspace` (worker hiện thực ở GĐ 6).
+- Test: backend 93 (gồm 8 test chủ đề + 9 endpoint mới trong bộ cô lập tenant), Playwright 33 + 15 ảnh chụp.

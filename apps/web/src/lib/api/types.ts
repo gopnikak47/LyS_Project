@@ -90,3 +90,29 @@ export type PublicInvitation = {
   user_exists: boolean;
   expires_at: string;
 };
+
+export type Topic = {
+  id: string;
+  name: string;
+  description: string | null;
+  keywords: string[];
+  color: string;
+  sort_order: number;
+  is_active: boolean;
+  usage_count: number;
+};
+
+export type TopicSet = {
+  id: string;
+  workspace_id: string;
+  name: string;
+  template_code: string | null;
+  version: number;
+  topics: Topic[];
+};
+
+export type TopicTemplate = {
+  code: string;
+  name: string;
+  topics: { name: string; description: string; keywords: string[]; color: string }[];
+};

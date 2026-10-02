@@ -29,6 +29,19 @@ const Toaster = ({ ...props }: ToasterProps) => {
           "--normal-text": "var(--popover-foreground)",
           "--normal-border": "var(--border)",
           "--border-radius": "var(--radius)",
+          // Màu ngữ nghĩa của hệ thống (đạt tương phản AA) thay cho màu mặc định của sonner.
+          "--success-bg": "var(--positive-soft)",
+          "--success-text": "var(--positive-ink)",
+          "--success-border": "color-mix(in oklch, var(--positive) 30%, transparent)",
+          "--error-bg": "var(--negative-soft)",
+          "--error-text": "var(--negative-ink)",
+          "--error-border": "color-mix(in oklch, var(--negative) 30%, transparent)",
+          "--warning-bg": "var(--urgent-soft)",
+          "--warning-text": "var(--urgent-ink)",
+          "--warning-border": "color-mix(in oklch, var(--urgent) 40%, transparent)",
+          "--info-bg": "var(--primary-soft)",
+          "--info-text": "var(--primary)",
+          "--info-border": "color-mix(in oklch, var(--primary) 30%, transparent)",
         } as React.CSSProperties
       }
       {...props}
