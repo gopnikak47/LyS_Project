@@ -187,7 +187,8 @@
       "billing": "Gói & Thanh toán",
       "admin": "Quản lý",
       "uiKit": "Thư viện giao diện",
-      "topics": "Chủ đề"
+      "topics": "Chủ đề",
+      "responses": "Phản hồi"
     },
     "workspace": {
       "label": "Không gian khảo sát",
@@ -542,6 +543,71 @@
       "running": "Đang xử lý",
       "done": "Đã hoàn thành",
       "failed": "Không hoàn thành"
+    }
+  },
+  "feedbackManager": {
+    "title": "Phản hồi khách hàng",
+    "search": "Tìm nội dung (có/không dấu)",
+    "sentiment": "Cảm xúc",
+    "allSentiments": "Tất cả cảm xúc",
+    "topics": "Chủ đề",
+    "allTopics": "Tất cả chủ đề",
+    "channel": "Nguồn",
+    "allChannels": "Tất cả nguồn",
+    "sort": "Sắp xếp",
+    "start": "Từ ngày",
+    "end": "Đến trước ngày",
+    "urgentOnly": "Chỉ khẩn cấp",
+    "urgent": "Khẩn cấp",
+    "loading": "Đang tải…",
+    "empty": "Chưa có phản hồi phù hợp.",
+    "select": "Chọn",
+    "selectRow": "Chọn phản hồi",
+    "text": "Nội dung",
+    "rating": "Sao",
+    "time": "Thời gian",
+    "pending": "Chờ phân tích",
+    "unclassified": "Chưa phân loại",
+    "previous": "Trước",
+    "next": "Sau",
+    "quality": "Chất lượng mô hình",
+    "qualityNote": "Tỷ lệ sửa nhãn không phải độ chính xác. Đánh giá accuracy/F1 cần tập nhãn độc lập.",
+    "qualityCounts": "{verified}/{total} phản hồi được xác nhận, {corrected} phản hồi được sửa.",
+    "dataset": "Tải nhãn đã duyệt {format}",
+    "detail": "Chi tiết phản hồi",
+    "shortcuts": "Phím n: tiếp theo; p: trước (khi không nhập văn bản).",
+    "note": "Ghi chú",
+    "reason": "Lý do sửa nhãn",
+    "save": "Lưu và xác nhận",
+    "history": "Lịch sử chỉnh sửa",
+    "undo": "Hoàn tác",
+    "approve": "Duyệt dùng huấn luyện",
+    "bulkClear": "Gỡ cờ khẩn cấp ({count})",
+    "bulkReason": "Gỡ cờ hàng loạt",
+    "sentiments": {
+      "positive": "Tích cực",
+      "negative": "Tiêu cực",
+      "neutral": "Trung lập"
+    },
+    "channels": {
+      "link": "Link",
+      "qr": "QR",
+      "email": "Email",
+      "embed": "Nhúng",
+      "kiosk": "Tại quầy",
+      "import": "Import",
+      "zalo": "Zalo"
+    },
+    "sorts": {
+      "urgent": "Khẩn cấp trước",
+      "newest": "Mới nhất",
+      "oldest": "Cũ nhất",
+      "confidence": "Độ tin cậy thấp"
+    },
+    "fields": {
+      "sentiment": "Cảm xúc",
+      "topics": "Chủ đề",
+      "urgent": "Khẩn cấp"
     }
   }
 }

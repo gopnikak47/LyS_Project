@@ -187,7 +187,8 @@
       "billing": "Plans & Billing",
       "admin": "Management",
       "uiKit": "UI kit",
-      "topics": "Topics"
+      "topics": "Topics",
+      "responses": "Feedback"
     },
     "workspace": {
       "label": "Survey workspace",
@@ -542,6 +543,71 @@
       "running": "Processing",
       "done": "Completed",
       "failed": "Failed"
+    }
+  },
+  "feedbackManager": {
+    "title": "Customer feedback",
+    "search": "Search text",
+    "sentiment": "Sentiment",
+    "allSentiments": "All sentiments",
+    "topics": "Topics",
+    "allTopics": "All topics",
+    "channel": "Source",
+    "allChannels": "All sources",
+    "sort": "Sort",
+    "start": "From date",
+    "end": "Before date",
+    "urgentOnly": "Urgent only",
+    "urgent": "Urgent",
+    "loading": "Loading…",
+    "empty": "No matching feedback.",
+    "select": "Select",
+    "selectRow": "Select response",
+    "text": "Text",
+    "rating": "Rating",
+    "time": "Time",
+    "pending": "Pending analysis",
+    "unclassified": "Unclassified",
+    "previous": "Previous",
+    "next": "Next",
+    "quality": "Model quality",
+    "qualityNote": "Correction rate is not accuracy. Accuracy/F1 requires an independent labelled set.",
+    "qualityCounts": "{verified}/{total} verified, {corrected} corrected responses.",
+    "dataset": "Download approved {format} labels",
+    "detail": "Feedback details",
+    "shortcuts": "n: next; p: previous (outside text fields).",
+    "note": "Note",
+    "reason": "Correction reason",
+    "save": "Save and verify",
+    "history": "Correction history",
+    "undo": "Undo",
+    "approve": "Approve for training",
+    "bulkClear": "Clear urgent flags ({count})",
+    "bulkReason": "Bulk clear urgent flags",
+    "sentiments": {
+      "positive": "Positive",
+      "negative": "Negative",
+      "neutral": "Neutral"
+    },
+    "channels": {
+      "link": "Link",
+      "qr": "QR",
+      "email": "Email",
+      "embed": "Embed",
+      "kiosk": "Kiosk",
+      "import": "Import",
+      "zalo": "Zalo"
+    },
+    "sorts": {
+      "urgent": "Urgent first",
+      "newest": "Newest",
+      "oldest": "Oldest",
+      "confidence": "Low confidence first"
+    },
+    "fields": {
+      "sentiment": "Sentiment",
+      "topics": "Topics",
+      "urgent": "Urgent"
     }
   }
 }
