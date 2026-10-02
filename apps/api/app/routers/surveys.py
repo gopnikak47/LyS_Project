@@ -7,7 +7,7 @@ from typing import Annotated, Literal
 from urllib.parse import urlencode
 
 import segno
-from fastapi import APIRouter, Query, Response
+from fastapi import APIRouter, Query, Response, UploadFile
 
 from app.core.auth import Ctx
 from app.models.enums import SurveyStatus
@@ -16,6 +16,39 @@ from app.schemas.surveys import ShareOut, SurveyCreate, SurveyInput, SurveyOut
 from app.services.surveys import SurveyService
 
 router = APIRouter(prefix="/surveys", tags=["surveys"])
+
+
+@router.post("/{survey_id}/assets", status_code=201)
+async def upload_asset(survey_id: uuid.UUID, file: UploadFile, ctx: Ctx) -> dict[str, str]:
+    import asyncio
+    import secrets
+    import time
+    import jwt
+    from PIL import Image
+    from app.core.errors import AppError
+    from app.core.permissions import Permission
+    from app.core.storage import LocalStorage
+
+    ctx.principal.require(Permission.SURVEY_EDIT)
+    survey = await SurveyService(ctx.db, ctx.principal).get(survey_id)
+    content = await file.read(5 * 1024 * 1024 + 1)
+    if len(content) > 5 * 1024 * 1024:
+        raise AppError("Ảnh tối đa 5MB.", status_code=413)
+    def sanitize() -> bytes:
+        try:
+            with Image.open(io.BytesIO(content)) as image:
+                if image.format not in {"PNG", "JPEG"} or image.width * image.height > 16000000:
+                    raise ValueError("Ảnh không hợp lệ.")
+                image.load()
+                output = io.BytesIO(); image.convert("RGBA").save(output, format="PNG")
+                return output.getvalue()
+        except (ValueError, OSError, Image.DecompressionBombError) as exc:
+            raise AppError("Chỉ nhận ảnh PNG/JPEG an toàn, tối đa 16 megapixel.") from exc
+    safe = await asyncio.to_thread(sanitize)
+    key = f"{survey.tenant_id}/assets/{secrets.token_hex(16)}.png"
+    await asyncio.to_thread(LocalStorage(ctx.settings.storage_local_root).put, key, safe)
+    token = jwt.encode({"aud": "public-asset", "key": key, "exp": int(time.time()) + 31536000}, ctx.settings.secret_key.get_secret_value(), algorithm="HS256")
+    return {"url": f"/api/v1/public/assets/{token}"}
 
 
 @router.get("", response_model=Page[SurveyOut])

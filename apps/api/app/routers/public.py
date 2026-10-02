@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from fastapi import APIRouter, Request, Response
+from fastapi import APIRouter, Request, Response, UploadFile, Form
 
 from app.core.auth import ResourcesDep, SettingsDep, SystemDB, client_ip_hash
 from app.core.ratelimit import enforce
@@ -16,11 +16,65 @@ from app.services import respondent
 router = APIRouter(prefix="/public", tags=["public"])
 
 
+@router.get("/assets/{token}")
+async def public_asset(token: str, settings: SettingsDep):
+    import jwt
+    from fastapi.responses import FileResponse
+    from app.core.errors import NotFoundError
+    from app.core.storage import LocalStorage
+    try:
+        claims = jwt.decode(token, settings.secret_key.get_secret_value(), algorithms=["HS256"], audience="public-asset")
+        path = LocalStorage(settings.storage_local_root).path(claims["key"])
+    except (jwt.PyJWTError, ValueError, KeyError) as exc:
+        raise NotFoundError() from exc
+    if not path.is_file():
+        raise NotFoundError()
+    return FileResponse(path, media_type="image/png", headers={"Cache-Control": "public, max-age=86400"})
+
+
 @router.get("/surveys/{slug}")
 async def public_survey(slug: str, db: SystemDB) -> dict:
     survey = await respondent.resolve(db, slug)
     respondent.require_open(survey)
-    return await respondent.snapshot(db, survey)
+    snapshot = await respondent.snapshot(db, survey)
+    return respondent.public_snapshot(snapshot)
+
+
+@router.post("/surveys/{slug}/uploads", status_code=201)
+async def upload_response_file(slug: str, request: Request, file: UploadFile, db: SystemDB, settings: SettingsDep, resources: ResourcesDep, token: str = Form(...)) -> dict:
+    import asyncio
+    import secrets
+    import time
+    import jwt
+    from pathlib import Path
+    from app.core.errors import AppError
+    from app.core.storage import LocalStorage
+    from app.core.uploads import scan_file
+
+    ip = client_ip_hash(request, settings)
+    await enforce(resources.limiter, f"survey-upload:{ip}", 20, 3600)
+    survey = await respondent.resolve(db, slug)
+    respondent.require_open(survey)
+    try:
+        claims = jwt.decode(token, settings.secret_key.get_secret_value(), algorithms=["HS256"], audience="survey-submit")
+    except jwt.PyJWTError as exc:
+        raise AppError("Phiên tải tệp không hợp lệ.") from exc
+    if claims.get("sub") != str(survey.id) or claims.get("ip") != ip:
+        raise AppError("Phiên tải tệp không hợp lệ.")
+    config = await respondent.snapshot(db, survey)
+    if not any(q["type"] == "upload" for q in config["questions"]):
+        raise AppError("Khảo sát không nhận tệp.")
+    content = await file.read(5 * 1024 * 1024 + 1)
+    if len(content) > 5 * 1024 * 1024:
+        raise AppError("Tệp vượt giới hạn 5MB.", status_code=413)
+    suffix = ".png" if content.startswith(b"\x89PNG\r\n\x1a\n") else ".jpg" if content.startswith(b"\xff\xd8\xff") else ".pdf" if content.startswith(b"%PDF-") else None
+    if suffix is None:
+        raise AppError("Chỉ nhận PNG, JPEG, PDF hợp lệ.")
+    await asyncio.to_thread(scan_file, content, settings.upload_scanner_host, settings.upload_scanner_port)
+    key = f"{survey.tenant_id}/uploads/{survey.id}/{claims['jti']}/{secrets.token_hex(16)}{suffix}"
+    await asyncio.to_thread(LocalStorage(settings.storage_local_root).put, key, content)
+    proof = jwt.encode({"aud": "survey-upload", "sub": str(survey.id), "jti": claims["jti"], "key": key, "exp": int(time.time()) + 7200}, settings.secret_key.get_secret_value(), algorithm="HS256")
+    return {"key": key, "filename": Path(file.filename or "file").name[:200], "size": len(content), "scanned": True, "proof": proof}
 
 
 @router.post("/surveys/{slug}/session")

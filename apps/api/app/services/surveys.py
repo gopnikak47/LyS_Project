@@ -63,6 +63,10 @@ class SurveyService:
         survey.description = data.description
         survey.theme = data.theme.model_dump(mode="json")
         survey.settings = data.settings
+        survey.languages = list(dict.fromkeys(data.languages))
+        survey.default_language = data.default_language
+        survey.opens_at = data.opens_at
+        survey.closes_at = data.closes_at
         survey.updated_at = datetime.now(UTC)
         old = {q.id: q for q in await self.questions.for_survey(survey.id)}
         for position, item in enumerate(data.questions):

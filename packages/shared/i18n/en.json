@@ -501,7 +501,15 @@
       "csat": "Satisfaction",
       "text": "Comment",
       "single_choice": "Single choice",
-      "multi_choice": "Multiple choice"
+      "multi_choice": "Multiple choice",
+      "nps": "NPS 0–10",
+      "picture_choice": "Picture choice",
+      "slider": "Slider",
+      "ranking": "Ranking",
+      "contact": "Contact info",
+      "upload": "File upload",
+      "matrix": "Matrix",
+      "datetime": "Date/time"
     },
     "statuses": {
       "draft": "Draft",
@@ -514,7 +522,56 @@
       "background": "Background",
       "text": "Text color"
     },
-    "voucherCode": "Voucher code (leave blank to disable)"
+    "voucherCode": "Voucher code (leave blank to disable)",
+    "logic": "Conditions & branching",
+    "logicHint": "Conditions reference earlier questions; jumps only go forward.",
+    "displayMode": "Display when",
+    "allConditions": "All conditions match",
+    "anyCondition": "Any condition matches",
+    "sourceQuestion": "Source question",
+    "operator": "Operator",
+    "conditionValue": "Comparison value",
+    "addCondition": "Add condition",
+    "clearConditions": "Clear conditions",
+    "carry": "Carry choices from earlier question",
+    "none": "None",
+    "jumpValue": "When answer equals",
+    "jumpTarget": "Jump to",
+    "endSurvey": "End survey",
+    "advanced": "Advanced settings",
+    "layout": "Layout",
+    "scroll": "Scroll",
+    "onePerPage": "One question per page",
+    "font": "Font",
+    "sans": "Sans serif",
+    "serif": "Serif",
+    "bilingual": "Vietnamese/English content",
+    "opens_at": "Open at",
+    "closes_at": "Close at",
+    "maxResponses": "Maximum responses",
+    "one_per_ip": "One response per IP",
+    "one_per_browser": "One response per browser",
+    "englishTitle": "English question title",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "logo_url": "Upload PNG/JPEG logo",
+    "background_image": "Upload PNG/JPEG background",
+    "operators": {
+      "eq": "Equals",
+      "ne": "Not equals",
+      "contains": "Contains",
+      "gt": "Greater than",
+      "lt": "Less than"
+    },
+    "contactLabels": {
+      "name": "Full name",
+      "email": "Email",
+      "phone": "Phone number"
+    },
+    "matrixLabels": {
+      "rows": "Rows (one per line)",
+      "columns": "Columns (one per line)"
+    }
   },
   "respondent": {
     "thanks": "Thank you!",
@@ -528,7 +585,10 @@
     "required": "Please answer all required questions.",
     "unavailable": "Survey unavailable",
     "unavailableDescription": "The survey may be closed or full. Thank you for your interest.",
-    "networkError": "Could not connect to the server. Please try again later."
+    "networkError": "Could not connect to the server. Please try again later.",
+    "language": "Language",
+    "previous": "Back",
+    "next": "Next"
   },
   "imports": {
     "title": "Import responses",

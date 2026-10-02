@@ -501,7 +501,15 @@
       "csat": "Mức hài lòng",
       "text": "Nhận xét",
       "single_choice": "Chọn một",
-      "multi_choice": "Chọn nhiều"
+      "multi_choice": "Chọn nhiều",
+      "nps": "NPS 0–10",
+      "picture_choice": "Chọn hình",
+      "slider": "Thanh trượt",
+      "ranking": "Xếp hạng",
+      "contact": "Thông tin liên hệ",
+      "upload": "Tải tệp",
+      "matrix": "Ma trận",
+      "datetime": "Ngày giờ"
     },
     "statuses": {
       "draft": "Bản nháp",
@@ -514,7 +522,56 @@
       "background": "Màu nền",
       "text": "Màu chữ"
     },
-    "voucherCode": "Mã ưu đãi (để trống để tắt)"
+    "voucherCode": "Mã ưu đãi (để trống để tắt)",
+    "logic": "Điều kiện & rẽ nhánh",
+    "logicHint": "Điều kiện chỉ tham chiếu câu phía trước; rẽ nhánh chỉ tới câu phía sau.",
+    "displayMode": "Hiển thị khi",
+    "allConditions": "Đúng tất cả điều kiện",
+    "anyCondition": "Đúng ít nhất một điều kiện",
+    "sourceQuestion": "Câu hỏi nguồn",
+    "operator": "Toán tử",
+    "conditionValue": "Giá trị so sánh",
+    "addCondition": "Thêm điều kiện",
+    "clearConditions": "Xóa điều kiện",
+    "carry": "Lấy lựa chọn từ câu trước",
+    "none": "Không dùng",
+    "jumpValue": "Nếu câu trả lời bằng",
+    "jumpTarget": "Chuyển đến",
+    "endSurvey": "Kết thúc khảo sát",
+    "advanced": "Thiết lập nâng cao",
+    "layout": "Bố cục",
+    "scroll": "Cuộn dọc",
+    "onePerPage": "Một câu mỗi trang",
+    "font": "Phông chữ",
+    "sans": "Không chân",
+    "serif": "Có chân",
+    "bilingual": "Nội dung Việt/Anh",
+    "opens_at": "Lịch mở",
+    "closes_at": "Lịch đóng",
+    "maxResponses": "Số phản hồi tối đa",
+    "one_per_ip": "Một lượt mỗi IP",
+    "one_per_browser": "Một lượt mỗi trình duyệt",
+    "englishTitle": "Nội dung câu hỏi tiếng Anh",
+    "moveUp": "Đưa lên",
+    "moveDown": "Đưa xuống",
+    "logo_url": "Tải logo PNG/JPEG",
+    "background_image": "Tải hình nền PNG/JPEG",
+    "operators": {
+      "eq": "Bằng",
+      "ne": "Khác",
+      "contains": "Chứa",
+      "gt": "Lớn hơn",
+      "lt": "Nhỏ hơn"
+    },
+    "contactLabels": {
+      "name": "Họ tên",
+      "email": "Email",
+      "phone": "Số điện thoại"
+    },
+    "matrixLabels": {
+      "rows": "Các hàng (mỗi hàng một dòng)",
+      "columns": "Các cột (mỗi cột một dòng)"
+    }
   },
   "respondent": {
     "thanks": "Cảm ơn bạn!",
@@ -528,7 +585,10 @@
     "required": "Vui lòng trả lời đầy đủ các câu hỏi bắt buộc.",
     "unavailable": "Khảo sát không khả dụng",
     "unavailableDescription": "Khảo sát có thể đã đóng hoặc nhận đủ phản hồi. Cảm ơn bạn đã quan tâm.",
-    "networkError": "Không kết nối được máy chủ. Vui lòng thử lại sau."
+    "networkError": "Không kết nối được máy chủ. Vui lòng thử lại sau.",
+    "language": "Ngôn ngữ",
+    "previous": "Quay lại",
+    "next": "Tiếp theo"
   },
   "imports": {
     "title": "Import phản hồi",

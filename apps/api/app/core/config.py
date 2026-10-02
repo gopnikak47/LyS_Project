@@ -74,6 +74,8 @@ class Settings(BaseSettings):
     nlp_model_path: str = ""
     nlp_topic_model: str = ""
     nlp_batch_size: int = Field(default=64, ge=1, le=256)
+    upload_scanner_host: str = ""
+    upload_scanner_port: int = 3310
 
     # --- Health-check ---
     health_check_timeout_seconds: float = Field(default=2.0, gt=0)

@@ -14,16 +14,21 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { QuestionControl } from "./question-control";
 import { ImportPanel } from "./import-panel";
+import {AdvancedSettings,LogicEditor} from "./logic-editor";
+import {surveyPath} from "@/lib/survey-logic";
 
-function QuestionEditor({ question: q, onChange, onRemove }: { question: Question; onChange: (q: Question) => void; onRemove: () => void }) {
+function QuestionEditor({ question: q, questions, onChange, onRemove }: { question: Question; questions:Question[]; onChange: (q: Question) => void; onRemove: () => void }) {
   const t = useTranslations("engine");
   const sortable = useSortable({ id: q.id });
   return <div ref={sortable.setNodeRef} style={{ transform: CSS.Transform.toString(sortable.transform), transition: sortable.transition }} className="space-y-3 rounded-xl border bg-card p-4">
     <div className="flex items-center justify-between gap-2"><button type="button" aria-label={t("drag")} {...sortable.attributes} {...sortable.listeners} className="touch-none rounded-lg border px-3 py-2">⠿</button><span>{t(`types.${q.type}`)}</span><Button type="button" variant="outline" onClick={onRemove}>{t("remove")}</Button></div>
     <label className="block space-y-1"><span>{t("questionTitle")}</span><Input value={q.title.vi} onChange={e => onChange({...q, title: {...q.title, vi: e.target.value}})}/></label>
     <label className="flex items-center gap-2"><input type="checkbox" checked={q.required} onChange={e => onChange({...q, required: e.target.checked})}/>{t("required")}</label>
+    <label className="block">{t("englishTitle")}<Input value={q.title.en||""} onChange={e=>onChange({...q,title:{...q.title,en:e.target.value}})}/></label>
+    <LogicEditor question={q} questions={questions} onChange={onChange}/>
+    {q.type==="matrix"&&(["rows","columns"] as const).map(key=><label key={key} className="block">{t(`matrixLabels.${key}`)}<textarea className="w-full rounded-lg border p-2" value={(q.config[key] as string[]||[]).join("\n")} onChange={e=>onChange({...q,config:{...q.config,[key]:e.target.value.split("\n")}})}/></label>)}
     {q.type === "text" && <label>{t("maxLength")}<Input type="number" min={1} max={10000} value={Number(q.config.max_length || 5000)} onChange={e => onChange({...q, config: {...q.config, max_length: Number(e.target.value)}})}/></label>}
-    {(q.type === "single_choice" || q.type === "multi_choice") && <label className="block space-y-1"><span>{t("choices")}</span><textarea className="w-full rounded-lg border p-2" rows={4} value={q.options.map(o => o.label.vi).join("\n")} onChange={e => onChange({...q, options: e.target.value.split("\n").map((label, i) => ({value: q.options[i]?.value || `option-${crypto.randomUUID()}`, label: {vi: label}}))})}/></label>}
+    {(["single_choice","multi_choice","picture_choice","ranking"] as string[]).includes(q.type) && <label className="block space-y-1"><span>{t("choices")}</span><textarea className="w-full rounded-lg border p-2" rows={4} value={q.options.map(o => o.label.vi).join("\n")} onChange={e => onChange({...q, options: e.target.value.split("\n").map((label, i) => ({value: q.options[i]?.value || `option-${crypto.randomUUID()}`, label: {vi: label}}))})}/></label>}
   </div>;
 }
 
@@ -58,6 +63,7 @@ function Editor({initial}: {initial: Survey}) {
   const [share, setShare] = useState<{url: string; embed: string} | null>(null);
   const [branch, setBranch] = useState("");
   const [table, setTable] = useState("");
+  const [simulation,setSimulation]=useState<Record<string,unknown>>({});
   const latest = useRef(draft); latest.current = draft;
   const version = useRef(initial.updated_at);
   const saved = useRef(JSON.stringify(initial));
@@ -89,7 +95,7 @@ function Editor({initial}: {initial: Survey}) {
   }, []);
   function add(type: Question["type"]) {
     const id = crypto.randomUUID();
-    setDraft(d => ({...d, questions: [...d.questions, {id, code: `q-${id}`, type, title: {vi: t(`types.${type}`)}, description: {}, required: false, config: {}, logic: {}, options: type.includes("choice") ? [{value: "a", label: {vi: t("choiceA")}}, {value: "b", label: {vi: t("choiceB")}}] : []}]}));
+    setDraft(d => ({...d, questions: [...d.questions, {id, code: `q-${id}`, type, title: {vi: t(`types.${type}`)}, description: {}, required: false, config: type === "matrix" ? {rows: [t("choiceA"),t("choiceB")], columns: [t("choiceA"),t("choiceB")]} : {}, logic: {}, options: (["single_choice","multi_choice","picture_choice","ranking"] as string[]).includes(type) ? [{value: "a", label: {vi: t("choiceA")}}, {value: "b", label: {vi: t("choiceB")}}] : []}]}));
   }
   async function action(name: "publish" | "close" | "duplicate") {
     try {await save(); const result = await api<Survey>(`/surveys/${initial.id}/${name}`, {method: "POST"});
@@ -104,10 +110,10 @@ function Editor({initial}: {initial: Survey}) {
     {error && <p className="text-destructive" role="alert">{error}</p>}<p role="status">{t(`statuses.${draft.status}`)} · {t("autosave")}</p>
     <fieldset disabled={!canEdit} className="grid gap-5 lg:grid-cols-[1fr_22rem]">
       <div className="space-y-4"><label className="block">{t("title")}<Input value={draft.title} onChange={e => setDraft({...draft, title: e.target.value})}/></label><label className="block">{t("description")}<textarea className="w-full rounded-lg border p-3" value={draft.description || ""} onChange={e => setDraft({...draft, description: e.target.value})}/></label>
-        {!preview ? <><div className="flex flex-wrap gap-2">{(["rating", "csat", "text", "single_choice", "multi_choice"] as const).map(type => <Button key={type} type="button" variant="outline" onClick={() => add(type)}>{t(`types.${type}`)}</Button>)}</div>
-          <DndContext sensors={sensors} onDragEnd={({active, over}) => {if (over && active.id !== over.id) setDraft(d => ({...d, questions: arrayMove(d.questions, d.questions.findIndex(q => q.id === active.id), d.questions.findIndex(q => q.id === over.id))}));}}><SortableContext items={draft.questions.map(q => q.id)} strategy={verticalListSortingStrategy}><div className="space-y-4">{draft.questions.map(q => <QuestionEditor key={q.id} question={q} onChange={question => setDraft(d => ({...d, questions: d.questions.map(x => x.id === q.id ? question : x)}))} onRemove={() => setDraft(d => ({...d, questions: d.questions.filter(x => x.id !== q.id)}))}/>)}</div></SortableContext></DndContext></> : <div className="space-y-4 rounded-xl p-5" style={{background: draft.theme.background, color: draft.theme.text, fontFamily: draft.theme.font, fontSize: draft.theme.font_size}}>{draft.questions.map(q => <QuestionControl key={q.id} question={q} value={undefined} onChange={() => {}}/>)}</div>}
+        {!preview ? <><div className="flex flex-wrap gap-2">{(["rating", "csat", "text", "single_choice", "multi_choice", "nps", "picture_choice", "slider", "ranking", "contact", "upload", "matrix", "datetime"] as const).map(type => <Button key={type} type="button" variant="outline" onClick={() => add(type)}>{t(`types.${type}`)}</Button>)}</div>
+          <DndContext sensors={sensors} onDragEnd={({active, over}) => {if (over && active.id !== over.id) setDraft(d => ({...d, questions: arrayMove(d.questions, d.questions.findIndex(q => q.id === active.id), d.questions.findIndex(q => q.id === over.id))}));}}><SortableContext items={draft.questions.map(q => q.id)} strategy={verticalListSortingStrategy}><div className="space-y-4">{draft.questions.map(q => <QuestionEditor key={q.id} question={q} questions={draft.questions} onChange={question => setDraft(d => ({...d, questions: d.questions.map(x => x.id === q.id ? question : x)}))} onRemove={() => setDraft(d => ({...d, questions: d.questions.filter(x => x.id !== q.id)}))}/>)}</div></SortableContext></DndContext></> : <div className="space-y-4 rounded-xl p-5" style={{background: draft.theme.background, color: draft.theme.text, fontFamily: draft.theme.font, fontSize: draft.theme.font_size}}>{surveyPath(draft.questions,simulation).map(q => <QuestionControl key={q.id} question={q} value={simulation[q.code]} onChange={value => setSimulation({...simulation,[q.code]:value})}/>)}</div>}
       </div>
-      <aside className="space-y-4 rounded-xl border bg-card p-5"><h2 className="font-semibold">{t("theme")}</h2>{(["primary", "background", "text"] as const).map(key => <label key={key} className="flex justify-between gap-3">{t(`themeLabels.${key}`)}<input type="color" value={draft.theme[key]} onChange={e => setDraft({...draft, theme: {...draft.theme, [key]: e.target.value}})}/></label>)}
+      <aside className="space-y-4 rounded-xl border bg-card p-5"><h2 className="font-semibold">{t("theme")}</h2><AdvancedSettings survey={draft} onChange={setDraft}/>{(["primary", "background", "text"] as const).map(key => <label key={key} className="flex justify-between gap-3">{t(`themeLabels.${key}`)}<input type="color" value={draft.theme[key]} onChange={e => setDraft({...draft, theme: {...draft.theme, [key]: e.target.value}})}/></label>)}
         <label className="block">{t("fontSize")}<Input type="number" min={14} max={24} value={draft.theme.font_size} onChange={e => setDraft({...draft, theme: {...draft.theme, font_size: Number(e.target.value)}})}/></label>
         <label className="block">{t("voucherCode")}<Input value={String((draft.settings.voucher as {code?: string} | undefined)?.code || "")} onChange={e => setDraft({...draft, settings: {...draft.settings, voucher: {enabled: !!e.target.value, code: e.target.value || null}}})}/></label>
         <label className="block">{t("branch")}<Input value={branch} onChange={e => setBranch(e.target.value)}/></label><label className="block">{t("table")}<Input value={table} onChange={e => setTable(e.target.value)}/></label>

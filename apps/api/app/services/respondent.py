@@ -43,6 +43,17 @@ async def snapshot(db: AsyncSession, survey: Survey) -> dict[str, Any]:
     return version.snapshot
 
 
+def public_snapshot(snapshot: dict[str, Any]) -> dict[str, Any]:
+    # Tách cấu hình nội bộ và đáp án đúng khỏi bản gửi cho khách.
+    import copy
+    result = copy.deepcopy(snapshot)
+    settings = result.get("settings", {})
+    result["settings"] = {key: settings[key] for key in ("thank_you", "quiz_duration_seconds", "quiz_show_result", "randomize_questions", "randomize_options") if key in settings}
+    for question in result["questions"]:
+        question.get("config", {}).pop("correct_answer", None)
+    return result
+
+
 def issue_token(survey: Survey, settings: Settings, ip_hash: str | None) -> str:
     now = int(time.time())
     return jwt.encode({"aud": "survey-submit", "sub": str(survey.id), "version": str(survey.current_version_id), "jti": secrets.token_urlsafe(24), "iat": now, "exp": now + 7200, "ip": ip_hash}, settings.secret_key.get_secret_value(), algorithm="HS256")
@@ -69,6 +80,32 @@ async def submit(db: AsyncSession, survey: Survey, data: Submission, settings: S
         raise AppError("Vui lòng đọc kỹ khảo sát trước khi gửi.", code="TOO_FAST")
     config = await snapshot(db, survey)
     answers = validate_answers(config["questions"], data.answers)
+    if survey.settings.get("one_per_ip") and ip_hash:
+        previous = (await db.execute(select(Response.id).where(Response.tenant_id == survey.tenant_id, Response.survey_id == survey.id, Response.ip_hash == ip_hash).limit(1))).scalar_one_or_none()
+        if previous:
+            raise AppError("Bạn đã gửi phản hồi cho khảo sát này.", code="ALREADY_RESPONDED", status_code=409)
+    fingerprint_hash = hash_identifier(data.fingerprint, settings.hash_salt.get_secret_value()) if data.fingerprint else None
+    if survey.settings.get("one_per_browser") and fingerprint_hash:
+        previous = (await db.execute(select(Response.id).where(Response.tenant_id == survey.tenant_id, Response.survey_id == survey.id, Response.fingerprint_hash == fingerprint_hash).limit(1))).scalar_one_or_none()
+        if previous:
+            raise AppError("Trình duyệt đã gửi phản hồi.", code="ALREADY_RESPONDED", status_code=409)
+    for q in config["questions"]:
+        if q["type"] == "upload" and q["code"] in answers:
+            value = answers[q["code"]]
+            try:
+                proof = jwt.decode(value.get("proof", ""), settings.secret_key.get_secret_value(), algorithms=["HS256"], audience="survey-upload")
+            except jwt.PyJWTError as exc:
+                raise AppError("Tệp không có xác nhận quét hợp lệ.") from exc
+            if proof.get("sub") != str(survey.id) or proof.get("jti") != token["jti"] or proof.get("key") != value.get("key"):
+                raise AppError("Tệp không thuộc lượt trả lời này.")
+    from app.models import Answer as StoredAnswer
+    from sqlalchemy import func
+    for quota in survey.settings.get("quotas", []):
+        if answers.get(quota["question"]) != quota["value"]:
+            continue
+        count = int((await db.execute(select(func.count()).select_from(StoredAnswer).join(Response, Response.id == StoredAnswer.response_id).where(StoredAnswer.tenant_id == survey.tenant_id, Response.survey_id == survey.id, StoredAnswer.question_code == quota["question"], StoredAnswer.value == quota["value"]))).scalar_one())
+        if count >= quota["limit"]:
+            raise AppError("Nhóm đối tượng này đã đủ số lượng phản hồi.", code="QUOTA_FULL", status_code=409)
     if data.language not in survey.languages:
         raise AppError("Ngôn ngữ không được hỗ trợ.")
     if len(data.source_params) > 10 or any(len(k) > 64 or len(v) > 200 for k, v in data.source_params.items()):
@@ -89,6 +126,8 @@ async def submit(db: AsyncSession, survey: Survey, data: Submission, settings: S
     for key, values in numeric.items():
         if values:
             setattr(response, key, Decimal(sum(values)) / Decimal(len(values)))
+    nps = next((answers[q["code"]] for q in config["questions"] if q["type"] == "nps" and q["code"] in answers), None)
+    response.nps = nps
     db.add(response)
     await db.flush()
     # Câu hỏi đã bị xóa ở bản nháp vẫn có snapshot; question_id lúc đó để NULL.
