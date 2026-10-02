@@ -527,5 +527,21 @@
     "unavailable": "Survey unavailable",
     "unavailableDescription": "The survey may be closed or full. Thank you for your interest.",
     "networkError": "Could not connect to the server. Please try again later."
+  },
+  "imports": {
+    "title": "Import responses",
+    "description": "UTF-8 CSV or XLSX, up to 20MB/100,000 rows. Use option codes; separate multiple choices with |.",
+    "file": "Choose file",
+    "skip": "Do not map",
+    "preview": "Preview 20 rows",
+    "start": "Start import",
+    "progress": "Processed {processed} rows · Success {success} · Errors {errors}",
+    "errors": "Download error report",
+    "statuses": {
+      "pending": "Queued",
+      "running": "Processing",
+      "done": "Completed",
+      "failed": "Failed"
+    }
   }
 }

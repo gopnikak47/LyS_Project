@@ -13,6 +13,7 @@ import type { Question, Survey } from "@/lib/api/surveys";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { QuestionControl } from "./question-control";
+import { ImportPanel } from "./import-panel";
 
 function QuestionEditor({ question: q, onChange, onRemove }: { question: Question; onChange: (q: Question) => void; onRemove: () => void }) {
   const t = useTranslations("engine");
@@ -114,5 +115,6 @@ function Editor({initial}: {initial: Survey}) {
         {share && <div className="space-y-2 break-all"><a className="underline" href={share.url} target="_blank" rel="noreferrer">{share.url}</a><div className="flex gap-3">{["png", "svg"].map(format => <a className="underline" key={format} href={apiUrl(`/surveys/${initial.id}/qr?${new URLSearchParams({format, branch, table})}`)}>{t("downloadQr", {format: format.toUpperCase()})}</a>)}</div></div>}
       </aside>
     </fieldset>
+    {canEdit && <ImportPanel survey={draft}/>}
   </div>;
 }

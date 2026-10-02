@@ -86,3 +86,5 @@ GĐ4: đã triển khai API CRUD, lưu nháp, nhân bản, xuất bản snapshot
 GĐ5: trang khách SSR tại /s/{slug}, validator registry, tiến độ sessionStorage, token ký có hạn/buộc IP và phiên bản, honeypot, thời gian tối thiểu, rate limit, gửi lặp idempotent, voucher, lưu thô + pending trước dispatch NLP. **Chưa kiểm thử**. Push hiện bị chặn bởi Git chưa đăng nhập và connector GitHub thiếu quyền Git Trees (403); tiếp tục commit cục bộ.
 
 GĐ6: tiền xử lý Unicode/teencode/emoji, phân tích theo câu, PhoBERT artifact + calibration, topic embedding tùy chọn + baseline từ khóa, luật khẩn cấp, worker batch/skip-locked/RLS/retry/quét bù; train/evaluate/retrain và CSV demo có cảnh báo. **Chưa kiểm thử; chưa có artifact fine-tune/tập đánh giá production; không tuyên bố đạt 80%.** Email khẩn cấp gắn luồng ticket/outbox ở GĐ12.
+
+GĐ7: upload CSV/XLSX giới hạn dung lượng/archive/cột/dòng; preview 20 dòng + mapping theo mã câu hỏi, nền 200 dòng/transaction, tiến độ bền qua retry, báo cáo lỗi tải được và pending NLP. StorageBackend local có chống traversal, ghi nguyên tử. **Chưa kiểm thử hoặc đo 10.000 dòng**. Beat nhận job trong tối đa 30 giây, tránh dispatch trước commit.

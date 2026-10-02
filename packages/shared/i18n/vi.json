@@ -527,5 +527,21 @@
     "unavailable": "Khảo sát không khả dụng",
     "unavailableDescription": "Khảo sát có thể đã đóng hoặc nhận đủ phản hồi. Cảm ơn bạn đã quan tâm.",
     "networkError": "Không kết nối được máy chủ. Vui lòng thử lại sau."
+  },
+  "imports": {
+    "title": "Import phản hồi",
+    "description": "CSV UTF-8 hoặc XLSX, tối đa 20MB/100.000 dòng. Dùng mã đáp án; chọn nhiều ngăn cách bằng |.",
+    "file": "Chọn tệp",
+    "skip": "Không ánh xạ",
+    "preview": "Xem trước 20 dòng",
+    "start": "Bắt đầu import",
+    "progress": "Đã xử lý {processed} dòng · Thành công {success} · Lỗi {errors}",
+    "errors": "Tải báo cáo lỗi",
+    "statuses": {
+      "pending": "Đang chờ xử lý",
+      "running": "Đang xử lý",
+      "done": "Đã hoàn thành",
+      "failed": "Không hoàn thành"
+    }
   }
 }
