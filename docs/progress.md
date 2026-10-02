@@ -2,19 +2,19 @@
 
 ## Trạng thái giai đoạn
 
-| GĐ    | Nội dung                                                                              | Trạng thái                |
-| ----- | ------------------------------------------------------------------------------------- | ------------------------- |
-| 0     | Monorepo, Docker Compose, lint/CI, `.env.example`, design system + layout khung, i18n | ✅ Hoàn thành — chờ duyệt |
-| 1     | CSDL, migration, ERD, RLS                                                             | ⏳                        |
-| 2     | Auth, tenant, workspace, thành viên, phân quyền (FR-01→04)                            | ⏳                        |
-| 3     | Chủ đề theo workspace + bộ mẫu (FR-12→13)                                             | ⏳                        |
-| 4     | Survey engine P0, link + QR (FR-05→06)                                                | ⏳                        |
-| 5     | Trang khách, chống spam, voucher (FR-08→11)                                           | ⏳                        |
-| 6     | NLP pipeline + Celery + dự phòng + evaluate (FR-14→17)                                | ⏳                        |
-| 7     | Import CSV/Excel (FR-07)                                                              | ⏳                        |
-| 8     | Danh sách phản hồi, sửa nhãn, chất lượng mô hình (FR-18→20)                           | ⏳                        |
-| 9     | Dashboard, xu hướng, word cloud, xuất Excel/PDF, SSE (FR-21→24)                       | ⏳                        |
-| 10–14 | P1 mở rộng & hoàn thiện                                                               | ⏳                        |
+| GĐ    | Nội dung                                                                              | Trạng thái    |
+| ----- | ------------------------------------------------------------------------------------- | ------------- |
+| 0     | Monorepo, Docker Compose, lint/CI, `.env.example`, design system + layout khung, i18n | ✅ Hoàn thành |
+| 1     | CSDL, migration, ERD, RLS                                                             | ✅ Hoàn thành |
+| 2     | Auth, tenant, workspace, thành viên, phân quyền (FR-01→04)                            | ⏳            |
+| 3     | Chủ đề theo workspace + bộ mẫu (FR-12→13)                                             | ⏳            |
+| 4     | Survey engine P0, link + QR (FR-05→06)                                                | ⏳            |
+| 5     | Trang khách, chống spam, voucher (FR-08→11)                                           | ⏳            |
+| 6     | NLP pipeline + Celery + dự phòng + evaluate (FR-14→17)                                | ⏳            |
+| 7     | Import CSV/Excel (FR-07)                                                              | ⏳            |
+| 8     | Danh sách phản hồi, sửa nhãn, chất lượng mô hình (FR-18→20)                           | ⏳            |
+| 9     | Dashboard, xu hướng, word cloud, xuất Excel/PDF, SSE (FR-21→24)                       | ⏳            |
+| 10–14 | P1 mở rộng & hoàn thiện                                                               | ⏳            |
 
 ## Giai đoạn 0 — chi tiết
 
@@ -32,3 +32,17 @@
 - [x] Ảnh chụp: `docs/screenshots/{landing,surveys,ui-kit,login}-{375,768,1280}.png`.
 
 **FR hoàn thành ở GĐ 0:** chưa có FR nghiệp vụ (GĐ 0 là nền tảng). Phần nền cho NFR: log JSON + request-id, health-check, header bảo mật/CSP, không lộ stack trace, hàng đợi bền, graceful shutdown, a11y tự động.
+
+## Giai đoạn 1 — chi tiết
+
+**Tiêu chí hoàn thành:** migration chạy sạch; ERD trong `docs/erd.md`.
+
+- [x] 26 bảng (SQLAlchemy 2 typed models), migration `0001` (Alembic async): lên → xuống → lên lại sạch.
+- [x] RLS trên 21 bảng (19 bảng tenant + `tenants` + `users`), vai trò `lys_rls`, ngữ cảnh `app.tenant_id`.
+- [x] Chỉ mục theo đặc tả: `(tenant_id, survey_id, created_at)`, `(tenant_id, sentiment)`, GIN `topic_ids`, trigram không dấu.
+- [x] Repository nền `TenantRepository` (lọc tenant + xóa mềm, ép `tenant_id` khi thêm).
+- [x] `make seed`: 2 doanh nghiệp, 4 workspace, 4 khảo sát, 1.660 phản hồi, 1.363 nhận xét có teencode/emoji/ca khẩn cấp.
+- [x] Service `migrate` trong Compose; CI có PostgreSQL thật; test dùng testcontainers khi chạy cục bộ.
+- [x] Test: 16 test CSDL (RLS: đọc/ghi/sửa/xóa chéo tenant, đoán ID, thiếu ngữ cảnh, rò ngữ cảnh qua pool, quyền bảng auth, độ phủ RLS; migration; khớp model; seed; repository) + test ERD.
+
+**FR:** nền tảng cho FR-04 (lớp RLS) — hoàn thiện kiểm thử qua mọi endpoint ở GĐ 2.

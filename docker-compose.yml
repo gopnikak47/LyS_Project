@@ -45,6 +45,8 @@ x-backend-depends: &backend-depends
     condition: service_healthy
   redis:
     condition: service_healthy
+  migrate:
+    condition: service_completed_successfully
 
 services:
   postgres:
@@ -87,6 +89,17 @@ services:
     ports:
       - "127.0.0.1:${MAIL_UI_HOST_PORT:-8025}:8025"
       - "127.0.0.1:${SMTP_HOST_PORT:-1025}:1025"
+
+  # Chạy migration một lần rồi thoát; api/worker/beat chỉ khởi động khi migration thành công.
+  migrate:
+    build: *backend-build
+    image: lys/backend:${IMAGE_TAG:-dev}
+    command: ["python", "-m", "app.cli", "migrate"]
+    environment: *backend-env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
 
   api:
     build: *backend-build

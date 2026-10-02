@@ -30,6 +30,8 @@ dev = [
   "httpx2>=2.13,<3",
   "pip-audit>=2.10,<3",
   "celery-types>=0.23",
+  "testcontainers[postgres]>=4.15,<5",
+  "types-openpyxl>=3.1",
 ]
 
 # ---------------------------------------------------------------- ruff
@@ -47,7 +49,11 @@ ignore = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"**/tests/**" = ["S101", "S105", "S106"]
+"**/tests/**" = ["S101", "S105", "S106", "S311"]
+# Migration chỉ ghép SQL từ hằng số trong file.
+"**/migrations/versions/*" = ["S608", "E501"]
+# Dữ liệu minh họa: random thường là đủ (không dùng cho bảo mật).
+"**/app/seed/*" = ["S311"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["app", "worker", "lys_nlp"]
@@ -69,7 +75,10 @@ ignore_missing_imports = true
 # ---------------------------------------------------------------- pytest
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
-asyncio_default_fixture_loop_scope = "function"
+# Dùng chung một event loop cho cả phiên test để tái sử dụng engine/pool CSDL.
+asyncio_default_fixture_loop_scope = "session"
+asyncio_default_test_loop_scope = "session"
 testpaths = ["apps/api/tests", "apps/worker/tests", "packages/nlp/tests"]
 addopts = "-ra --strict-markers --import-mode=importlib"
+markers = ["db: test cần PostgreSQL thật (testcontainers hoặc TEST_DATABASE_URL)"]
 filterwarnings = ["error::DeprecationWarning:app.*"]

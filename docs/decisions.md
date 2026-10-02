@@ -80,3 +80,39 @@ Mỗi mục: **bối cảnh → quyết định → hệ quả**. Bổ sung theo
 - Màu chủ đạo: xanh chàm `oklch(0.5 0.19 265)` trong biến CSS `--primary` (`apps/web/src/app/globals.css`).
 - Múi giờ hiển thị mặc định `Asia/Ho_Chi_Minh`; lưu trữ thời gian ở UTC.
 - Cổng truy cập mặc định `8080` (tránh xung đột cổng 80); đổi bằng `HTTP_PORT`.
+
+## Giai đoạn 1
+
+### D-014. RLS bằng `SET LOCAL ROLE lys_rls` + `app.tenant_id`
+
+- **Bối cảnh:** superuser và chủ sở hữu bảng bỏ qua RLS; dùng `FORCE ROW LEVEL SECURITY` thì các
+  thao tác hệ thống (đăng ký, đăng nhập, phân giải slug công khai) cũng bị chặn.
+- **Quyết định:** migration tạo vai trò `lys_rls` (NOLOGIN), cấp quyền DML trên bảng tenant và cấp
+  vai trò đó cho user kết nối. Mỗi transaction đã xác thực chạy `SET LOCAL ROLE lys_rls` và
+  `set_config('app.tenant_id', …, true)`; chính sách `tenant_isolation` so khớp
+  `tenant_id = app_current_tenant()` cho cả `USING` lẫn `WITH CHECK`. Phiên hệ thống
+  (`system_session`) không đổi vai trò, chỉ dùng cho thao tác bắt buộc xuyên tenant.
+- **Hệ quả:** kể cả truy vấn quên điều kiện tenant cũng không đọc/ghi được dữ liệu tenant khác.
+  Vai trò RLS không đọc được `refresh_tokens`/`password_reset_tokens`. Test
+  `test_rls_enabled_on_every_tenant_table` bắt lỗi nếu bảng mới có `tenant_id` mà quên bật RLS.
+  Ở môi trường CSDL được quản lý (không có quyền CREATEROLE), cần tạo sẵn vai trò `lys_rls`.
+
+### D-015. Email lưu chữ thường
+
+- Unique trên `users.email`; tầng service chuẩn hóa `strip().lower()` trước khi lưu/tra cứu.
+
+### D-016. Tìm kiếm không dấu
+
+- Extension `unaccent` + `pg_trgm`, hàm `f_unaccent()` IMMUTABLE và chỉ mục GIN trigram trên
+  `f_unaccent(lower(text))` của `text_analyses` → tìm "dau bung" ra "đau bụng".
+
+### D-017. Cột phi chuẩn hóa trên `text_analyses`
+
+- `workspace_id`, `survey_id`, `channel`, `rating`, `responded_at` được sao chép từ phản hồi để
+  bảng phản hồi (FR-18) và dashboard lọc/sắp xếp nhanh mà không cần JOIN.
+
+### D-018. Migration nằm trong package `app`
+
+- Thư mục `app/db/migrations` được đóng gói cùng wheel nên image runtime chạy được
+  `python -m app.cli migrate` (service `migrate` một lần trong Compose). ERD sinh tự động từ model
+  (`python -m app.db.erd`), có test đảm bảo `docs/erd.md` luôn khớp.

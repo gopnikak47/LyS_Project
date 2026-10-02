@@ -38,6 +38,7 @@ infra: .env ## Chỉ chạy hạ tầng (postgres, redis, mailpit) để dev ngo
 
 .PHONY: dev
 dev: infra ## Dev có hot-reload: API :8000, worker, web :3000 (Ctrl+C để dừng)
+	cd apps/api && uv run python -m app.cli migrate
 	@trap 'kill 0' EXIT; \
 	(cd apps/api && uv run uvicorn app.main:create_app --factory --reload --port 8000) & \
 	(cd apps/worker && uv run celery -A worker.celery_app worker -Q default,nlp -l INFO) & \
@@ -75,13 +76,21 @@ screenshots: ## Chụp ảnh màn hình các trang mẫu vào docs/screenshots/
 	$(WEB) screenshots
 
 # ---------------------------------------------------------------- dữ liệu & NLP (các giai đoạn sau)
+# Lệnh CSDL chạy trong container nếu stack Docker đang chạy, ngược lại chạy cục bộ bằng uv.
+API_RUN = $(shell $(COMPOSE) ps --status running --services 2>/dev/null | grep -qx api \
+	&& echo "$(COMPOSE) exec -T api" || echo "cd apps/api && uv run")
+
 .PHONY: migrate
-migrate: ## (GĐ 1) Chạy migration Alembic
-	@echo "Chưa triển khai — Giai đoạn 1 (CSDL, migration, RLS)."
+migrate: ## Chạy migration Alembic tới bản mới nhất
+	$(API_RUN) python -m app.cli migrate
 
 .PHONY: seed
-seed: ## (GĐ 1+) Sinh dữ liệu minh họa tiếng Việt
-	@echo "Chưa triển khai — dữ liệu minh họa được bổ sung từ Giai đoạn 1."
+seed: ## Sinh dữ liệu minh họa tiếng Việt (xóa dữ liệu minh họa cũ)
+	$(API_RUN) python -m app.cli seed --reset
+
+.PHONY: erd
+erd: ## Sinh lại docs/erd.md từ model
+	cd apps/api && uv run python -m app.db.erd > ../../docs/erd.md
 
 .PHONY: train
 train: ## (GĐ 6) Huấn luyện mô hình cảm xúc
