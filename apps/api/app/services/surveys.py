@@ -92,6 +92,7 @@ class SurveyService:
         # Snapshot giữ cấu hình khách; không chứa đáp án bí mật (quiz thêm ở GĐ11).
         version.snapshot = {**version.snapshot, "settings": survey.settings}
         await self.db.flush()
+        version.snapshot = {**version.snapshot, "current_version_id": str(version.id)}
         survey.current_version_id = version.id
         survey.status = SurveyStatus.PUBLISHED
         survey.published_at = datetime.now(UTC)

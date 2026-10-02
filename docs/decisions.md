@@ -175,3 +175,9 @@ Nháp được lưu qua PUT, có khóa hàng và expected_updated_at để phát
 ### D-026. Quy trình của phiên làm việc
 
 Theo yêu cầu trực tiếp ngày 02/10/2026: tiếp tục tuần tự GĐ4–14, commit mỗi giai đoạn, chỉ chạy test sau khi làm đủ giai đoạn. Không dừng chờ duyệt như hướng dẫn trong đặc tả. Commit trung gian chưa được kiểm thử; chỉ GĐ14 mới ghi kết quả thật.
+
+## Giai đoạn 5
+
+### D-027. Token gửi và bảo toàn phản hồi
+
+JWT audience survey-submit có nonce, ràng buộc IP băm và snapshot. Khóa hàng khảo sát bao quanh quota và tra nonce đảm bảo gửi lặp trả cùng kết quả. Commit phản hồi/analysis pending trước dispatch; nếu broker lỗi, job quét bù GĐ6 xử lý. Không ghi IP thô.

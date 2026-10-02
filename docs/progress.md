@@ -82,3 +82,5 @@
 ## Phiên tiếp tục 02/10/2026
 
 GĐ4: đã triển khai API CRUD, lưu nháp, nhân bản, xuất bản snapshot, đóng/xóa mềm, chia sẻ link/QR PNG/SVG theo nguồn; giao diện danh sách API thật và builder kéo thả/bàn phím, xem trước, màu/cỡ chữ. **Chưa kiểm thử** theo yêu cầu; các tiêu chí nghiệm thu được xác minh ở GĐ14.
+
+GĐ5: trang khách SSR tại /s/{slug}, validator registry, tiến độ sessionStorage, token ký có hạn/buộc IP và phiên bản, honeypot, thời gian tối thiểu, rate limit, gửi lặp idempotent, voucher, lưu thô + pending trước dispatch NLP. **Chưa kiểm thử**. Push hiện bị chặn bởi Git chưa đăng nhập và connector GitHub thiếu quyền Git Trees (403); tiếp tục commit cục bộ.

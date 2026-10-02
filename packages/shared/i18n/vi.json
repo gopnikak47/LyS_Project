@@ -511,6 +511,21 @@
       "primary": "Màu nút",
       "background": "Màu nền",
       "text": "Màu chữ"
-    }
+    },
+    "voucherCode": "Mã ưu đãi (để trống để tắt)"
+  },
+  "respondent": {
+    "thanks": "Cảm ơn bạn!",
+    "thanksDescription": "Phản hồi của bạn giúp chúng tôi phục vụ tốt hơn.",
+    "voucher": "Mã ưu đãi dành cho bạn",
+    "expires": "Có hiệu lực đến {date}",
+    "progress": "Tiến độ trả lời",
+    "honeypot": "Website",
+    "sending": "Đang gửi…",
+    "submit": "Gửi phản hồi",
+    "required": "Vui lòng trả lời đầy đủ các câu hỏi bắt buộc.",
+    "unavailable": "Khảo sát không khả dụng",
+    "unavailableDescription": "Khảo sát có thể đã đóng hoặc nhận đủ phản hồi. Cảm ơn bạn đã quan tâm.",
+    "networkError": "Không kết nối được máy chủ. Vui lòng thử lại sau."
   }
 }

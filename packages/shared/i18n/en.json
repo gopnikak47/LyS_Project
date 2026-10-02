@@ -511,6 +511,21 @@
       "primary": "Button color",
       "background": "Background",
       "text": "Text color"
-    }
+    },
+    "voucherCode": "Voucher code (leave blank to disable)"
+  },
+  "respondent": {
+    "thanks": "Thank you!",
+    "thanksDescription": "Your feedback helps us improve.",
+    "voucher": "Your discount code",
+    "expires": "Valid until {date}",
+    "progress": "Response progress",
+    "honeypot": "Website",
+    "sending": "Sending…",
+    "submit": "Submit feedback",
+    "required": "Please answer all required questions.",
+    "unavailable": "Survey unavailable",
+    "unavailableDescription": "The survey may be closed or full. Thank you for your interest.",
+    "networkError": "Could not connect to the server. Please try again later."
   }
 }

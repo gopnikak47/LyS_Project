@@ -24,6 +24,18 @@ class Choice(ApiModel):
     label: dict[str, str]
 
 
+class Voucher(ApiModel):
+    enabled: bool = False
+    code: str | None = Field(default=None, max_length=100)
+    expires_at: datetime | None = None
+
+    @model_validator(mode="after")
+    def timezone_required(self) -> Voucher:
+        if self.expires_at and self.expires_at.tzinfo is None:
+            raise ValueError("Hạn voucher cần múi giờ.")
+        return self
+
+
 class QuestionInput(ApiModel):
     id: uuid.UUID = Field(default_factory=uuid.uuid4)
     code: str = Field(min_length=1, max_length=64, pattern=r"^[\w-]+$")
@@ -61,6 +73,8 @@ class SurveyInput(ApiModel):
 
     @model_validator(mode="after")
     def unique_questions(self) -> SurveyInput:
+        if "voucher" in self.settings:
+            self.settings["voucher"] = Voucher.model_validate(self.settings["voucher"]).model_dump(mode="json")
         if len({q.code for q in self.questions}) != len(self.questions):
             raise ValueError("Mã câu hỏi không được trùng.")
         if len({q.id for q in self.questions}) != len(self.questions):
