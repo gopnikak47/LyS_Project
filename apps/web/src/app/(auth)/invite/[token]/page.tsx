@@ -7,7 +7,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t("inviteTitle"), robots: { index: false } };
 }
 
-export default async function InvitePage({ params }: PageProps<"/invite/[token]">) {
+export default async function InvitePage({ params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;
   return <InviteAccept token={token} />;
 }

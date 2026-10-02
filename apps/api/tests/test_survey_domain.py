@@ -79,7 +79,7 @@ def test_quiz_snapshot_is_not_mutated_and_grading_is_exact() -> None:
 
 
 def test_image_schema_accepts_signed_asset_and_blocks_external_urls() -> None:
-    data = {
+    data: dict[str, Any] = {
         "code": "pick",
         "type": "picture_choice",
         "title": {"vi": "Chọn"},

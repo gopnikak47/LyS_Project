@@ -14,7 +14,7 @@ from app.core.permissions import Permission
 from app.core.storage import LocalStorage
 from app.domain.tabular import rows
 from app.models import ImportJob
-from app.models.enums import ImportKind
+from app.models.enums import ImportKind, JobStatus
 from app.repositories.jobs import ImportRepository
 from app.services.surveys import SurveyService
 from app.services.workspaces import WorkspaceService
@@ -75,7 +75,7 @@ class ImportService:
                 self.repo._scoped().where(ImportJob.id == job_id).with_for_update()
             )
         ).scalar_one()
-        if job.mapping:
+        if job.mapping or job.status != JobStatus.PENDING:
             raise AppError("Tác vụ đã được bắt đầu.", status_code=409)
         if job.survey_id is None:
             raise AppError("Tác vụ thiếu khảo sát.")

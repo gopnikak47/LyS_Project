@@ -26,7 +26,13 @@ export async function registerViaApi(
     },
   });
   expect(res.status(), await res.text()).toBe(201);
-  return { email, session: await res.json() };
+  const session = await res.json();
+  const upgrade = await page.request.post("/api/v1/billing/mock-subscription", {
+    headers: { "X-CSRF-Token": session.csrf_token },
+    data: { plan_code: "pro" },
+  });
+  expect(upgrade.status(), await upgrade.text()).toBe(200);
+  return { email, session };
 }
 
 /** Không được có thanh cuộn ngang ở bất kỳ kích thước màn hình nào. */

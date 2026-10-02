@@ -22,13 +22,21 @@ export function generateStaticParams() {
   return Object.keys(PLANNED_PAGES).map((page) => ({ page }));
 }
 
-export async function generateMetadata({ params }: PageProps<"/[page]">): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ page: string }>;
+}): Promise<Metadata> {
   const { page } = await params;
   const t = await getTranslations();
   return { title: t(PLANNED_PAGES[page as PlannedPage].title) };
 }
 
-export default async function PlannedContentPage({ params }: PageProps<"/[page]">) {
+export default async function PlannedContentPage({
+  params,
+}: {
+  params: Promise<{ page: string }>;
+}) {
   const { page } = await params;
   const entry = PLANNED_PAGES[page as PlannedPage];
   const t = await getTranslations();

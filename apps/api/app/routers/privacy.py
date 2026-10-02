@@ -46,12 +46,10 @@ async def erase(response_id: uuid.UUID, data: Erasure, ctx: Ctx) -> HttpResponse
     row = found(
         (
             await ctx.db.execute(
-                select(Response)
-                .where(
+                select(Response).where(
                     Response.id == response_id,
                     Response.tenant_id == ctx.principal.tenant_id,
                 )
-                .with_for_update()
             )
         ).scalar_one_or_none()
     )
@@ -102,14 +100,29 @@ async def erase(response_id: uuid.UUID, data: Erasure, ctx: Ctx) -> HttpResponse
     analysis_ids = (
         (
             await ctx.db.execute(
-                select(TextAnalysis.id).where(
+                select(TextAnalysis.id)
+                .where(
                     TextAnalysis.tenant_id == ctx.principal.tenant_id,
                     TextAnalysis.response_id == response_id,
                 )
+                .with_for_update()
             )
         )
         .scalars()
         .all()
+    )
+    # Wait for analysis workers before taking the response lock, matching their FK writes.
+    row = found(
+        (
+            await ctx.db.execute(
+                select(Response)
+                .where(
+                    Response.tenant_id == ctx.principal.tenant_id,
+                    Response.id == response_id,
+                )
+                .with_for_update()
+            )
+        ).scalar_one_or_none()
     )
     await ctx.db.execute(
         delete(EmailDelivery).where(

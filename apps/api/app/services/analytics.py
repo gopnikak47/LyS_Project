@@ -4,7 +4,8 @@ from __future__ import annotations
 
 from typing import Any
 
-from sqlalchemy import Select, String, cast, func, select
+from sqlalchemy import Select, String, case, cast, func, select
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.auth import Principal
@@ -157,19 +158,25 @@ class AnalyticsService:
 
     async def per_question(self, filters: FeedbackFilter) -> list[dict[str, Any]]:
         responses = (await self.response_scope(filters)).subquery()
+        # Text/contact/upload values are not a distribution; aggregate in SQL instead
+        # of loading every unique comment or identity into the API process.
+        bucket_value = case(
+            (Answer.question_type.in_(["text", "contact", "upload"]), cast(None, JSONB)),
+            else_=Answer.value,
+        )
         rows = (
             await self.db.execute(
                 select(
                     responses.c.survey_id,
                     Answer.question_code,
                     Answer.question_type,
-                    Answer.value,
+                    bucket_value,
                     func.count(),
                 )
                 .join(Answer, Answer.response_id == responses.c.id)
                 .where(Answer.tenant_id == self.principal.tenant_id)
                 .group_by(
-                    responses.c.survey_id, Answer.question_code, Answer.question_type, Answer.value
+                    responses.c.survey_id, Answer.question_code, Answer.question_type, bucket_value
                 )
             )
         ).all()

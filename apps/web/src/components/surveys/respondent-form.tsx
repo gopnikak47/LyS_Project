@@ -11,6 +11,7 @@ export function RespondentForm({ survey: initial }: { survey: Survey }) {
   const t = useTranslations("respondent");
   const [survey, setSurvey] = useState(initial);
   const formRef = useRef<HTMLFormElement>(null);
+  const autoSubmitted = useRef(false);
   const [startedAt, setStartedAt] = useState<number | null>(null);
   const [remaining, setRemaining] = useState<number | null>(null);
   const [answers, setAnswers] = useState<Record<string, unknown>>({});
@@ -90,7 +91,10 @@ export function RespondentForm({ survey: initial }: { survey: Survey }) {
     const tick = () => {
       const left = Math.max(0, Math.ceil(startedAt + duration - Date.now() / 1000));
       setRemaining(left);
-      if (left === 0) formRef.current?.requestSubmit();
+      if (left === 0 && !autoSubmitted.current) {
+        autoSubmitted.current = true;
+        formRef.current?.requestSubmit();
+      }
     };
     const timer = setInterval(tick, 1000);
     tick();
@@ -132,7 +136,11 @@ export function RespondentForm({ survey: initial }: { survey: Survey }) {
           method: "POST",
           body: {
             token,
-            answers,
+            answers: Object.fromEntries(
+              Object.entries(answers).filter(([code]) =>
+                survey.questions.some((question) => question.code === code),
+              ),
+            ),
             honeypot,
             language,
             fingerprint,

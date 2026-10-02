@@ -32,9 +32,11 @@ ARG NEXT_PUBLIC_APP_NAME="LyS Survey"
 ARG NEXT_PUBLIC_API_BASE_URL="/api"
 # Đích rewrite /api/* của Next.js (dự phòng khi request không qua nginx).
 ARG API_INTERNAL_URL="http://api:8000"
+ARG SURVEY_EMBED_ORIGINS=""
 ENV NEXT_PUBLIC_APP_NAME=$NEXT_PUBLIC_APP_NAME \
     NEXT_PUBLIC_API_BASE_URL=$NEXT_PUBLIC_API_BASE_URL \
-    API_INTERNAL_URL=$API_INTERNAL_URL
+    API_INTERNAL_URL=$API_INTERNAL_URL \
+    SURVEY_EMBED_ORIGINS=$SURVEY_EMBED_ORIGINS
 RUN pnpm --filter @lys/web build
 
 # ---------------------------------------------------------------- runtime

@@ -128,8 +128,22 @@ async def observability(ctx: Ctx) -> dict[str, Any]:
             .group_by(TextAnalysis.status)
         )
     ).all()
+    from redis.asyncio import Redis
+    from redis.exceptions import RedisError
+
+    broker = Redis.from_url(
+        ctx.settings.celery_broker_url, socket_timeout=2, socket_connect_timeout=2
+    )
+    default: int | None
+    nlp: int | None
+    try:
+        default, nlp = await broker.llen("default"), await broker.llen("nlp")
+    except RedisError:
+        default = nlp = None
+    finally:
+        await broker.aclose()
     return {
         "analysis_statuses": dict(counts),
-        "broker_default": await ctx.resources.redis.llen("default"),
-        "broker_nlp": await ctx.resources.redis.llen("nlp"),
+        "broker_default": default,
+        "broker_nlp": nlp,
     }

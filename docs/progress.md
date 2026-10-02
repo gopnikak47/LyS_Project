@@ -2,19 +2,19 @@
 
 ## Trạng thái giai đoạn
 
-| GĐ    | Nội dung                                                                              | Trạng thái    |
-| ----- | ------------------------------------------------------------------------------------- | ------------- |
-| 0     | Monorepo, Docker Compose, lint/CI, `.env.example`, design system + layout khung, i18n | ✅ Hoàn thành |
-| 1     | CSDL, migration, ERD, RLS                                                             | ✅ Hoàn thành |
-| 2     | Auth, tenant, workspace, thành viên, phân quyền (FR-01→04)                            | ⏳            |
-| 3     | Chủ đề theo workspace + bộ mẫu (FR-12→13)                                             | ⏳            |
-| 4     | Survey engine P0, link + QR (FR-05→06)                                                | ⏳            |
-| 5     | Trang khách, chống spam, voucher (FR-08→11)                                           | ⏳            |
-| 6     | NLP pipeline + Celery + dự phòng + evaluate (FR-14→17)                                | ⏳            |
-| 7     | Import CSV/Excel (FR-07)                                                              | ⏳            |
-| 8     | Danh sách phản hồi, sửa nhãn, chất lượng mô hình (FR-18→20)                           | ⏳            |
-| 9     | Dashboard, xu hướng, word cloud, xuất Excel/PDF, SSE (FR-21→24)                       | ⏳            |
-| 10–14 | P1 mở rộng & hoàn thiện                                                               | ⏳            |
+| GĐ    | Nội dung                                                                              | Trạng thái                   |
+| ----- | ------------------------------------------------------------------------------------- | ---------------------------- |
+| 0     | Monorepo, Docker Compose, lint/CI, `.env.example`, design system + layout khung, i18n | ✅ Hoàn thành                |
+| 1     | CSDL, migration, ERD, RLS                                                             | ✅ Hoàn thành                |
+| 2     | Auth, tenant, workspace, thành viên, phân quyền (FR-01→04)                            | Đã triển khai; đang kiểm tra |
+| 3     | Chủ đề theo workspace + bộ mẫu (FR-12→13)                                             | Đã triển khai; đang kiểm tra |
+| 4     | Survey engine P0, link + QR (FR-05→06)                                                | Đã triển khai; đang kiểm tra |
+| 5     | Trang khách, chống spam, voucher (FR-08→11)                                           | Đã triển khai; đang kiểm tra |
+| 6     | NLP pipeline + Celery + dự phòng + evaluate (FR-14→17)                                | Đã triển khai; đang kiểm tra |
+| 7     | Import CSV/Excel (FR-07)                                                              | Đã triển khai; đang kiểm tra |
+| 8     | Danh sách phản hồi, sửa nhãn, chất lượng mô hình (FR-18→20)                           | Đã triển khai; đang kiểm tra |
+| 9     | Dashboard, xu hướng, word cloud, xuất Excel/PDF, SSE (FR-21→24)                       | Đã triển khai; đang kiểm tra |
+| 10–14 | P1 mở rộng & hoàn thiện                                                               | Đã triển khai; đang kiểm tra |
 
 ## Giai đoạn 0 — chi tiết
 
@@ -102,3 +102,14 @@ GĐ12: ticket tự động từ NLP/hiệu chỉnh (khẩn/tiêu cực/sao thấ
 GĐ13: hạn mức workspace/member+invitation/survey/NLP tháng với khóa tenant chống vượt đồng thời; phản hồi thô vẫn lưu, NLP hết hạn ghi skipped/PLAN_LIMIT; billing usage + mô phỏng đổi gói dev (production từ chối); audit phân trang, Prometheus latency/request-counter và trạng thái NLP theo tenant, giao diện billing/audit/metrics. **Chưa kiểm thử**. Hạn mức đặt tại service giữ invariant thay vì middleware dò URL.
 
 GĐ14: đã thêm service backup/retention/checksum, restore nguyên tử có xác nhận database, endpoint admin xóa phản hồi và thu hồi job nguồn/derived, tài liệu vận hành và CI cho nhánh hiện tại. Bắt đầu kiểm tra tổng hợp sau khi triển khai đủ GĐ4–14; chưa xác nhận benchmark/model production.
+
+## Kiểm tra tổng hợp hiện tại
+
+Đã chạy: Ruff, Mypy strict, TypeScript trực tiếp (`tsc --noEmit`), 96 test Python không cần
+PostgreSQL, 26 test Vitest, kiểm tra vi/en và gate liệt kê mọi route có ID. Các số test trước
+đây ở GĐ0–3 là nhật ký cũ, không thay cho việc chạy lại integration sau GĐ14.
+
+Chưa chạy thành công: PostgreSQL integration, restore backup, Docker build, Playwright thật.
+Local Next build/typegen bị chặn bởi cache native SWC trên Windows; workflow CI đã chuẩn bị
+PostgreSQL/Redis và API thật cho E2E, đang cần quyền `workflow` của GitHub CLI để push.
+Chưa có corpus/artifact production hoặc benchmark 100k để xác nhận accuracy/latency/SLA.

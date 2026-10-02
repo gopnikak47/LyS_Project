@@ -27,16 +27,17 @@ docker compose up -d api worker beat
 ```
 
 Restore dùng một transaction và dừng ở lỗi đầu tiên. Kiểm tra `/api/v1/health`, đăng nhập,
-tenant isolation, số lượng phản hồi và một báo cáo trước khi mở traffic. CI kiểm tra restore
-trên PostgreSQL thử nghiệm; không tự restore database của người dùng.
+tenant isolation, số lượng phản hồi và một báo cáo trước khi mở traffic. Workflow nghiệm thu có bước kiểm tra restore trên PostgreSQL thử nghiệm; bước này
+chưa được chạy nếu GitHub CLI chưa có quyền workflow. Không tự restore database của người dùng.
 
 ## Xóa dữ liệu theo yêu cầu
 
 Admin dùng `DELETE /api/v1/privacy/responses/{id}` với body `confirm_response_id` khớp ID,
 sau khi xác minh yêu cầu ngoài hệ thống. Xóa phản hồi, câu trả lời, nhãn/lịch sử và ticket;
 thu hồi toàn bộ export/import của workspace để tránh tải lại hoặc nhập lại bản cũ.
-Tệp nguồn, tệp export đã thu hồi và upload có thể còn trên volume: người vận hành phải
-xóa chúng trong cửa sổ bảo trì, đồng thời xử lý bản tải về/email/backup theo chính sách lưu giữ.
+Tệp nguồn, export đã thu hồi và upload được xóa sau commit DB. Theo dõi log
+`erasure_file_cleanup_failed` để xử lý lỗi filesystem; dọn cả tệp tạm/báo cáo lỗi từng lô trong
+cửa sổ bảo trì. Người vận hành xử lý bản tải về/email/backup theo chính sách lưu giữ.
 Nếu restore backup trước thời điểm xóa, phải áp dụng lại nhật ký `privacy.erase` trước khi mở
 traffic. Không coi thao tác DB là đã xóa mọi bản sao ngoài hệ thống.
 
@@ -44,8 +45,11 @@ traffic. Không coi thao tác DB là đã xóa mọi bản sao ngoài hệ thố
 
 PhoBERT cần artifact đã fine-tune và metadata/calibration. Không có artifact: phản hồi thô
 vẫn lưu; analysis thất bại/retry có giới hạn. `NLP_BACKEND=rules` chỉ dùng demo, không chứng
-minh accuracy production. Worker cần cài extra `ml`, mount model read-only vào `/data/models`.
-Upload khách yêu cầu ClamAV; bật profile `uploads` và đặt `CLAMAV_HOST=clamav`.
+minh accuracy production. Docker bật `NLP_WITH_ML=true` để cài extra `ml`, đặt `NLP_MODEL_PATH=/data/models`
+trong Compose và `NLP_MODEL_HOST_DIR=./var/models` để mount artifact read-only. Chạy ngoài
+Docker dùng `uv sync --all-packages --all-extras` và đường dẫn artifact thật. Đây là dependency
+build tùy chọn vì Torch/transformers lớn; ảnh mặc định chưa chứa chúng.
+Upload khách yêu cầu ClamAV; bật profile `uploads` và đặt `UPLOAD_SCANNER_HOST=clamav`.
 Email là at-least-once; theo dõi outbox lỗi và job quá lâu, không xóa Redis khi còn task.
 Dashboard `/observability`, Prometheus `/metrics` chỉ dành admin. Kiểm tra quyền tenant và
 scope workspace trên mọi tài nguyên có ID; role `lys_rls` không được BYPASSRLS.

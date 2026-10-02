@@ -14,6 +14,7 @@ ENV UV_COMPILE_BYTECODE=1 \
     UV_LINK_MODE=copy \
     UV_PYTHON_DOWNLOADS=never \
     UV_PROJECT_ENVIRONMENT=/app/.venv
+ARG NLP_WITH_ML=false
 WORKDIR /src
 
 # Cài phụ thuộc trước (tận dụng cache layer khi chỉ sửa code).
@@ -24,7 +25,9 @@ COPY packages/nlp/pyproject.toml packages/nlp/pyproject.toml
 RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=secret,id=ca_bundle,required=false \
     if [ -s /run/secrets/ca_bundle ]; then export SSL_CERT_FILE=/run/secrets/ca_bundle; fi; \
-    uv sync --frozen --no-dev --all-packages --no-install-workspace
+    set -- --frozen --no-dev --all-packages --no-install-workspace; \
+    if [ "$NLP_WITH_ML" = "true" ]; then set -- "$@" --all-extras; fi; \
+    uv sync "$@"
 
 COPY apps/api apps/api
 COPY apps/worker apps/worker
@@ -32,14 +35,16 @@ COPY packages/nlp packages/nlp
 RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=secret,id=ca_bundle,required=false \
     if [ -s /run/secrets/ca_bundle ]; then export SSL_CERT_FILE=/run/secrets/ca_bundle; fi; \
-    uv sync --frozen --no-dev --all-packages --no-editable
+    set -- --frozen --no-dev --all-packages --no-editable; \
+    if [ "$NLP_WITH_ML" = "true" ]; then set -- "$@" --all-extras; fi; \
+    uv sync "$@"
 
 # ---------------------------------------------------------------- runtime
 FROM python:${PYTHON_VERSION}-slim AS runtime
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PATH="/app/.venv/bin:${PATH}"
-RUN apt-get update && apt-get install -y --no-install-recommends fonts-dejavu-core && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends fonts-dejavu-core libgomp1 && rm -rf /var/lib/apt/lists/*
 RUN groupadd --gid 10001 app \
  && useradd --uid 10001 --gid app --create-home app \
  && mkdir -p /data/storage /data/models \

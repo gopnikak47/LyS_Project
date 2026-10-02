@@ -12,6 +12,8 @@ name: lys
 x-backend-build: &backend-build
   context: .
   dockerfile: infra/docker/python.Dockerfile
+  args:
+    NLP_WITH_ML: ${NLP_WITH_ML:-false}
 
 x-backend-env: &backend-env
   APP_NAME: ${APP_NAME:-LyS Survey}
@@ -35,14 +37,21 @@ x-backend-env: &backend-env
   REDIS_URL: redis://redis:6379/0
   CELERY_BROKER_URL: redis://redis:6379/1
   CELERY_RESULT_BACKEND: redis://redis:6379/2
-  SMTP_HOST: mailpit
-  SMTP_PORT: 1025
+  SMTP_HOST: ${COMPOSE_SMTP_HOST:-mailpit}
+  SMTP_PORT: ${SMTP_PORT:-1025}
+  SMTP_USER: ${SMTP_USER:-}
+  SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+  SMTP_USE_TLS: ${SMTP_USE_TLS:-false}
   SMTP_FROM: ${SMTP_FROM:-LyS Survey <no-reply@lys.local>}
   STORAGE_BACKEND: local
   STORAGE_LOCAL_ROOT: /data/storage
   NLP_MODEL_DIR: /data/models
   NLP_BACKEND: ${NLP_BACKEND:-phobert}
-  CLAMAV_HOST: ${CLAMAV_HOST:-}
+  UPLOAD_SCANNER_HOST: ${UPLOAD_SCANNER_HOST:-}
+  UPLOAD_SCANNER_PORT: ${UPLOAD_SCANNER_PORT:-3310}
+  NLP_MODEL_PATH: ${NLP_MODEL_PATH:-/data/models}
+  NLP_TOPIC_MODEL: ${NLP_TOPIC_MODEL:-}
+  NLP_BATCH_SIZE: ${NLP_BATCH_SIZE:-64}
 
 x-backend-depends: &backend-depends
   postgres:
@@ -141,6 +150,7 @@ services:
       FORWARDED_ALLOW_IPS: "*"
     volumes:
       - storage:/data/storage
+      - ${NLP_MODEL_HOST_DIR:-./var/models}:/data/models:ro
     depends_on: *backend-depends
     stop_grace_period: 30s
     healthcheck:
@@ -174,6 +184,7 @@ services:
     environment: *backend-env
     volumes:
       - storage:/data/storage
+      - ${NLP_MODEL_HOST_DIR:-./var/models}:/data/models:ro
     depends_on: *backend-depends
     # Celery xử lý SIGTERM: chạy nốt task đang làm rồi mới thoát (warm shutdown).
     stop_grace_period: 60s
@@ -213,6 +224,7 @@ services:
       args:
         NEXT_PUBLIC_APP_NAME: ${APP_NAME:-LyS Survey}
         NEXT_PUBLIC_API_BASE_URL: /api
+        SURVEY_EMBED_ORIGINS: ${SURVEY_EMBED_ORIGINS:-}
     image: lys/web:${IMAGE_TAG:-dev}
     restart: unless-stopped
     environment:

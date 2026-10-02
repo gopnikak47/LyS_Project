@@ -2,7 +2,8 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, claude/bat-dau-code-rb4lid]
+  workflow_dispatch:
   pull_request:
 
 concurrency:
@@ -44,10 +45,46 @@ jobs:
         run: uv run mypy apps/api/app apps/worker/worker packages/nlp/src apps/api/tests apps/worker/tests packages/nlp/tests
       - name: Pytest
         run: uv run pytest --cov=app --cov=worker --cov=lys_nlp --cov-report=term-missing
+      - name: Backup and restore on disposable database
+        env:
+          PGHOST: localhost
+          PGUSER: lys
+          PGPASSWORD: lys
+          PGDATABASE: lys_test
+        run: |
+          sudo mkdir -p /backups
+          sudo chown "$USER" /backups
+          sh infra/backup/backup.sh
+          createdb lys_test_restore
+          dump=$(find /backups -name '*.dump' | head -n 1)
+          PGDATABASE=lys_test_restore RESTORE_CONFIRM=lys_test_restore sh infra/backup/restore.sh "$dump"
+          original=$(psql -Atc 'SELECT count(*) FROM tenants')
+          restored=$(PGDATABASE=lys_test_restore psql -Atc 'SELECT count(*) FROM tenants')
+          test "$original" = "$restored"
+          PGDATABASE=lys_test_restore psql -Atc "SELECT count(*) FROM pg_policies WHERE policyname='tenant_isolation'" | grep -qE '^[1-9][0-9]*$'
 
   frontend:
     name: Frontend (eslint · tsc · vitest · build · e2e)
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: lys_test_web
+          POSTGRES_USER: lys
+          POSTGRES_PASSWORD: lys
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U lys -d lys_test_web"
+          --health-interval 5s --health-timeout 3s --health-retries 20
+      redis:
+        image: redis:7-alpine
+        ports: ["6379:6379"]
+    env:
+      DATABASE_URL: postgresql+asyncpg://lys:lys@localhost:5432/lys_test_web
+      APP_ENV: test
+      SECRET_KEY: ci-test-secret-0123456789-abcdefghijklmnop
+      API_INTERNAL_URL: http://localhost:8000
     steps:
       - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v6
@@ -71,6 +108,17 @@ jobs:
         run: pnpm --filter @lys/web build
       - name: Cài Chromium cho Playwright
         run: pnpm --filter @lys/web exec playwright install --with-deps chromium
+      - uses: astral-sh/setup-uv@v10
+      - name: Start real API for E2E
+        run: |
+          uv sync --frozen --all-packages
+          uv run python -m app.cli migrate
+          nohup uv run uvicorn app.main:create_app --factory --port 8000 > /tmp/lys-api.log 2>&1 &
+          for attempt in $(seq 1 30); do
+            if curl -fsS http://localhost:8000/health; then break; fi
+            sleep 1
+          done
+          curl -fsS http://localhost:8000/health
       - name: Playwright E2E (375 / 768 / 1280)
         run: pnpm --filter @lys/web exec playwright test --project=mobile-375 --project=tablet-768 --project=desktop-1280
       - uses: actions/upload-artifact@v7
