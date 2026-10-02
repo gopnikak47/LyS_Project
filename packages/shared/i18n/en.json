@@ -781,5 +781,41 @@
       "week": "Weekly",
       "month": "Monthly"
     }
+  },
+  "billingPanel": {
+    "title": "Plan & usage",
+    "mockNotice": "Prices and plan changes are development simulations; no charges. Production disables plan changes.",
+    "price": "{price} VND / month (illustrative)",
+    "current": "Current plan",
+    "simulate": "Simulate plan change",
+    "metrics": "NLP processing status",
+    "prometheus": "View Prometheus metrics",
+    "audit": "Recent activity log",
+    "action": "Action",
+    "time": "Time",
+    "resources": {
+      "workspaces": "Workspaces",
+      "members": "Members",
+      "surveys": "Surveys",
+      "nlp_responses_per_month": "NLP responses / month"
+    },
+    "statuses": {
+      "pending": "Pending",
+      "processing": "Processing",
+      "done": "Analyzed",
+      "failed": "Needs retry",
+      "skipped": "Skipped due to quota"
+    },
+    "actions": {
+      "auth_login": "Login",
+      "auth_register": "Registration",
+      "survey_publish": "Publish survey",
+      "analysis_correct": "Correct labels",
+      "ticket_update": "Update ticket",
+      "billing_mock_change": "Simulate plan change",
+      "workspace_create": "Create workspace",
+      "workspace_update": "Update workspace",
+      "workspace_delete": "Delete workspace"
+    }
   }
 }

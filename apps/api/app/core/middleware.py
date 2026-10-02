@@ -65,6 +65,10 @@ class RequestContextMiddleware:
                 await response(scope, receive, send_wrapper)
         finally:
             duration_ms = round((time.perf_counter() - started) * 1000, 2)
+            from app.core.metrics import LATENCY, REQUESTS
+            route = getattr(scope.get("route"), "path", "unmatched")
+            REQUESTS.labels(scope.get("method", ""), route, str(status_code)).inc()
+            LATENCY.labels(scope.get("method", ""), route).observe(duration_ms / 1000)
             path = scope.get("path", "")
             log = logger.debug if path in _QUIET_PATHS and status_code < 400 else logger.info
             log(

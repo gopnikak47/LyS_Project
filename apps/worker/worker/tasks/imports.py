@@ -66,6 +66,8 @@ async def run_import(tenant_id: str, job_id: str) -> int:
                         except (ValueError, AppError) as exc:
                             errors.append([number, str(exc)]); job.error_rows += 1
                             continue
+                        from app.services.billing import nlp_capacity
+                        allow_nlp = await nlp_capacity(db, tid)
                         response = Response(tenant_id=tid, workspace_id=survey.workspace_id, survey_id=survey.id, survey_version_id=uuid.UUID(job.mapping["version_id"]) if job.mapping.get("version_id") else None, channel=Channel.IMPORT, external_id=f"{jid}:{number}", submitted_at=datetime.now(UTC))
                         for field in ("rating", "csat"):
                             values = [validated[q["code"]] for q in job.mapping["questions"] if q["type"] == field and q["code"] in validated]
@@ -79,7 +81,7 @@ async def run_import(tenant_id: str, job_id: str) -> int:
                             answer = Answer(tenant_id=tid, response_id=response.id, question_id=qid if qid in qids else None, question_code=q["code"], question_type=q["type"], value=value, text_value=value if q["type"] == "text" else None)
                             db.add(answer); await db.flush()
                             if answer.text_value:
-                                db.add(TextAnalysis(tenant_id=tid, response_id=response.id, answer_id=answer.id, workspace_id=survey.workspace_id, survey_id=survey.id, channel=Channel.IMPORT, rating=response.rating, text=answer.text_value, status=AnalysisStatus.PENDING))
+                                db.add(TextAnalysis(tenant_id=tid, response_id=response.id, answer_id=answer.id, workspace_id=survey.workspace_id, survey_id=survey.id, channel=Channel.IMPORT, rating=response.rating, text=answer.text_value, status=AnalysisStatus.PENDING if allow_nlp else AnalysisStatus.SKIPPED, last_error=None if allow_nlp else "PLAN_LIMIT"))
                         job.success_rows += 1; survey.response_count += 1
                     storage.put(f"{tid}/imports/{jid}/errors-{start:08d}.csv", csv_bytes(["Dòng", "Lỗi"], errors))
                     job.processed_rows += len(batch)

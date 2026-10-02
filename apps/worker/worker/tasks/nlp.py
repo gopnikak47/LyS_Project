@@ -72,6 +72,8 @@ async def process(tenant_id: str, response_id: str | None = None, workspace_id: 
                         await create_alert(db, row)
                         completed += 1
                     except Exception as exc:
+                        from app.core.metrics import NLP_FAILURES
+                        NLP_FAILURES.labels(settings.nlp_backend).inc()
                         row.status = AnalysisStatus.FAILED
                         row.last_error = type(exc).__name__
                         failed = True

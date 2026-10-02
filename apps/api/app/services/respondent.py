@@ -160,6 +160,8 @@ async def submit(db: AsyncSession, survey: Survey, data: Submission, settings: S
     if quiz_result:
         response.score = Decimal(str(quiz_result["score"]))
     await db.flush()
+    from app.services.billing import nlp_capacity
+    allow_nlp = await nlp_capacity(db, survey.tenant_id)
     # Câu hỏi đã bị xóa ở bản nháp vẫn có snapshot; question_id lúc đó để NULL.
     from app.models import Question
     current_ids = set((await db.execute(select(Question.id).where(Question.survey_id == survey.id, Question.tenant_id == survey.tenant_id))).scalars())
@@ -172,7 +174,7 @@ async def submit(db: AsyncSession, survey: Survey, data: Submission, settings: S
         db.add(answer)
         await db.flush()
         if answer.text_value:
-            db.add(TextAnalysis(tenant_id=survey.tenant_id, response_id=response.id, answer_id=answer.id, workspace_id=survey.workspace_id, survey_id=survey.id, channel=response.channel, rating=response.rating, responded_at=now, text=answer.text_value, status=AnalysisStatus.PENDING))
+            db.add(TextAnalysis(tenant_id=survey.tenant_id, response_id=response.id, answer_id=answer.id, workspace_id=survey.workspace_id, survey_id=survey.id, channel=response.channel, rating=response.rating, responded_at=now, text=answer.text_value, status=AnalysisStatus.PENDING if allow_nlp else AnalysisStatus.SKIPPED, last_error=None if allow_nlp else "PLAN_LIMIT"))
     survey.response_count += 1
     await db.flush()
     return SubmissionResult(response_id=str(response.id), voucher=voucher, voucher_expires_at=expires if voucher else None, quiz=sources.get("_quiz"))

@@ -781,5 +781,41 @@
       "week": "Hằng tuần",
       "month": "Hằng tháng"
     }
+  },
+  "billingPanel": {
+    "title": "Gói & mức sử dụng",
+    "mockNotice": "Giá và thay đổi gói chỉ là mô phỏng phát triển; không thu tiền. Môi trường production tắt nút đổi gói.",
+    "price": "{price} ₫ / tháng (giá minh họa)",
+    "current": "Gói hiện tại",
+    "simulate": "Mô phỏng chuyển gói",
+    "metrics": "Theo dõi xử lý NLP",
+    "prometheus": "Xem metrics Prometheus",
+    "audit": "Nhật ký hoạt động gần đây",
+    "action": "Hành động",
+    "time": "Thời gian",
+    "resources": {
+      "workspaces": "Không gian",
+      "members": "Thành viên",
+      "surveys": "Khảo sát",
+      "nlp_responses_per_month": "Phản hồi NLP / tháng"
+    },
+    "statuses": {
+      "pending": "Chờ xử lý",
+      "processing": "Đang xử lý",
+      "done": "Đã phân tích",
+      "failed": "Cần thử lại",
+      "skipped": "Chưa phân tích do hạn mức"
+    },
+    "actions": {
+      "auth_login": "Đăng nhập",
+      "auth_register": "Đăng ký",
+      "survey_publish": "Xuất bản khảo sát",
+      "analysis_correct": "Hiệu chỉnh nhãn",
+      "ticket_update": "Cập nhật khiếu nại",
+      "billing_mock_change": "Mô phỏng thay đổi gói",
+      "workspace_create": "Tạo không gian",
+      "workspace_update": "Sửa không gian",
+      "workspace_delete": "Xóa không gian"
+    }
   }
 }

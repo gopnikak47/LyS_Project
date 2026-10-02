@@ -50,6 +50,8 @@ class SurveyService:
     async def create(self, data: SurveyCreate) -> SurveyOut:
         self.principal.require(Permission.SURVEY_EDIT)
         await WorkspaceService(self.db, self.principal).get(data.workspace_id)
+        from app.services.billing import enforce_limit
+        await enforce_limit(self.db, self.principal.tenant_id, "surveys")
         survey = self.repo.add(Survey(workspace_id=data.workspace_id, title=data.title.strip(), slug=secrets.token_urlsafe(18), created_by=self.principal.user_id))
         await self.db.flush()
         return await self.save(survey.id, data)
