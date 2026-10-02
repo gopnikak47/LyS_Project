@@ -77,4 +77,4 @@
 - Xóa/gộp chủ đề cập nhật luôn nhãn trên phản hồi đã phân tích (không để ID mồ côi, không trùng).
 - Mỗi thay đổi tăng `topic_sets.version`; nút "Phân tích lại" đánh dấu `pending` và xếp job
   `worker.tasks.nlp.reanalyze_workspace` (worker hiện thực ở GĐ 6).
-- Test: backend 93 (gồm 8 test chủ đề + 9 endpoint mới trong bộ cô lập tenant), Playwright 33 + 15 ảnh chụp.
+- Test: backend 88 (gồm 7 test chủ đề + 9 endpoint mới trong bộ cô lập tenant), Playwright 33 + 15 ảnh chụp.
