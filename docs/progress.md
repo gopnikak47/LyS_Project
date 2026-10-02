@@ -78,3 +78,7 @@
 - Mỗi thay đổi tăng `topic_sets.version`; nút "Phân tích lại" đánh dấu `pending` và xếp job
   `worker.tasks.nlp.reanalyze_workspace` (worker hiện thực ở GĐ 6).
 - Test: backend 88 (gồm 7 test chủ đề + 9 endpoint mới trong bộ cô lập tenant), Playwright 33 + 15 ảnh chụp.
+
+## Phiên tiếp tục 02/10/2026
+
+GĐ4: đã triển khai API CRUD, lưu nháp, nhân bản, xuất bản snapshot, đóng/xóa mềm, chia sẻ link/QR PNG/SVG theo nguồn; giao diện danh sách API thật và builder kéo thả/bàn phím, xem trước, màu/cỡ chữ. **Chưa kiểm thử** theo yêu cầu; các tiêu chí nghiệm thu được xác minh ở GĐ14.

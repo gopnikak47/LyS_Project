@@ -1,0 +1,20 @@
+export type Choice = { value: string; label: Record<string, string> };
+export type Question = {
+  id: string; code: string;
+  type: "rating" | "csat" | "text" | "single_choice" | "multi_choice";
+  title: Record<string, string>; description: Record<string, string>;
+  required: boolean; options: Choice[];
+  config: Record<string, unknown>; logic: Record<string, unknown>;
+};
+export type Theme = {
+  primary: string; background: string; text: string;
+  font: "sans-serif" | "serif"; font_size: number;
+  layout: "scroll" | "one_per_page";
+};
+export type Survey = {
+  id: string; workspace_id: string; title: string; description: string | null;
+  slug: string; status: "draft" | "published" | "closed" | "archived";
+  response_count: number; updated_at: string; current_version_id: string | null;
+  theme: Theme; settings: Record<string, unknown>; questions: Question[];
+};
+export type Page<T> = { items: T[]; total: number; page: number; page_size: number };

@@ -454,5 +454,63 @@
     "emptyTitle": "Chưa có chủ đề nào",
     "emptyDescription": "Thêm chủ đề thủ công hoặc dùng bộ mẫu theo ngành để bắt đầu.",
     "noWorkspace": "Hãy chọn hoặc tạo một không gian khảo sát trước."
+  },
+  "engine": {
+    "surveys": "Khảo sát của tôi",
+    "create": "Tạo khảo sát",
+    "search": "Tìm khảo sát",
+    "status": "Trạng thái",
+    "all": "Tất cả",
+    "loading": "Đang tải…",
+    "workspaceRequired": "Hãy tạo một không gian khảo sát trước.",
+    "empty": "Chưa có khảo sát.",
+    "responseCount": "{count} phản hồi",
+    "open": "Mở khảo sát",
+    "previous": "Quay lại",
+    "next": "Tiếp theo",
+    "required": "Bắt buộc",
+    "drag": "Kéo để sắp xếp, hoặc dùng phím mũi tên",
+    "remove": "Xóa câu hỏi",
+    "questionTitle": "Nội dung câu hỏi",
+    "maxLength": "Số ký tự tối đa",
+    "choices": "Mỗi đáp án trên một dòng",
+    "untitled": "Khảo sát mới",
+    "builder": "Thiết kế khảo sát",
+    "edit": "Chỉnh sửa",
+    "preview": "Xem trước",
+    "saving": "Đang lưu…",
+    "save": "Lưu nháp",
+    "publish": "Xuất bản",
+    "close": "Đóng khảo sát",
+    "duplicate": "Nhân bản",
+    "autosave": "Tự lưu nháp sau khi chỉnh sửa",
+    "title": "Tên khảo sát",
+    "description": "Mô tả",
+    "theme": "Giao diện",
+    "fontSize": "Cỡ chữ",
+    "branch": "Chi nhánh",
+    "table": "Bàn / điểm phát hành",
+    "share": "Lấy link và QR",
+    "downloadQr": "Tải QR {format}",
+    "choiceA": "Lựa chọn A",
+    "choiceB": "Lựa chọn B",
+    "types": {
+      "rating": "Đánh giá sao",
+      "csat": "Mức hài lòng",
+      "text": "Nhận xét",
+      "single_choice": "Chọn một",
+      "multi_choice": "Chọn nhiều"
+    },
+    "statuses": {
+      "draft": "Bản nháp",
+      "published": "Đang mở",
+      "closed": "Đã đóng",
+      "archived": "Lưu trữ"
+    },
+    "themeLabels": {
+      "primary": "Màu nút",
+      "background": "Màu nền",
+      "text": "Màu chữ"
+    }
   }
 }

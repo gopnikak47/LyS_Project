@@ -165,3 +165,13 @@ Mỗi mục: **bối cảnh → quyết định → hệ quả**. Bổ sung theo
 
 - Tạo tenant/người dùng trong SAVEPOINT; trùng slug → thử lại với hậu tố ngẫu nhiên; trùng email
   → 409. Mọi `IntegrityError` còn sót được chuyển thành 409 `CONFLICT` (không lộ SQL).
+
+## Giai đoạn 4
+
+### D-025. Nháp và snapshot xuất bản
+
+Nháp được lưu qua PUT, có khóa hàng và expected_updated_at để phát hiện cửa sổ khác ghi đồng thời. Mỗi lần xuất bản tạo snapshot mới; mã câu hỏi ổn định dùng đối chiếu lịch sử. QR dùng segno, có tham số chi nhánh/bàn. Trang danh sách dùng phân trang API thật.
+
+### D-026. Quy trình của phiên làm việc
+
+Theo yêu cầu trực tiếp ngày 02/10/2026: tiếp tục tuần tự GĐ4–14, commit mỗi giai đoạn, chỉ chạy test sau khi làm đủ giai đoạn. Không dừng chờ duyệt như hướng dẫn trong đặc tả. Commit trung gian chưa được kiểm thử; chỉ GĐ14 mới ghi kết quả thật.

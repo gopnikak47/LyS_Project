@@ -1,13 +1,2 @@
-import type { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
-import { ComingSoonPage } from "@/components/layout/coming-soon-page";
-
-export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations("app.nav");
-  return { title: t("createSurvey") };
-}
-
-export default async function CreateSurveyPage() {
-  const t = await getTranslations("app.nav");
-  return <ComingSoonPage title={t("createSurvey")} stage={4} />;
-}
+import { SurveyBuilder } from "@/components/surveys/survey-builder";
+export default function CreateSurveyPage() { return <SurveyBuilder/>; }

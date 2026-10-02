@@ -454,5 +454,63 @@
     "emptyTitle": "No topics yet",
     "emptyDescription": "Add topics manually or start from an industry template.",
     "noWorkspace": "Please select or create a survey workspace first."
+  },
+  "engine": {
+    "surveys": "My surveys",
+    "create": "Create survey",
+    "search": "Search surveys",
+    "status": "Status",
+    "all": "All",
+    "loading": "Loading…",
+    "workspaceRequired": "Create a workspace first.",
+    "empty": "No surveys yet.",
+    "responseCount": "{count} responses",
+    "open": "Open survey",
+    "previous": "Back",
+    "next": "Next",
+    "required": "Required",
+    "drag": "Drag to reorder, or use arrow keys",
+    "remove": "Remove question",
+    "questionTitle": "Question title",
+    "maxLength": "Maximum characters",
+    "choices": "One choice per line",
+    "untitled": "New survey",
+    "builder": "Survey designer",
+    "edit": "Edit",
+    "preview": "Preview",
+    "saving": "Saving…",
+    "save": "Save draft",
+    "publish": "Publish",
+    "close": "Close survey",
+    "duplicate": "Duplicate",
+    "autosave": "Draft saves automatically after edits",
+    "title": "Survey title",
+    "description": "Description",
+    "theme": "Appearance",
+    "fontSize": "Font size",
+    "branch": "Branch",
+    "table": "Table / distribution point",
+    "share": "Get link and QR",
+    "downloadQr": "Download {format} QR",
+    "choiceA": "Choice A",
+    "choiceB": "Choice B",
+    "types": {
+      "rating": "Star rating",
+      "csat": "Satisfaction",
+      "text": "Comment",
+      "single_choice": "Single choice",
+      "multi_choice": "Multiple choice"
+    },
+    "statuses": {
+      "draft": "Draft",
+      "published": "Open",
+      "closed": "Closed",
+      "archived": "Archived"
+    },
+    "themeLabels": {
+      "primary": "Button color",
+      "background": "Background",
+      "text": "Text color"
+    }
   }
 }
