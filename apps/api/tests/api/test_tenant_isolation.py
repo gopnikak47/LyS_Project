@@ -34,6 +34,26 @@ CASES: list[Case] = [
     ("PATCH", "/api/v1/members/{membership_id}", lambda b: {"role": "VIEWER"}),
     ("DELETE", "/api/v1/members/{membership_id}", lambda b: None),
     ("DELETE", "/api/v1/invitations/{invitation_id}", lambda b: None),
+    ("GET", "/api/v1/workspaces/{workspace_id}/topics", lambda b: None),
+    ("POST", "/api/v1/workspaces/{workspace_id}/topics", lambda b: {"name": "Chen ngang"}),
+    ("PATCH", "/api/v1/topics/{topic_id}", lambda b: {"name": "Bi sua"}),
+    ("DELETE", "/api/v1/topics/{topic_id}", lambda b: None),
+    (
+        "POST",
+        "/api/v1/workspaces/{workspace_id}/topics/merge",
+        lambda b: {"source_ids": [b.ids["topic_id"]], "target_id": b.ids["topic2_id"]},
+    ),
+    (
+        "PUT",
+        "/api/v1/workspaces/{workspace_id}/topics/order",
+        lambda b: {"ids": [b.ids["topic_id"]]},
+    ),
+    (
+        "POST",
+        "/api/v1/workspaces/{workspace_id}/topics/apply-template",
+        lambda b: {"template_code": "it", "replace": True},
+    ),
+    ("POST", "/api/v1/workspaces/{workspace_id}/topics/reanalyze", lambda b: None),
 ]
 
 # Endpoint có tham số nhưng không định danh dữ liệu tenant (token công khai một lần).
@@ -53,7 +73,20 @@ async def _setup(api: Harness) -> tuple[Any, TenantB, Any]:
     ).json()
     members_b = (await client_b.get("/api/v1/members")).json()
     analyst_b = next(m for m in members_b if m["email"] == "nv@b.vn")
-    ids = {"workspace_id": ws_b["id"], "membership_id": analyst_b["id"], "invitation_id": inv["id"]}
+    topics_b = (await client_b.get(f"/api/v1/workspaces/{ws_b['id']}/topics")).json()["topics"]
+    if not topics_b:
+        await client_b.post(
+            f"/api/v1/workspaces/{ws_b['id']}/topics/apply-template",
+            json={"template_code": "retail"},
+        )
+        topics_b = (await client_b.get(f"/api/v1/workspaces/{ws_b['id']}/topics")).json()["topics"]
+    ids = {
+        "workspace_id": ws_b["id"],
+        "membership_id": analyst_b["id"],
+        "invitation_id": inv["id"],
+        "topic_id": topics_b[0]["id"],
+        "topic2_id": topics_b[1]["id"],
+    }
     return client_a, TenantB(ids), client_b
 
 
@@ -72,6 +105,10 @@ async def test_tenant_a_cannot_touch_tenant_b_resources(api: Harness) -> None:
     members = {m["email"]: m["role"] for m in (await client_b.get("/api/v1/members")).json()}
     assert members["nv@b.vn"] == "ANALYST"
     assert len((await client_b.get("/api/v1/invitations")).json()) == 1
+    topics = (await client_b.get(f"/api/v1/workspaces/{b.ids['workspace_id']}/topics")).json()
+    assert topics["topics"][0]["id"] == b.ids["topic_id"]
+    assert topics["template_code"] == "retail"
+    assert api.queue.of("worker.tasks.nlp.reanalyze_workspace") == []
 
 
 async def test_list_endpoints_only_return_own_tenant(api: Harness) -> None:

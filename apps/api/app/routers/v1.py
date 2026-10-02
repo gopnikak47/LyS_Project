@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from fastapi import APIRouter
 
-from app.routers import auth, health, members, public, workspaces
+from app.routers import auth, health, members, public, topics, workspaces
 from app.schemas.health import ReadinessResponse
 
 api_v1 = APIRouter(prefix="/api/v1")
@@ -12,6 +12,7 @@ api_v1.include_router(auth.router)
 api_v1.include_router(workspaces.router)
 api_v1.include_router(members.router)
 api_v1.include_router(public.router)
+api_v1.include_router(topics.router)
 
 # Readiness công khai qua nginx: GET /api/v1/health
 api_v1.add_api_route(
