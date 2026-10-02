@@ -15,6 +15,7 @@ class Submission(ApiModel):
     fingerprint: str = Field(default="", max_length=200)
     language: str = Field(default="vi", max_length=8)
     channel: Channel = Channel.LINK
+    invitation: str | None = Field(default=None, max_length=2000)
     source_params: dict[str, str] = Field(default_factory=dict)
 
 

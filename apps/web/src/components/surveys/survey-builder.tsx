@@ -16,6 +16,7 @@ import { QuestionControl } from "./question-control";
 import { ImportPanel } from "./import-panel";
 import {AdvancedSettings,LogicEditor} from "./logic-editor";
 import {surveyPath} from "@/lib/survey-logic";
+import {DistributionPanel} from "./distribution-panel";
 import {TemplateLibrary} from "./template-library";
 
 function QuestionEditor({ question: q, questions, onChange, onRemove }: { question: Question; questions:Question[]; onChange: (q: Question) => void; onRemove: () => void }) {
@@ -125,6 +126,7 @@ function Editor({initial}: {initial: Survey}) {
       </aside>
     </fieldset>
     {canEdit && <ImportPanel survey={draft}/>}
+    {canEdit&&<DistributionPanel survey={draft}/>}
     {canEdit&&<section className="space-y-3 rounded-xl border p-5"><h2 className="font-semibold">{t("importQuestions")}</h2><a className="underline" href={apiUrl("/surveys/question-import-template")}>{t("questionTemplate")}</a><p>{t("replaceQuestions")}</p><input type="file" aria-label={t("importQuestions")} accept=".csv,.xlsx" onChange={e=>{void importQuestions(e.target.files?.[0]);}}/></section>}
   </div>;
 }

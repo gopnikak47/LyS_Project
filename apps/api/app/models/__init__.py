@@ -2,6 +2,7 @@
 
 from app.models.base import Base
 from app.models.jobs import ExportJob, ImportJob, NlpModel
+from app.models.engagement import EmailDelivery, ReportSchedule
 from app.models.responses import Answer, LabelCorrection, Response, TextAnalysis, Ticket
 from app.models.surveys import Question, Survey, SurveyChannel, SurveyVersion
 from app.models.tenancy import (
@@ -34,6 +35,8 @@ __all__ = [
     "AuditLog",
     "Base",
     "ExportJob",
+    "EmailDelivery",
+    "ReportSchedule",
     "ImportJob",
     "Invitation",
     "LabelCorrection",

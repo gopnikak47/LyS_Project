@@ -72,6 +72,8 @@ class FeedbackService:
         row.updated_at = datetime.now(UTC)
         if row.sentiment is not None:
             row.status = AnalysisStatus.DONE
+        from app.services.alerts import create_alert
+        await create_alert(self.db, row)
         await audit(self.db, tenant_id=self.principal.tenant_id, user_id=self.principal.user_id, action="analysis.correct", entity_type="analysis", entity_id=row.id, data={"reason": data.reason})
         await self.db.flush()
         return row

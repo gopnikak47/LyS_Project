@@ -189,7 +189,8 @@
       "uiKit": "UI kit",
       "topics": "Topics",
       "responses": "Feedback",
-      "reports": "Reports"
+      "reports": "Reports",
+      "tickets": "Tickets"
     },
     "workspace": {
       "label": "Survey workspace",
@@ -720,6 +721,65 @@
       "positive": "Positive",
       "negative": "Negative",
       "neutral": "Neutral"
+    }
+  },
+  "engagement": {
+    "tickets": "Complaint handling",
+    "resolution": "Average resolution time: {hours} hours",
+    "status": "Status",
+    "all": "All",
+    "empty": "No tickets yet.",
+    "previous": "Previous",
+    "next": "Next",
+    "assignee": "Assignee",
+    "unassigned": "Unassigned",
+    "due": "Due at",
+    "note": "Note",
+    "addNote": "Add note",
+    "responses": "View feedback",
+    "distribution": "Distribution channels",
+    "emails": "Recipient emails (one per line or comma separated)",
+    "send": "Send survey invitations",
+    "embed": "Website embed code",
+    "kiosk": "Open kiosk mode",
+    "queued": "Queued {count} emails",
+    "perQuestion": "Per-question analytics",
+    "answered": "{count} answers",
+    "average": "Average",
+    "pivot": "Pivot table",
+    "row": "Row",
+    "column": "Column",
+    "value": "Value",
+    "schedule": "Scheduled reports",
+    "cadence": "Cadence",
+    "createSchedule": "Create schedule (first run in 1 minute)",
+    "stopSchedule": "Stop schedule",
+    "statuses": {
+      "new": "New",
+      "in_progress": "In progress",
+      "done": "Done"
+    },
+    "priorities": {
+      "low": "Low",
+      "normal": "Normal",
+      "high": "High",
+      "urgent": "Urgent"
+    },
+    "dimensions": {
+      "channel": "Channel",
+      "survey": "Survey",
+      "branch": "Branch",
+      "sentiment": "Sentiment"
+    },
+    "values": {
+      "count": "Response count",
+      "rating": "Average rating",
+      "csat": "Average CSAT"
+    },
+    "cadences": {
+      "day": "Daily",
+      "week": "Weekly",
+      "month": "Monthly"
     }
   }
 }

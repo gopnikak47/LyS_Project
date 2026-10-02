@@ -119,6 +119,24 @@ async def submit(db: AsyncSession, survey: Survey, data: Submission, settings: S
     if len(data.source_params) > 10 or any(len(k) > 64 or len(v) > 200 for k, v in data.source_params.items()):
         raise AppError("Tham số nguồn không hợp lệ.")
     sources = {k: v for k, v in data.source_params.items() if not k.startswith("_")}
+    if data.invitation:
+        try:
+            invitation = jwt.decode(data.invitation, settings.secret_key.get_secret_value(), algorithms=["HS256"], audience="survey-invitation")
+        except jwt.PyJWTError as exc:
+            raise AppError("Lời mời khảo sát đã hết hạn.") from exc
+        from app.models import EmailDelivery
+        if invitation.get("survey") != str(survey.id) or invitation.get("tenant") != str(survey.tenant_id):
+            raise AppError("Lời mời không thuộc khảo sát.")
+        delivery = (await db.execute(select(EmailDelivery).where(EmailDelivery.id == uuid.UUID(invitation["sub"]), EmailDelivery.tenant_id == survey.tenant_id, EmailDelivery.survey_id == survey.id))).scalar_one_or_none()
+        if delivery is None:
+            raise AppError("Lời mời không hợp lệ.")
+        sources["_invitation_id"] = str(delivery.id)
+        if survey.settings.get("one_per_email"):
+            previous = (await db.execute(select(Response.id).where(Response.tenant_id == survey.tenant_id, Response.survey_id == survey.id, Response.source_params["_invitation_id"].astext == str(delivery.id)).limit(1))).scalar_one_or_none()
+            if previous:
+                raise AppError("Lời mời đã được dùng để gửi phản hồi.", code="ALREADY_RESPONDED", status_code=409)
+    elif survey.settings.get("one_per_email"):
+        raise AppError("Khảo sát yêu cầu lời mời email hợp lệ.")
     if quiz_result and config.get("settings", {}).get("quiz_show_result", True):
         sources["_quiz"] = quiz_result
     voucher_config = config.get("settings", {}).get("voucher", {})

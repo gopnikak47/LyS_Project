@@ -15,6 +15,7 @@ const PROTECTED = [
   "/reports",
   "/responses",
   "/topics",
+  "/tickets",
 ];
 
 export function proxy(request: NextRequest) {

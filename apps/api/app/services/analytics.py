@@ -3,11 +3,11 @@ from __future__ import annotations
 
 from typing import Any
 
-from sqlalchemy import func, select
+from sqlalchemy import String, cast, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.auth import Principal
-from app.models import Response, Survey, TextAnalysis, Workspace
+from app.models import Answer, Question, Response, Survey, TextAnalysis, Workspace
 from app.models.enums import ResponseStatus, Sentiment
 from app.schemas.feedback import FeedbackFilter
 from app.services.workspaces import WorkspaceService
@@ -61,3 +61,36 @@ class AnalyticsService:
         expanded = select(analyses.c.sentiment, func.unnest(analyses.c.keywords).label("word")).where(analyses.c.sentiment.in_([Sentiment.POSITIVE, Sentiment.NEGATIVE])).subquery()
         rows = (await self.db.execute(select(expanded.c.sentiment, expanded.c.word, func.count()).group_by(expanded.c.sentiment, expanded.c.word).order_by(func.count().desc(), expanded.c.word).limit(100))).all()
         return [{"sentiment": sentiment, "word": word, "count": count} for sentiment, word, count in rows]
+
+    async def per_question(self, filters: FeedbackFilter) -> list[dict[str, Any]]:
+        responses=(await self.response_scope(filters)).subquery()
+        rows=(await self.db.execute(select(responses.c.survey_id,Answer.question_code,Answer.question_type,Answer.value,func.count()).join(Answer,Answer.response_id==responses.c.id).where(Answer.tenant_id==self.principal.tenant_id).group_by(responses.c.survey_id,Answer.question_code,Answer.question_type,Answer.value))).all()
+        result={}
+        names=(await self.db.execute(select(Question.survey_id,Question.code,Question.title).join(Survey,Survey.id==Question.survey_id).where(Question.tenant_id==self.principal.tenant_id,Survey.workspace_id==filters.workspace_id))).all()
+        titles={(str(survey),code):title for survey,code,title in names}
+        for survey,code,kind,value,count in rows:
+            key=(str(survey),code)
+            item=result.setdefault(key,{"survey_id":str(survey),"code":code,"title":titles.get(key,{"vi":code}),"type":kind,"distribution":[],"answered":0})
+            if kind not in {"text","contact","upload"}:
+                item["distribution"].append({"value":value,"count":count})
+            item["answered"]+=count
+        for item in result.values():
+            if item["type"] in {"rating","csat","nps","slider"}:
+                total=sum(row["count"] for row in item["distribution"])
+                item["average"]=sum(float(row["value"])*row["count"] for row in item["distribution"])/total if total else None
+                if item["type"]=="nps":
+                    promoters=sum(row["count"] for row in item["distribution"] if int(row["value"])>=9)
+                    detractors=sum(row["count"] for row in item["distribution"] if int(row["value"])<=6)
+                    item["nps"]=(promoters-detractors)/total*100 if total else None
+        return list(result.values())
+
+    async def pivot(self,filters:FeedbackFilter,row:str,column:str,value:str)->list[dict[str,Any]]:
+        responses=(await self.response_scope(filters)).subquery()
+        dimensions={"channel":cast(responses.c.channel,String),"survey":cast(responses.c.survey_id,String),"branch":responses.c.source_params["branch"].astext,"sentiment":cast(TextAnalysis.sentiment,String)}
+        query=select(responses.c.id,func.coalesce(dimensions[row],"—").label("row"),func.coalesce(dimensions[column],"—").label("column"),responses.c.rating,responses.c.csat).select_from(responses)
+        if "sentiment" in {row,column}:
+            query=query.outerjoin(TextAnalysis,(TextAnalysis.response_id==responses.c.id)&(TextAnalysis.tenant_id==self.principal.tenant_id))
+        cells=query.distinct().subquery()
+        aggregate=func.count() if value=="count" else func.avg(cells.c.rating if value=="rating" else cells.c.csat)
+        rows=(await self.db.execute(select(cells.c.row,cells.c.column,aggregate).group_by(cells.c.row,cells.c.column).order_by(cells.c.row,cells.c.column))).all()
+        return [{"row":r,"column":c,"value":float(v) if v is not None else None} for r,c,v in rows]

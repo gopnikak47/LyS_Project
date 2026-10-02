@@ -6,6 +6,7 @@ from fastapi import APIRouter
 
 from app.routers import analytics, auth, exports, feedback, health, imports, members, nlp, public, surveys, templates, topics, workspaces
 from app.schemas.health import ReadinessResponse
+from app.routers import engagement, tickets, tracking
 
 api_v1 = APIRouter(prefix="/api/v1")
 api_v1.include_router(auth.router)
@@ -20,6 +21,9 @@ api_v1.include_router(feedback.router)
 api_v1.include_router(analytics.router)
 api_v1.include_router(exports.router)
 api_v1.include_router(templates.router)
+api_v1.include_router(tickets.router)
+api_v1.include_router(engagement.router)
+api_v1.include_router(tracking.router)
 
 # Readiness công khai qua nginx: GET /api/v1/health
 api_v1.add_api_route(

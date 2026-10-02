@@ -187,3 +187,9 @@ JWT audience survey-submit có nonce, ràng buộc IP băm và snapshot. Khóa h
 ### D-028. Không thay mô hình thật bằng số liệu demo
 
 NLP_BACKEND=phobert mặc định, thiếu artifact giữ failed và retry. rules phải bật tường minh và model_version=rules-demo-v1. Temperature lấy từ validation khi train; train.py chặn trùng nội dung với validation. Nhãn đã xác nhận không bị worker ghi đè.
+
+## Giai đoạn 12
+
+### D-029. Outbox email và lịch báo cáo
+
+Email lưu cùng transaction tạo ticket, worker khóa skip-locked, retry theo next_attempt_at. Link mời chứa ID delivery ký, không chứa email thô. Lịch tạo ExportJob và outbox trong cùng transaction; khi export hoàn tất mới gửi link có hạn. iframe chỉ cho origin HTTPS được khai báo qua SURVEY_EMBED_ORIGINS.

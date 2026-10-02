@@ -20,6 +20,7 @@ export function AppHeader({ session }: { session: Session }) {
     { href: "/topics", label: t("topics") },
     { href: "/responses", label: t("responses") },
     { href: "/reports", label: t("reports") },
+    { href: "/tickets", label: t("tickets") },
     { href: "/profile", label: t("profile") },
     can("tenant:manage") && { href: "/billing", label: t("billing") },
     can("member:manage") && { href: "/admin", label: t("admin") },

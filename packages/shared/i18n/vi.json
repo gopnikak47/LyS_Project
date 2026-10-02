@@ -189,7 +189,8 @@
       "uiKit": "Thư viện giao diện",
       "topics": "Chủ đề",
       "responses": "Phản hồi",
-      "reports": "Báo cáo"
+      "reports": "Báo cáo",
+      "tickets": "Khiếu nại"
     },
     "workspace": {
       "label": "Không gian khảo sát",
@@ -720,6 +721,65 @@
       "positive": "Tích cực",
       "negative": "Tiêu cực",
       "neutral": "Trung lập"
+    }
+  },
+  "engagement": {
+    "tickets": "Xử lý khiếu nại",
+    "resolution": "Thời gian xử lý trung bình: {hours} giờ",
+    "status": "Trạng thái",
+    "all": "Tất cả",
+    "empty": "Chưa có ticket.",
+    "previous": "Trước",
+    "next": "Sau",
+    "assignee": "Người xử lý",
+    "unassigned": "Chưa phân công",
+    "due": "Hạn xử lý",
+    "note": "Ghi chú",
+    "addNote": "Thêm ghi chú",
+    "responses": "Xem phản hồi",
+    "distribution": "Phát hành đa kênh",
+    "emails": "Email người nhận (mỗi dòng hoặc cách bằng dấu phẩy)",
+    "send": "Gửi lời mời khảo sát",
+    "embed": "Mã nhúng website",
+    "kiosk": "Mở chế độ tại quầy",
+    "queued": "Đã xếp hàng {count} email",
+    "perQuestion": "Thống kê theo câu hỏi",
+    "answered": "{count} câu trả lời",
+    "average": "Trung bình",
+    "pivot": "Bảng tổng hợp Pivot",
+    "row": "Hàng",
+    "column": "Cột",
+    "value": "Giá trị",
+    "schedule": "Báo cáo định kỳ",
+    "cadence": "Chu kỳ",
+    "createSchedule": "Tạo lịch (lần đầu sau 1 phút)",
+    "stopSchedule": "Dừng lịch",
+    "statuses": {
+      "new": "Mới",
+      "in_progress": "Đang xử lý",
+      "done": "Đã xong"
+    },
+    "priorities": {
+      "low": "Thấp",
+      "normal": "Bình thường",
+      "high": "Cao",
+      "urgent": "Khẩn cấp"
+    },
+    "dimensions": {
+      "channel": "Nguồn",
+      "survey": "Khảo sát",
+      "branch": "Chi nhánh",
+      "sentiment": "Cảm xúc"
+    },
+    "values": {
+      "count": "Số phản hồi",
+      "rating": "Sao trung bình",
+      "csat": "CSAT trung bình"
+    },
+    "cadences": {
+      "day": "Hằng ngày",
+      "week": "Hằng tuần",
+      "month": "Hằng tháng"
     }
   }
 }

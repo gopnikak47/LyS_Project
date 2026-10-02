@@ -68,6 +68,8 @@ async def process(tenant_id: str, response_id: str | None = None, workspace_id: 
                         row.status = AnalysisStatus.DONE
                         row.analyzed_at = datetime.now(UTC)
                         row.last_error = None
+                        from app.services.alerts import create_alert
+                        await create_alert(db, row)
                         completed += 1
                     except Exception as exc:
                         row.status = AnalysisStatus.FAILED

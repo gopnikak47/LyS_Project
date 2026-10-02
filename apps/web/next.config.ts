@@ -35,7 +35,8 @@ const nextConfig: NextConfig = {
   // Docker: build từ gốc monorepo nên cần trỏ đúng gốc để tracing file.
   outputFileTracingRoot: new URL("../../", import.meta.url).pathname,
   async headers() {
-    return [{ source: "/:path*", headers: securityHeaders }];
+    const origins=(process.env.SURVEY_EMBED_ORIGINS||"").split(",").filter(origin=>/^https:\/\/[a-zA-Z0-9.-]+(:[0-9]+)?$/.test(origin));
+    return [{ source: "/:path*", headers: securityHeaders },{source:"/s/:path*",headers:securityHeaders.map(header=>header.key==="Content-Security-Policy"?{...header,value:header.value.replace("frame-ancestors 'self'",`frame-ancestors 'self' ${origins.join(" ")}`)}:header)}];
   },
   // Dev (next dev :3000) và khi không có nginx đứng trước: chuyển /api/* sang FastAPI để
   // trình duyệt luôn gọi cùng origin (cookie phiên httpOnly + SameSite hoạt động).

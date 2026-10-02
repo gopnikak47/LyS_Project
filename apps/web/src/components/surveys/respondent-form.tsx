@@ -18,6 +18,7 @@ export function RespondentForm({survey:initial}: {survey: Survey}) {
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<{voucher: string | null; voucher_expires_at: string | null;quiz?:{score:number;maximum:number;classification:string}} | null>(null);
+  useEffect(()=>{if(!result)return;const params=new URLSearchParams(window.location.search);if(params.get("channel")!=="kiosk")return;const timer=setTimeout(()=>window.location.reload(),8000);return()=>clearTimeout(timer);},[result]);
   const [honeypot, setHoneypot] = useState("");
   const [language,setLanguage]=useState(survey.default_language||"vi");
   const [step,setStep]=useState(0);
@@ -48,7 +49,7 @@ export function RespondentForm({survey:initial}: {survey: Survey}) {
     const params = new URLSearchParams(window.location.search);
     try {
       let fingerprint="";try{fingerprint=localStorage.getItem("lys.respondent")||crypto.randomUUID();localStorage.setItem("lys.respondent",fingerprint);}catch{}
-      const data = await api<NonNullable<typeof result>>(`/public/surveys/${survey.slug}/responses`, {method: "POST", body: {token, answers, honeypot, language, fingerprint, channel: ["qr", "embed", "email", "kiosk", "zalo"].includes(params.get("channel") || "") ? params.get("channel") : "link", source_params: Object.fromEntries(["branch", "table", "invoice"].flatMap(k => params.has(k) ? [[k, params.get(k)!]] : []))}});
+      const data = await api<NonNullable<typeof result>>(`/public/surveys/${survey.slug}/responses`, {method: "POST", body: {token, answers, honeypot, language, fingerprint, invitation:params.get("invitation"), channel: ["qr", "embed", "email", "kiosk", "zalo"].includes(params.get("channel") || "") ? params.get("channel") : "link", source_params: Object.fromEntries(["branch", "table", "invoice"].flatMap(k => params.has(k) ? [[k, params.get(k)!]] : []))}});
       setResult(data); try {sessionStorage.removeItem(key);sessionStorage.removeItem(`${key}:attempt`);} catch {}
     } catch(e) {setError((e as Error).message);}
     finally {setBusy(false);}

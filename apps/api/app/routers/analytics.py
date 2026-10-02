@@ -16,6 +16,16 @@ router = APIRouter(prefix="/analytics", tags=["analytics"])
 Filters = Annotated[FeedbackFilter, Depends()]
 
 
+@router.get("/per-question")
+async def per_question(ctx:Ctx,filters:Filters)->list[dict]:
+    return await AnalyticsService(ctx.db,ctx.principal).per_question(filters)
+
+
+@router.get("/pivot")
+async def pivot(ctx:Ctx,filters:Filters,row:Literal["channel","survey","branch","sentiment"]="channel",column:Literal["channel","survey","branch","sentiment"]="sentiment",value:Literal["count","rating","csat"]="count")->list[dict]:
+    return await AnalyticsService(ctx.db,ctx.principal).pivot(filters,row,column,value)
+
+
 @router.get("/overview")
 async def overview(ctx: Ctx, filters: Filters) -> dict:
     return await AnalyticsService(ctx.db, ctx.principal).overview(filters)
