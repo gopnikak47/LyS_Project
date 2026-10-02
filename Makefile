@@ -94,11 +94,11 @@ erd: ## Sinh lại docs/erd.md từ model
 
 .PHONY: train
 train: ## (GĐ 6) Huấn luyện mô hình cảm xúc
-	@echo "Chưa triển khai — Giai đoạn 6 (NLP pipeline)."
+	uv run --extra ml python -m lys_nlp.train --train $(TRAIN) --validation $(VALIDATION) --output $(MODEL) --version $(VERSION)
 
 .PHONY: evaluate
 evaluate: ## (GĐ 6) Đánh giá mô hình (accuracy, macro-F1)
-	@echo "Chưa triển khai — Giai đoạn 6 (NLP pipeline)."
+	uv run python -m lys_nlp.evaluate --data $(DATA) --model $(MODEL) --output $(REPORT)
 
 .PHONY: backup
 backup: ## (GĐ 14) Sao lưu PostgreSQL bằng pg_dump

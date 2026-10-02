@@ -303,6 +303,7 @@ class TopicService:
                 TextAnalysis.tenant_id == self.principal.tenant_id,
                 TextAnalysis.workspace_id == workspace_id,
                 TextAnalysis.status != AnalysisStatus.PROCESSING,
+                TextAnalysis.is_verified.is_(False),
             )
             .values(status=AnalysisStatus.PENDING)
             .execution_options(synchronize_session=False)

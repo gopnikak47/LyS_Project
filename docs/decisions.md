@@ -181,3 +181,9 @@ Theo yêu cầu trực tiếp ngày 02/10/2026: tiếp tục tuần tự GĐ4–
 ### D-027. Token gửi và bảo toàn phản hồi
 
 JWT audience survey-submit có nonce, ràng buộc IP băm và snapshot. Khóa hàng khảo sát bao quanh quota và tra nonce đảm bảo gửi lặp trả cùng kết quả. Commit phản hồi/analysis pending trước dispatch; nếu broker lỗi, job quét bù GĐ6 xử lý. Không ghi IP thô.
+
+## Giai đoạn 6
+
+### D-028. Không thay mô hình thật bằng số liệu demo
+
+NLP_BACKEND=phobert mặc định, thiếu artifact giữ failed và retry. rules phải bật tường minh và model_version=rules-demo-v1. Temperature lấy từ validation khi train; train.py chặn trùng nội dung với validation. Nhãn đã xác nhận không bị worker ghi đè.

@@ -69,6 +69,12 @@ class Settings(BaseSettings):
     storage_backend: Literal["local", "s3"] = "local"
     storage_local_root: str = "./var/storage"
 
+    # NLP mặc định đòi artifact thật; rules chỉ dùng demo, không tuyên bố F1 production.
+    nlp_backend: Literal["phobert", "rules"] = "phobert"
+    nlp_model_path: str = ""
+    nlp_topic_model: str = ""
+    nlp_batch_size: int = Field(default=64, ge=1, le=256)
+
     # --- Health-check ---
     health_check_timeout_seconds: float = Field(default=2.0, gt=0)
 
