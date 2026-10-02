@@ -571,7 +571,20 @@
     "matrixLabels": {
       "rows": "Rows (one per line)",
       "columns": "Columns (one per line)"
-    }
+    },
+    "templates": "Survey templates",
+    "useTemplate": "Use this template",
+    "quizQuestion": "Quiz answer & points",
+    "points": "Question points",
+    "correctAnswer": "Correct answer (option code, number or list of codes)",
+    "quiz": "Quiz mode",
+    "quiz_duration_seconds": "Quiz duration (seconds)",
+    "quiz_draw_count": "Questions to draw from bank",
+    "randomize_questions": "Shuffle questions",
+    "randomize_options": "Shuffle options",
+    "importQuestions": "Import questions",
+    "questionTemplate": "Download Excel question template",
+    "replaceQuestions": "A valid file replaces current draft questions; published snapshots are retained."
   },
   "respondent": {
     "thanks": "Thank you!",
@@ -588,7 +601,9 @@
     "networkError": "Could not connect to the server. Please try again later.",
     "language": "Language",
     "previous": "Back",
-    "next": "Next"
+    "next": "Next",
+    "remaining": "{seconds} seconds remaining",
+    "quizResult": "Score: {score}/{maximum} · {classification}"
   },
   "imports": {
     "title": "Import responses",

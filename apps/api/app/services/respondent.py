@@ -71,7 +71,7 @@ async def submit(db: AsyncSession, survey: Survey, data: Submission, settings: S
     survey = found((await db.execute(select(Survey).where(Survey.id == survey.id, Survey.tenant_id == survey.tenant_id).with_for_update())).scalar_one_or_none())
     existing = (await db.execute(select(Response).where(Response.tenant_id == survey.tenant_id, Response.survey_id == survey.id, Response.external_id == token["jti"]))).scalar_one_or_none()
     if existing:
-        return SubmissionResult(response_id=str(existing.id), voucher=existing.source_params.get("_voucher"), voucher_expires_at=existing.source_params.get("_voucher_expires_at"))
+        return SubmissionResult(response_id=str(existing.id), voucher=existing.source_params.get("_voucher"), voucher_expires_at=existing.source_params.get("_voucher_expires_at"), quiz=existing.source_params.get("_quiz"))
     require_open(survey)
     if str(survey.current_version_id) != token["version"]:
         raise AppError("Khảo sát vừa được cập nhật. Vui lòng tải lại trang.", code="VERSION_CHANGED", status_code=409)
@@ -79,7 +79,15 @@ async def submit(db: AsyncSession, survey: Survey, data: Submission, settings: S
     if duration < 2:
         raise AppError("Vui lòng đọc kỹ khảo sát trước khi gửi.", code="TOO_FAST")
     config = await snapshot(db, survey)
-    answers = validate_answers(config["questions"], data.answers)
+    from app.domain.quiz import grade, questions_for_attempt
+    questions = questions_for_attempt(config, token["jti"])
+    quiz_duration = config.get("settings", {}).get("quiz_duration_seconds")
+    if survey.is_quiz and quiz_duration and duration > quiz_duration + 30:
+        raise AppError("Bài làm đã vượt thời gian cho phép.", code="QUIZ_EXPIRED")
+    if survey.is_quiz:
+        questions = [{**q, "required": False} for q in questions]
+    answers = validate_answers(questions, data.answers)
+    quiz_result = grade(questions, answers) if survey.is_quiz else None
     if survey.settings.get("one_per_ip") and ip_hash:
         previous = (await db.execute(select(Response.id).where(Response.tenant_id == survey.tenant_id, Response.survey_id == survey.id, Response.ip_hash == ip_hash).limit(1))).scalar_one_or_none()
         if previous:
@@ -111,6 +119,8 @@ async def submit(db: AsyncSession, survey: Survey, data: Submission, settings: S
     if len(data.source_params) > 10 or any(len(k) > 64 or len(v) > 200 for k, v in data.source_params.items()):
         raise AppError("Tham số nguồn không hợp lệ.")
     sources = {k: v for k, v in data.source_params.items() if not k.startswith("_")}
+    if quiz_result and config.get("settings", {}).get("quiz_show_result", True):
+        sources["_quiz"] = quiz_result
     voucher_config = config.get("settings", {}).get("voucher", {})
     voucher = None
     expires = voucher_config.get("expires_at")
@@ -129,11 +139,13 @@ async def submit(db: AsyncSession, survey: Survey, data: Submission, settings: S
     nps = next((answers[q["code"]] for q in config["questions"] if q["type"] == "nps" and q["code"] in answers), None)
     response.nps = nps
     db.add(response)
+    if quiz_result:
+        response.score = Decimal(str(quiz_result["score"]))
     await db.flush()
     # Câu hỏi đã bị xóa ở bản nháp vẫn có snapshot; question_id lúc đó để NULL.
     from app.models import Question
     current_ids = set((await db.execute(select(Question.id).where(Question.survey_id == survey.id, Question.tenant_id == survey.tenant_id))).scalars())
-    for q in config["questions"]:
+    for q in questions:
         if q["code"] not in answers:
             continue
         value = answers[q["code"]]
@@ -145,4 +157,4 @@ async def submit(db: AsyncSession, survey: Survey, data: Submission, settings: S
             db.add(TextAnalysis(tenant_id=survey.tenant_id, response_id=response.id, answer_id=answer.id, workspace_id=survey.workspace_id, survey_id=survey.id, channel=response.channel, rating=response.rating, responded_at=now, text=answer.text_value, status=AnalysisStatus.PENDING))
     survey.response_count += 1
     await db.flush()
-    return SubmissionResult(response_id=str(response.id), voucher=voucher, voucher_expires_at=expires if voucher else None)
+    return SubmissionResult(response_id=str(response.id), voucher=voucher, voucher_expires_at=expires if voucher else None, quiz=sources.get("_quiz"))

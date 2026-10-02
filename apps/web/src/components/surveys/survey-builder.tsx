@@ -16,6 +16,7 @@ import { QuestionControl } from "./question-control";
 import { ImportPanel } from "./import-panel";
 import {AdvancedSettings,LogicEditor} from "./logic-editor";
 import {surveyPath} from "@/lib/survey-logic";
+import {TemplateLibrary} from "./template-library";
 
 function QuestionEditor({ question: q, questions, onChange, onRemove }: { question: Question; questions:Question[]; onChange: (q: Question) => void; onRemove: () => void }) {
   const t = useTranslations("engine");
@@ -25,6 +26,7 @@ function QuestionEditor({ question: q, questions, onChange, onRemove }: { questi
     <label className="block space-y-1"><span>{t("questionTitle")}</span><Input value={q.title.vi} onChange={e => onChange({...q, title: {...q.title, vi: e.target.value}})}/></label>
     <label className="flex items-center gap-2"><input type="checkbox" checked={q.required} onChange={e => onChange({...q, required: e.target.checked})}/>{t("required")}</label>
     <label className="block">{t("englishTitle")}<Input value={q.title.en||""} onChange={e=>onChange({...q,title:{...q.title,en:e.target.value}})}/></label>
+    <details className="rounded-lg border p-3"><summary>{t("quizQuestion")}</summary><label className="block">{t("points")}<Input type="number" min={0} max={1000} value={q.points||0} onChange={e=>onChange({...q,points:Number(e.target.value)})}/></label><label className="block">{t("correctAnswer")}<Input value={typeof q.config.correct_answer==="string"?q.config.correct_answer:JSON.stringify(q.config.correct_answer??"")} onChange={e=>{let value:unknown=e.target.value;try{value=JSON.parse(e.target.value);}catch{}onChange({...q,config:{...q.config,correct_answer:value}});}}/></label></details>
     <LogicEditor question={q} questions={questions} onChange={onChange}/>
     {q.type==="matrix"&&(["rows","columns"] as const).map(key=><label key={key} className="block">{t(`matrixLabels.${key}`)}<textarea className="w-full rounded-lg border p-2" value={(q.config[key] as string[]||[]).join("\n")} onChange={e=>onChange({...q,config:{...q.config,[key]:e.target.value.split("\n")}})}/></label>)}
     {q.type === "text" && <label>{t("maxLength")}<Input type="number" min={1} max={10000} value={Number(q.config.max_length || 5000)} onChange={e => onChange({...q, config: {...q.config, max_length: Number(e.target.value)}})}/></label>}
@@ -45,7 +47,7 @@ export function SurveyBuilder({ id }: { id?: string }) {
     try {const s = await api<Survey>("/surveys", {method: "POST", body: {workspace_id: workspace.id, title: t("untitled")}}); router.replace(`/surveys/${s.id}`);}
     catch (e) {setError((e as Error).message); setCreating(false);}
   }
-  if (!id) return <div className="mx-auto max-w-xl space-y-4 rounded-xl border bg-card p-6"><h1 className="text-2xl font-bold">{t("create")}</h1><p>{workspace?.name || t("workspaceRequired")}</p>{error && <p role="alert">{error}</p>}<Button onClick={create} disabled={!workspace || creating}>{t("create")}</Button></div>;
+  if (!id) return <div className="mx-auto max-w-3xl space-y-4 rounded-xl border bg-card p-6"><h1 className="text-2xl font-bold">{t("create")}</h1><p>{workspace?.name || t("workspaceRequired")}</p>{error && <p role="alert">{error}</p>}<Button onClick={create} disabled={!workspace || creating}>{t("create")}</Button>{workspace&&<TemplateLibrary workspaceId={workspace.id}/>}</div>;
   if (query.error) return <p role="alert">{query.error.message}</p>;
   if (!query.data) return <p role="status">{t("loading")}</p>;
   return <Editor key={id} initial={query.data}/>;
@@ -105,6 +107,7 @@ function Editor({initial}: {initial: Survey}) {
       if (name === "publish") setShare(await api(`/surveys/${initial.id}/share?${new URLSearchParams({branch, table})}`));
     } catch(e) {setError((e as Error).message);}
   }
+  async function importQuestions(file:File|undefined){if(!file)return;try{await save();const form=new FormData();form.append("file",file);const result=await api<Survey>(`/surveys/${initial.id}/questions/import`,{method:"POST",form});version.current=result.updated_at;saved.current=JSON.stringify(result);setDraft(result);}catch(e){setError((e as Error).message);}}
   return <div className="space-y-5">
     <div className="flex flex-wrap items-center justify-between gap-3"><h1 className="text-2xl font-bold">{t("builder")}</h1><div className="flex flex-wrap gap-2"><Button variant="outline" onClick={() => setPreview(p => !p)}>{preview ? t("edit") : t("preview")}</Button>{canEdit && <><Button variant="outline" disabled={saving} onClick={() => {void save().catch(() => {});}}>{saving ? t("saving") : t("save")}</Button><Button disabled={saving} onClick={() => {void action("publish");}}>{t("publish")}</Button><Button variant="outline" onClick={() => {void action("close");}}>{t("close")}</Button><Button variant="outline" onClick={() => {void action("duplicate");}}>{t("duplicate")}</Button></>}</div></div>
     {error && <p className="text-destructive" role="alert">{error}</p>}<p role="status">{t(`statuses.${draft.status}`)} · {t("autosave")}</p>
@@ -122,5 +125,6 @@ function Editor({initial}: {initial: Survey}) {
       </aside>
     </fieldset>
     {canEdit && <ImportPanel survey={draft}/>}
+    {canEdit&&<section className="space-y-3 rounded-xl border p-5"><h2 className="font-semibold">{t("importQuestions")}</h2><a className="underline" href={apiUrl("/surveys/question-import-template")}>{t("questionTemplate")}</a><p>{t("replaceQuestions")}</p><input type="file" aria-label={t("importQuestions")} accept=".csv,.xlsx" onChange={e=>{void importQuestions(e.target.files?.[0]);}}/></section>}
   </div>;
 }

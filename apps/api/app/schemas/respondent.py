@@ -23,3 +23,4 @@ class SubmissionResult(ApiModel):
     voucher: str | None = None
     voucher_expires_at: str | None = None
     message: str = "Cảm ơn bạn đã chia sẻ phản hồi!"
+    quiz: dict[str, Any] | None = None

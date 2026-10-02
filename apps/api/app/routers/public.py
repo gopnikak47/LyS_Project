@@ -83,7 +83,12 @@ async def survey_session(slug: str, request: Request, db: SystemDB, settings: Se
     await enforce(resources.limiter, f"survey-session:{ip}", 60, 3600)
     survey = await respondent.resolve(db, slug)
     respondent.require_open(survey)
-    return {"token": respondent.issue_token(survey, settings, ip)}
+    import jwt
+    from app.domain.quiz import questions_for_attempt
+    token = respondent.issue_token(survey, settings, ip)
+    claims = jwt.decode(token, settings.secret_key.get_secret_value(), algorithms=["HS256"], audience="survey-submit")
+    config = await respondent.snapshot(db, survey)
+    return {"token": token, "survey": respondent.public_snapshot({**config, "questions": questions_for_attempt(config, claims["jti"])}), "started_at": claims["iat"]}
 
 
 @router.post("/surveys/{slug}/responses", response_model=SubmissionResult, status_code=201)

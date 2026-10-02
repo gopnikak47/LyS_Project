@@ -18,6 +18,24 @@ from app.services.surveys import SurveyService
 router = APIRouter(prefix="/surveys", tags=["surveys"])
 
 
+@router.get("/question-import-template")
+async def question_import_template(ctx: Ctx) -> Response:
+    from openpyxl import Workbook
+    workbook = Workbook(); sheet = workbook.active
+    sheet.title = "Câu hỏi"
+    sheet.append(["code", "type", "title_vi", "title_en", "required", "options_vi", "config_json", "points"])
+    sheet.append(["csat", "csat", "Bạn hài lòng thế nào?", "How satisfied are you?", "true", "", "{}", ""])
+    sheet.append(["comment", "text", "Góp ý của bạn", "Your feedback", "false", "", '{"max_length":5000}', ""])
+    output = io.BytesIO(); workbook.save(output)
+    return Response(output.getvalue(), media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", headers={"Content-Disposition": 'attachment; filename="question-template.xlsx"'})
+
+
+@router.post("/{survey_id}/questions/import", response_model=SurveyOut)
+async def import_question_file(survey_id: uuid.UUID, file: UploadFile, ctx: Ctx) -> SurveyOut:
+    from app.services.question_imports import import_questions
+    return await import_questions(ctx, survey_id, file)
+
+
 @router.post("/{survey_id}/assets", status_code=201)
 async def upload_asset(survey_id: uuid.UUID, file: UploadFile, ctx: Ctx) -> dict[str, str]:
     import asyncio

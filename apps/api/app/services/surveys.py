@@ -67,6 +67,7 @@ class SurveyService:
         survey.default_language = data.default_language
         survey.opens_at = data.opens_at
         survey.closes_at = data.closes_at
+        survey.is_quiz = data.is_quiz
         survey.updated_at = datetime.now(UTC)
         old = {q.id: q for q in await self.questions.for_survey(survey.id)}
         for position, item in enumerate(data.questions):

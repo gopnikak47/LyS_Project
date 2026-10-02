@@ -50,6 +50,7 @@ class QuestionInput(ApiModel):
     options: list[Choice] = Field(default_factory=list, max_length=100)
     config: dict[str, Any] = Field(default_factory=dict)
     logic: dict[str, Any] = Field(default_factory=dict)
+    points: float | None = Field(default=None, ge=0, le=1000)
 
     @model_validator(mode="after")
     def validate_question(self) -> QuestionInput:
@@ -87,11 +88,30 @@ class SurveyInput(ApiModel):
     default_language: Literal["vi", "en"] = "vi"
     opens_at: datetime | None = None
     closes_at: datetime | None = None
+    is_quiz: bool = False
 
     @model_validator(mode="after")
     def unique_questions(self) -> SurveyInput:
         from app.domain.survey_logic import validate_logic
         from app.core.errors import AppError
+        from app.domain.question_types import VALIDATORS
+        if self.is_quiz:
+            for question in self.questions:
+                if question.points:
+                    if "correct_answer" not in question.config:
+                        raise ValueError("Câu có điểm cần đáp án đúng.")
+                    try:
+                        VALIDATORS[question.type](question.model_dump(mode="json"), question.config["correct_answer"])
+                    except AppError as exc:
+                        raise ValueError("Đáp án đúng không hợp lệ.") from exc
+        duration = self.settings.get("quiz_duration_seconds")
+        if duration is not None and (type(duration) is not int or not 30 <= duration <= 86400):
+            raise ValueError("Thời gian quiz cần 30–86.400 giây.")
+        draw = self.settings.get("quiz_draw_count")
+        if draw is not None and (type(draw) is not int or not 1 <= draw <= len(self.questions)):
+            raise ValueError("Số câu rút ngẫu nhiên phải từ 1 đến số câu trong ngân hàng.")
+        if (draw or self.settings.get("randomize_questions")) and any(q.logic for q in self.questions):
+            raise ValueError("Không xáo/rút câu khi khảo sát có logic phụ thuộc thứ tự.")
         try:
             validate_logic([q.model_dump(mode="json") for q in self.questions])
         except AppError as exc:
@@ -143,6 +163,7 @@ class SurveyOut(ApiModel):
     default_language: str
     opens_at: datetime | None
     closes_at: datetime | None
+    is_quiz: bool
 
 
 class ShareOut(ApiModel):

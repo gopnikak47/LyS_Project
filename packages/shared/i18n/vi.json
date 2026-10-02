@@ -571,7 +571,20 @@
     "matrixLabels": {
       "rows": "Các hàng (mỗi hàng một dòng)",
       "columns": "Các cột (mỗi cột một dòng)"
-    }
+    },
+    "templates": "Thư viện khảo sát mẫu",
+    "useTemplate": "Dùng mẫu này",
+    "quizQuestion": "Đáp án & điểm trắc nghiệm",
+    "points": "Điểm câu hỏi",
+    "correctAnswer": "Đáp án đúng (mã đáp án, số hoặc danh sách mã)",
+    "quiz": "Chế độ trắc nghiệm",
+    "quiz_duration_seconds": "Thời gian làm bài (giây)",
+    "quiz_draw_count": "Số câu rút từ ngân hàng",
+    "randomize_questions": "Xáo thứ tự câu hỏi",
+    "randomize_options": "Xáo thứ tự đáp án",
+    "importQuestions": "Import bảng câu hỏi",
+    "questionTemplate": "Tải mẫu Excel câu hỏi",
+    "replaceQuestions": "Tệp hợp lệ sẽ thay thế các câu hỏi trong bản nháp hiện tại; bản xuất bản vẫn giữ nguyên."
   },
   "respondent": {
     "thanks": "Cảm ơn bạn!",
@@ -588,7 +601,9 @@
     "networkError": "Không kết nối được máy chủ. Vui lòng thử lại sau.",
     "language": "Ngôn ngữ",
     "previous": "Quay lại",
-    "next": "Tiếp theo"
+    "next": "Tiếp theo",
+    "remaining": "Còn {seconds} giây",
+    "quizResult": "Điểm: {score}/{maximum} · {classification}"
   },
   "imports": {
     "title": "Import phản hồi",
