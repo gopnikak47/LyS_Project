@@ -20,7 +20,14 @@ celery_app = Celery(
     "lys",
     broker=settings.celery_broker_url,
     backend=settings.celery_result_backend,
-    include=["worker.tasks.system", "worker.tasks.email", "worker.tasks.nlp", "worker.tasks.imports", "worker.tasks.exports", "worker.tasks.engagement"],
+    include=[
+        "worker.tasks.system",
+        "worker.tasks.email",
+        "worker.tasks.nlp",
+        "worker.tasks.imports",
+        "worker.tasks.exports",
+        "worker.tasks.engagement",
+    ],
 )
 
 celery_app.conf.update(

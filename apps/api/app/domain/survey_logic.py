@@ -1,4 +1,5 @@
 """Logic chỉ tham chiếu câu trước và jump tiến: cấu trúc không có vòng lặp."""
+
 from __future__ import annotations
 
 from typing import Any
@@ -21,13 +22,19 @@ def condition(rule: dict[str, Any] | None, answers: dict[str, Any]) -> bool:
     if actual is None:
         return False
     if op == "eq":
-        return actual == expected
+        return bool(actual == expected)
     if op == "ne":
-        return actual != expected
+        return bool(actual != expected)
     if op == "contains":
-        return isinstance(actual, (list, str)) and expected in actual
+        return (isinstance(actual, list) and expected in actual) or (
+            isinstance(actual, str) and isinstance(expected, str) and expected in actual
+        )
     if op in {"gt", "lt"}:
-        return type(actual) in (int, float) and type(expected) in (int, float) and (actual > expected if op == "gt" else actual < expected)
+        return (
+            type(actual) in (int, float)
+            and type(expected) in (int, float)
+            and (actual > expected if op == "gt" else actual < expected)
+        )
     return False
 
 
@@ -73,24 +80,33 @@ def path(questions: list[dict[str, Any]], answers: dict[str, Any]) -> list[dict[
     positions = {q["code"]: i for i, q in enumerate(questions)}
     previous_answers: dict[str, Any] = {}
     while index < len(questions):
-        question = dict(questions[index]); logic = question.get("logic", {})
+        question = dict(questions[index])
+        logic = question.get("logic", {})
         if not condition(logic.get("display_if"), previous_answers):
             index += 1
             continue
-        question["options"] = [option for option in question.get("options", []) if condition(option.get("display_if"), previous_answers)]
+        question["options"] = [
+            option
+            for option in question.get("options", [])
+            if condition(option.get("display_if"), previous_answers)
+        ]
         carry = logic.get("carry_from")
         if carry:
             source = next(q for q in questions if q["code"] == carry)
             selected = previous_answers.get(carry, [])
             selected = selected if isinstance(selected, list) else [selected]
-            question["options"] = [option for option in source.get("options", []) if option["value"] in selected]
+            question["options"] = [
+                option for option in source.get("options", []) if option["value"] in selected
+            ]
         visible.append(question)
         if question["code"] in answers:
             previous_answers[question["code"]] = answers[question["code"]]
         next_index = index + 1
         for jump in logic.get("jumps", []):
             if question["code"] in answers and condition(jump.get("if"), previous_answers):
-                next_index = len(questions) if jump["target"] == "end" else positions[jump["target"]]
+                next_index = (
+                    len(questions) if jump["target"] == "end" else positions[jump["target"]]
+                )
                 break
         index = next_index
     return visible

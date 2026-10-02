@@ -16,7 +16,16 @@ router = APIRouter(prefix="/imports", tags=["imports"])
 
 
 def describe(job: ImportJob) -> dict[str, Any]:
-    return {"id": str(job.id), "status": job.status, "total_rows": job.total_rows, "processed_rows": job.processed_rows, "success_rows": job.success_rows, "error_rows": job.error_rows, "error_message": job.error_message, "has_error_report": bool(job.error_report_key)}
+    return {
+        "id": str(job.id),
+        "status": job.status,
+        "total_rows": job.total_rows,
+        "processed_rows": job.processed_rows,
+        "success_rows": job.success_rows,
+        "error_rows": job.error_rows,
+        "error_message": job.error_message,
+        "has_error_report": bool(job.error_report_key),
+    }
 
 
 class Mapping(BaseModel):
@@ -44,4 +53,8 @@ async def errors(job_id: uuid.UUID, ctx: Ctx) -> FileResponse:
     job = await service.get(job_id)
     if not job.error_report_key:
         raise AppError("Báo cáo lỗi chưa sẵn sàng.", status_code=409)
-    return FileResponse(service.storage.path(job.error_report_key), media_type="text/csv", filename="import-errors.csv")
+    return FileResponse(
+        service.storage.path(job.error_report_key),
+        media_type="text/csv",
+        filename="import-errors.csv",
+    )

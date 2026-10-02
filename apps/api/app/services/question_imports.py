@@ -16,7 +16,9 @@ from app.schemas.surveys import Choice, QuestionInput, SurveyInput, SurveyOut
 from app.services.surveys import SurveyService
 
 
-async def import_questions(ctx: RequestContext, survey_id: uuid.UUID, file: UploadFile) -> SurveyOut:
+async def import_questions(
+    ctx: RequestContext, survey_id: uuid.UUID, file: UploadFile
+) -> SurveyOut:
     ctx.principal.require(Permission.SURVEY_EDIT)
     service = SurveyService(ctx.db, ctx.principal)
     survey = await service.describe(await service.get(survey_id))
@@ -35,10 +37,32 @@ async def import_questions(ctx: RequestContext, survey_id: uuid.UUID, file: Uplo
     questions = []
     for number, value in enumerate(values, 2):
         try:
-            choices = [Choice(value=f"option-{index + 1}", label={"vi": label}) for index, label in enumerate(value.get("options_vi", "").split("|")) if label]
+            choices = [
+                Choice(value=f"option-{index + 1}", label={"vi": label})
+                for index, label in enumerate(value.get("options_vi", "").split("|"))
+                if label
+            ]
             config = json.loads(value.get("config_json") or "{}")
-            questions.append(QuestionInput.model_validate({"code": value["code"], "type": value["type"], "title": {"vi": value["title_vi"], "en": value.get("title_en", "")}, "required": value.get("required", "").lower() in {"true", "1", "yes"}, "options": choices, "config": config, "points": float(value["points"]) if value.get("points") else None}))
+            questions.append(
+                QuestionInput.model_validate(
+                    {
+                        "code": value["code"],
+                        "type": value["type"],
+                        "title": {"vi": value["title_vi"], "en": value.get("title_en", "")},
+                        "required": value.get("required", "").lower() in {"true", "1", "yes"},
+                        "options": choices,
+                        "config": config,
+                        "points": float(value["points"]) if value.get("points") else None,
+                    }
+                )
+            )
         except (KeyError, ValueError) as exc:
             raise AppError(f"Câu hỏi tại dòng {number} không hợp lệ.") from exc
-    data = SurveyInput.model_validate({**survey.model_dump(mode="json"), "questions": questions, "expected_updated_at": survey.updated_at})
+    data = SurveyInput.model_validate(
+        {
+            **survey.model_dump(mode="json"),
+            "questions": questions,
+            "expected_updated_at": survey.updated_at,
+        }
+    )
     return await service.save(survey_id, data)

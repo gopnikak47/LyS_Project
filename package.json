@@ -1,8 +1,8 @@
 {
   "name": "lys-project",
   "private": true,
-  "description": "Hệ thống khảo sát & phân tích phản hồi khách hàng tiếng Việt",
-  "packageManager": "pnpm@10.28.0",
+  "description": "H\u00e1\u00bb\u2021 th\u00e1\u00bb\u2018ng kh\u00e1\u00ba\u00a3o s\u00c3\u00a1t & ph\u00c3\u00a2n t\u00c3\u00adch ph\u00e1\u00ba\u00a3n h\u00e1\u00bb\u201ci kh\u00c3\u00a1ch h\u00c3\u00a0ng ti\u00e1\u00ba\u00bfng Vi\u00e1\u00bb\u2021t",
+  "packageManager": "pnpm@11.25.0",
   "engines": {
     "node": ">=22.12"
   },

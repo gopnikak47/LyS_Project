@@ -1,4 +1,5 @@
 """Lưu nháp độc lập snapshot xuất bản; không thay đổi câu trả lời lịch sử."""
+
 from __future__ import annotations
 
 import secrets
@@ -34,25 +35,52 @@ class SurveyService:
 
     async def describe(self, survey: Survey) -> SurveyOut:
         out = SurveyOut.model_validate(survey)
-        out.questions = [QuestionInput.model_validate(q) for q in await self.questions.for_survey(survey.id)]
+        out.questions = [
+            QuestionInput.model_validate(q) for q in await self.questions.for_survey(survey.id)
+        ]
         return out
 
-    async def list(self, workspace_id: uuid.UUID, page: int, page_size: int, search: str, status: SurveyStatus | None) -> Page[SurveyOut]:
+    async def list(
+        self,
+        workspace_id: uuid.UUID,
+        page: int,
+        page_size: int,
+        search: str,
+        status: SurveyStatus | None,
+    ) -> Page[SurveyOut]:
         await WorkspaceService(self.db, self.principal).get(workspace_id)
         filters = [Survey.workspace_id == workspace_id]
         if search:
             filters.append(Survey.title.ilike(f"%{search}%"))
         if status:
             filters.append(Survey.status == status)
-        items = await self.repo.list(*filters, order_by=Survey.updated_at.desc(), limit=page_size, offset=(page - 1) * page_size)
-        return Page(items=[SurveyOut.model_validate(s) for s in items], total=await self.repo.count(*filters), page=page, page_size=page_size)
+        items = await self.repo.list(
+            *filters,
+            order_by=Survey.updated_at.desc(),
+            limit=page_size,
+            offset=(page - 1) * page_size,
+        )
+        return Page(
+            items=[SurveyOut.model_validate(s) for s in items],
+            total=await self.repo.count(*filters),
+            page=page,
+            page_size=page_size,
+        )
 
     async def create(self, data: SurveyCreate) -> SurveyOut:
         self.principal.require(Permission.SURVEY_EDIT)
         await WorkspaceService(self.db, self.principal).get(data.workspace_id)
         from app.services.billing import enforce_limit
+
         await enforce_limit(self.db, self.principal.tenant_id, "surveys")
-        survey = self.repo.add(Survey(workspace_id=data.workspace_id, title=data.title.strip(), slug=secrets.token_urlsafe(18), created_by=self.principal.user_id))
+        survey = self.repo.add(
+            Survey(
+                workspace_id=data.workspace_id,
+                title=data.title.strip(),
+                slug=secrets.token_urlsafe(18),
+                created_by=self.principal.user_id,
+            )
+        )
         await self.db.flush()
         return await self.save(survey.id, data)
 
@@ -60,7 +88,9 @@ class SurveyService:
         self.principal.require(Permission.SURVEY_EDIT)
         survey = await self.get(survey_id, lock=True)
         if data.expected_updated_at is not None and survey.updated_at != data.expected_updated_at:
-            raise ConflictError("Khảo sát đã được sửa ở cửa sổ khác. Vui lòng tải lại trước khi lưu.")
+            raise ConflictError(
+                "Khảo sát đã được sửa ở cửa sổ khác. Vui lòng tải lại trước khi lưu."
+            )
         survey.title = data.title.strip()
         survey.description = data.description
         survey.theme = data.theme.model_dump(mode="json")
@@ -94,8 +124,26 @@ class SurveyService:
         out = await self.describe(survey)
         if not out.questions:
             raise AppError("Cần ít nhất một câu hỏi để xuất bản.")
-        versions = await self.versions.list(SurveyVersion.survey_id == survey.id, order_by=SurveyVersion.version.desc(), limit=1)
-        version = self.versions.add(SurveyVersion(survey_id=survey.id, version=versions[0].version + 1 if versions else 1, snapshot=out.model_dump(mode="json", exclude={"settings", "updated_at", "status", "response_count", "current_version_id"}), published_by=self.principal.user_id))
+        versions = await self.versions.list(
+            SurveyVersion.survey_id == survey.id, order_by=SurveyVersion.version.desc(), limit=1
+        )
+        version = self.versions.add(
+            SurveyVersion(
+                survey_id=survey.id,
+                version=versions[0].version + 1 if versions else 1,
+                snapshot=out.model_dump(
+                    mode="json",
+                    exclude={
+                        "settings",
+                        "updated_at",
+                        "status",
+                        "response_count",
+                        "current_version_id",
+                    },
+                ),
+                published_by=self.principal.user_id,
+            )
+        )
         # Snapshot giữ cấu hình khách; không chứa đáp án bí mật (quiz thêm ở GĐ11).
         version.snapshot = {**version.snapshot, "settings": survey.settings}
         await self.db.flush()
@@ -104,7 +152,15 @@ class SurveyService:
         survey.status = SurveyStatus.PUBLISHED
         survey.published_at = datetime.now(UTC)
         survey.closed_at = None
-        await audit(self.db, tenant_id=self.principal.tenant_id, user_id=self.principal.user_id, action="survey.publish", entity_type="survey", entity_id=survey.id, data={"version": version.version})
+        await audit(
+            self.db,
+            tenant_id=self.principal.tenant_id,
+            user_id=self.principal.user_id,
+            action="survey.publish",
+            entity_type="survey",
+            entity_id=survey.id,
+            data={"version": version.version},
+        )
         await self.db.flush()
         return await self.describe(survey)
 
@@ -119,5 +175,13 @@ class SurveyService:
     async def duplicate(self, survey_id: uuid.UUID) -> SurveyOut:
         self.principal.require(Permission.SURVEY_EDIT)
         original = await self.describe(await self.get(survey_id))
-        data = SurveyCreate.model_validate({**original.model_dump(), "title": f"{original.title[:285]} (bản sao)", "questions": [q.model_copy(update={"id": uuid.uuid4()}) for q in original.questions]})
+        data = SurveyCreate.model_validate(
+            {
+                **original.model_dump(),
+                "title": f"{original.title[:285]} (bản sao)",
+                "questions": [
+                    q.model_copy(update={"id": uuid.uuid4()}) for q in original.questions
+                ],
+            }
+        )
         return await self.create(data)

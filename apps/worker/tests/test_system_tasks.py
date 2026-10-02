@@ -34,5 +34,6 @@ def test_queue_durability_settings() -> None:
 
 
 def test_beat_schedule_registered_tasks_exist() -> None:
+    celery_app.loader.import_default_modules()
     for entry in celery_app.conf.beat_schedule.values():
         assert entry["task"] in celery_app.tasks

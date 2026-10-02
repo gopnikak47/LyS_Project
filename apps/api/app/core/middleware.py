@@ -66,6 +66,7 @@ class RequestContextMiddleware:
         finally:
             duration_ms = round((time.perf_counter() - started) * 1000, 2)
             from app.core.metrics import LATENCY, REQUESTS
+
             route = getattr(scope.get("route"), "path", "unmatched")
             REQUESTS.labels(scope.get("method", ""), route, str(status_code)).inc()
             LATENCY.labels(scope.get("method", ""), route).observe(duration_ms / 1000)

@@ -41,6 +41,8 @@ x-backend-env: &backend-env
   STORAGE_BACKEND: local
   STORAGE_LOCAL_ROOT: /data/storage
   NLP_MODEL_DIR: /data/models
+  NLP_BACKEND: ${NLP_BACKEND:-phobert}
+  CLAMAV_HOST: ${CLAMAV_HOST:-}
 
 x-backend-depends: &backend-depends
   postgres:
@@ -51,6 +53,32 @@ x-backend-depends: &backend-depends
     condition: service_completed_successfully
 
 services:
+  backup:
+    image: postgres:16-alpine
+    profiles: [backup]
+    restart: unless-stopped
+    environment:
+      PGHOST: postgres
+      PGDATABASE: ${POSTGRES_DB:-lys}
+      PGUSER: ${POSTGRES_USER:-lys}
+      PGPASSWORD: ${POSTGRES_PASSWORD:-lys_dev_password}
+      BACKUP_KEEP: ${BACKUP_KEEP:-14}
+      BACKUP_INTERVAL_SECONDS: ${BACKUP_INTERVAL_SECONDS:-86400}
+    command: ["sh", "-c", "while sh /scripts/backup.sh; do sleep $${BACKUP_INTERVAL_SECONDS}; done"]
+    volumes:
+      - ./infra/backup:/scripts:ro
+      - backups:/backups
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  clamav:
+    image: clamav/clamav:stable
+    profiles: [uploads]
+    restart: unless-stopped
+    volumes:
+      - clamavdata:/var/lib/clamav
+
   postgres:
     image: postgres:16-alpine
     restart: unless-stopped
@@ -215,6 +243,8 @@ services:
       retries: 5
 
 volumes:
+  backups:
+  clamavdata:
   pgdata:
   redisdata:
   storage:

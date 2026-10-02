@@ -7,7 +7,6 @@ from pathlib import Path
 from typing import Any
 
 from fastapi import UploadFile
-from sqlalchemy import select
 
 from app.core.auth import RequestContext
 from app.core.errors import AppError
@@ -15,7 +14,7 @@ from app.core.permissions import Permission
 from app.core.storage import LocalStorage
 from app.domain.tabular import rows
 from app.models import ImportJob
-from app.models.enums import ImportKind, JobStatus
+from app.models.enums import ImportKind
 from app.repositories.jobs import ImportRepository
 from app.services.surveys import SurveyService
 from app.services.workspaces import WorkspaceService
@@ -47,29 +46,55 @@ class ImportService:
         key = f"{survey.tenant_id}/imports/{job_id}/input{suffix}"
         await asyncio.to_thread(self.storage.put, key, content)
         try:
-            preview = await asyncio.to_thread(lambda: list(islice(rows(self.storage.path(key)), 20)))
+            preview = await asyncio.to_thread(
+                lambda: list(islice(rows(self.storage.path(key)), 20))
+            )
         except (ValueError, OSError, UnicodeError) as exc:
             raise AppError("Không đọc được tệp CSV/XLSX.") from exc
         if not preview:
             raise AppError("Tệp không có dữ liệu.")
-        job = self.repo.add(ImportJob(id=job_id, workspace_id=survey.workspace_id, survey_id=survey.id, kind=ImportKind.RESPONSES, original_filename=(file.filename or "import")[:300], file_key=key, created_by=self.ctx.principal.user_id))
+        job = self.repo.add(
+            ImportJob(
+                id=job_id,
+                workspace_id=survey.workspace_id,
+                survey_id=survey.id,
+                kind=ImportKind.RESPONSES,
+                original_filename=(file.filename or "import")[:300],
+                file_key=key,
+                created_by=self.ctx.principal.user_id,
+            )
+        )
         await self.ctx.db.flush()
         return {"id": str(job.id), "columns": list(preview[0]), "preview": preview}
 
     async def start(self, job_id: uuid.UUID, mapping: dict[str, str]) -> ImportJob:
         self.ctx.principal.require(Permission.SURVEY_EDIT)
         await self.get(job_id)
-        job = (await self.ctx.db.execute(self.repo._scoped().where(ImportJob.id == job_id).with_for_update())).scalar_one()
+        job: ImportJob = (
+            await self.ctx.db.execute(
+                self.repo._scoped().where(ImportJob.id == job_id).with_for_update()
+            )
+        ).scalar_one()
         if job.mapping:
             raise AppError("Tác vụ đã được bắt đầu.", status_code=409)
-        survey = await SurveyService(self.ctx.db, self.ctx.principal).describe(await SurveyService(self.ctx.db, self.ctx.principal).get(job.survey_id))
+        if job.survey_id is None:
+            raise AppError("Tác vụ thiếu khảo sát.")
+        if job.survey_id is None:
+            raise AppError("Tác vụ thiếu khảo sát.")
+        survey = await SurveyService(self.ctx.db, self.ctx.principal).describe(
+            await SurveyService(self.ctx.db, self.ctx.principal).get(job.survey_id)
+        )
         allowed = {q.code for q in survey.questions}
         columns = set(next(rows(self.storage.path(job.file_key))))
         if not mapping or set(mapping) - allowed or set(mapping.values()) - columns:
             raise AppError("Ánh xạ cột không hợp lệ.")
         if any(q.required and q.code not in mapping for q in survey.questions):
             raise AppError("Cần ánh xạ tất cả câu hỏi bắt buộc.")
-        job.mapping = {"columns": mapping, "questions": [q.model_dump(mode="json") for q in survey.questions], "version_id": str(survey.current_version_id) if survey.current_version_id else None}
+        job.mapping = {
+            "columns": mapping,
+            "questions": [q.model_dump(mode="json") for q in survey.questions],
+            "version_id": str(survey.current_version_id) if survey.current_version_id else None,
+        }
         await self.ctx.db.flush()
         # Commit ở dependency trước dispatch: quét bù cũng tìm job pending đã có mapping.
         return job

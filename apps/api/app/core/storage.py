@@ -1,4 +1,5 @@
 """StorageBackend; khóa tương đối kiểm tra traversal, ghi thay thế nguyên tử."""
+
 from __future__ import annotations
 
 import os
@@ -11,6 +12,7 @@ class StorageBackend(Protocol):
     def put(self, key: str, content: bytes) -> None: ...
     def read(self, key: str) -> bytes: ...
     def path(self, key: str) -> Path: ...
+    def delete(self, key: str) -> None: ...
 
 
 class LocalStorage:
@@ -37,3 +39,6 @@ class LocalStorage:
 
     def read(self, key: str) -> bytes:
         return self.path(key).read_bytes()
+
+    def delete(self, key: str) -> None:
+        self.path(key).unlink(missing_ok=True)

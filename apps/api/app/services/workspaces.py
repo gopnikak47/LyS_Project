@@ -106,6 +106,7 @@ class WorkspaceService:
     ) -> Workspace:
         self.principal.require(Permission.WORKSPACE_MANAGE)
         from app.services.billing import enforce_limit
+
         await enforce_limit(self.db, self.principal.tenant_id, "workspaces")
         workspace = await create_workspace(
             self.db,

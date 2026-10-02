@@ -83,3 +83,7 @@ pythonpath = ["apps/api"]
 addopts = "-ra --strict-markers --import-mode=importlib"
 markers = ["db: test cần PostgreSQL thật (testcontainers hoặc TEST_DATABASE_URL)"]
 filterwarnings = ["error::DeprecationWarning:app.*"]
+
+[[tool.mypy.overrides]]
+module = ["underthesea.*", "torch.*", "transformers.*", "sentence_transformers.*", "reportlab.*"]
+ignore_missing_imports = true

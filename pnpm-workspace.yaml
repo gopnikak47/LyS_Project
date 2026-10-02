@@ -2,6 +2,10 @@ packages:
   - apps/web
   - packages/shared
 
-onlyBuiltDependencies:
-  - sharp
-  - unrs-resolver
+minimumReleaseAge: 1440
+minimumReleaseAgeStrict: true
+allowBuilds:
+  sharp: true
+  unrs-resolver: true
+  "@parcel/watcher": true
+  "@swc/core": true

@@ -24,7 +24,15 @@ class ExportService:
         await WorkspaceService(self.ctx.db, self.ctx.principal).get(filters.workspace_id)
         if kind not in {ExportKind.XLSX, ExportKind.PDF}:
             raise AppError("Định dạng xuất chưa được hỗ trợ.")
-        job = self.repo.add(ExportJob(workspace_id=filters.workspace_id, kind=kind, params={"filters": filters.model_dump(mode="json"), "anonymous": True}, created_by=self.ctx.principal.user_id, expires_at=datetime.now(UTC) + timedelta(days=7)))
+        job = self.repo.add(
+            ExportJob(
+                workspace_id=filters.workspace_id,
+                kind=kind,
+                params={"filters": filters.model_dump(mode="json"), "anonymous": True},
+                created_by=self.ctx.principal.user_id,
+                expires_at=datetime.now(UTC) + timedelta(days=7),
+            )
+        )
         await self.ctx.db.flush()
         return job
 
@@ -40,4 +48,12 @@ class ExportService:
 
 
 def describe(job: ExportJob) -> dict[str, Any]:
-    return {"id": str(job.id), "kind": job.kind, "status": job.status, "filename": job.filename, "error_message": job.error_message, "expires_at": job.expires_at, "ready": job.status == JobStatus.DONE}
+    return {
+        "id": str(job.id),
+        "kind": job.kind,
+        "status": job.status,
+        "filename": job.filename,
+        "error_message": job.error_message,
+        "expires_at": job.expires_at,
+        "ready": job.status == JobStatus.DONE,
+    }

@@ -1,13 +1,76 @@
 """Chuẩn hóa tiếng Việt, giữ tín hiệu emoji; từ điển có thể ghi đè theo workspace."""
+
 from __future__ import annotations
 
 import html
 import re
 import unicodedata
 
-TEENCODE = {"ko": "không", "kh": "không", "k": "không", "hok": "không", "dc": "được", "đc": "được", "vs": "với", "nv": "nhân viên", "sp": "sản phẩm", "tks": "cảm ơn", "thx": "cảm ơn", "ok": "ổn", "oke": "ổn", "good": "tốt", "bad": "tệ", "bt": "bình thường", "bth": "bình thường"}
-EMOJI = {"😍": " yêu thích ", "❤️": " yêu thích ", "👍": " tốt ", "😊": " hài lòng ", "😄": " hài lòng ", "😡": " tức giận ", "👎": " tệ ", "😭": " thất vọng ", "😞": " thất vọng "}
-STOPWORDS = frozenset("và là của có cho với những các thì một tôi mình bạn này đó được đã cũng rất quá nhưng ở về trong khi đến từ sẽ mà nhé nha".split())
+TEENCODE = {
+    "ko": "không",
+    "kh": "không",
+    "k": "không",
+    "hok": "không",
+    "dc": "được",
+    "đc": "được",
+    "vs": "với",
+    "nv": "nhân viên",
+    "sp": "sản phẩm",
+    "tks": "cảm ơn",
+    "thx": "cảm ơn",
+    "ok": "ổn",
+    "oke": "ổn",
+    "good": "tốt",
+    "bad": "tệ",
+    "bt": "bình thường",
+    "bth": "bình thường",
+}
+EMOJI = {
+    "😍": " yêu thích ",
+    "❤️": " yêu thích ",
+    "👍": " tốt ",
+    "😊": " hài lòng ",
+    "😄": " hài lòng ",
+    "😡": " tức giận ",
+    "👎": " tệ ",
+    "😭": " thất vọng ",
+    "😞": " thất vọng ",
+}
+STOPWORDS = frozenset(
+    [
+        "và",
+        "là",
+        "của",
+        "có",
+        "cho",
+        "với",
+        "những",
+        "các",
+        "thì",
+        "một",
+        "tôi",
+        "mình",
+        "bạn",
+        "này",
+        "đó",
+        "được",
+        "đã",
+        "cũng",
+        "rất",
+        "quá",
+        "nhưng",
+        "ở",
+        "về",
+        "trong",
+        "khi",
+        "đến",
+        "từ",
+        "sẽ",
+        "mà",
+        "nhé",
+        "nha",
+    ]
+)
 
 
 def normalize(text: str, dictionary: dict[str, str] | None = None) -> str:
@@ -37,4 +100,10 @@ def words(text: str) -> list[str]:
 
 
 def keywords(text: str) -> list[str]:
-    return list(dict.fromkeys(word for word in words(text) if len(word) > 1 and len(word) <= 64 and word not in STOPWORDS))[:100]
+    return list(
+        dict.fromkeys(
+            word
+            for word in words(text)
+            if len(word) > 1 and len(word) <= 64 and word not in STOPWORDS
+        )
+    )[:100]

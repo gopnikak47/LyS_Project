@@ -12,6 +12,8 @@ erDiagram
   questions |o--o{ answers : question_id
   responses ||--o{ answers : response_id
   users |o--o{ audit_logs : user_id
+  surveys |o--o{ email_deliveries : survey_id
+  workspaces ||--o{ email_deliveries : workspace_id
   users |o--o{ export_jobs : created_by
   workspaces |o--o{ export_jobs : workspace_id
   users |o--o{ import_jobs : created_by
@@ -25,6 +27,8 @@ erDiagram
   users ||--o{ password_reset_tokens : user_id
   surveys ||--o{ questions : survey_id
   users ||--o{ refresh_tokens : user_id
+  users |o--o{ report_schedules : created_by
+  workspaces ||--o{ report_schedules : workspace_id
   survey_channels |o--o{ responses : channel_id
   surveys ||--o{ responses : survey_id
   survey_versions |o--o{ responses : survey_version_id
@@ -74,6 +78,25 @@ erDiagram
     uuid id PK
     uuid tenant_id FK
     datetime created_at
+  }
+  email_deliveries {
+    uuid workspace_id FK
+    uuid survey_id FK
+    string recipient
+    string kind
+    string dedupe_key
+    jsonb payload
+    enum status
+    integer attempts
+    datetime next_attempt_at
+    datetime sent_at
+    datetime opened_at
+    datetime clicked_at
+    string last_error
+    uuid id PK
+    uuid tenant_id FK
+    datetime created_at
+    datetime updated_at
   }
   export_jobs {
     uuid workspace_id FK
@@ -211,6 +234,19 @@ erDiagram
     string ip_hash
     uuid id PK
     datetime created_at
+  }
+  report_schedules {
+    uuid workspace_id FK
+    uuid created_by FK
+    array recipients
+    string cadence
+    jsonb filters
+    datetime next_run_at
+    boolean enabled
+    uuid id PK
+    uuid tenant_id FK
+    datetime created_at
+    datetime updated_at
   }
   responses {
     uuid survey_id FK
@@ -416,4 +452,4 @@ erDiagram
 
 ## Bảng chịu RLS theo tenant
 
-`answers`, `audit_logs`, `export_jobs`, `import_jobs`, `invitations`, `label_corrections`, `memberships`, `questions`, `responses`, `subscriptions`, `survey_channels`, `survey_versions`, `surveys`, `text_analyses`, `tickets`, `topic_sets`, `topics`, `workspace_members`, `workspaces`
+`answers`, `audit_logs`, `email_deliveries`, `export_jobs`, `import_jobs`, `invitations`, `label_corrections`, `memberships`, `questions`, `report_schedules`, `responses`, `subscriptions`, `survey_channels`, `survey_versions`, `surveys`, `text_analyses`, `tickets`, `topic_sets`, `topics`, `workspace_members`, `workspaces`

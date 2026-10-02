@@ -1,4 +1,5 @@
 """Quét ClamAV INSTREAM; không chấp nhận tệp khi scanner chưa cấu hình."""
+
 from __future__ import annotations
 
 import socket
@@ -14,7 +15,7 @@ def scan_file(content: bytes, host: str, port: int) -> None:
         with socket.create_connection((host, port), timeout=20) as connection:
             connection.sendall(b"zINSTREAM\0")
             for start in range(0, len(content), 65536):
-                chunk = content[start:start + 65536]
+                chunk = content[start : start + 65536]
                 connection.sendall(struct.pack("!I", len(chunk)) + chunk)
             connection.sendall(struct.pack("!I", 0))
             result = b""

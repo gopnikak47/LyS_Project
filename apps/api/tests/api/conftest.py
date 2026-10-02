@@ -55,6 +55,9 @@ class Harness:
         assert res.status_code == 201, res.text
         body = res.json()
         client.headers["X-CSRF-Token"] = body["csrf_token"]
+        # Existing role/scope tests require several workspaces and invitations.
+        upgrade = await client.post("/api/v1/billing/mock-subscription", json={"plan_code": "pro"})
+        assert upgrade.status_code == 200, upgrade.text
         return client, body
 
     async def login(

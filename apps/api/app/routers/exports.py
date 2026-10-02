@@ -37,4 +37,10 @@ async def download(job_id: uuid.UUID, ctx: Ctx) -> FileResponse:
     job = await ExportService(ctx).get(job_id)
     if job.status != JobStatus.DONE or not job.file_key:
         raise AppError("Báo cáo chưa sẵn sàng.", status_code=409)
-    return FileResponse(LocalStorage(ctx.settings.storage_local_root).path(job.file_key), filename=job.filename, media_type="application/pdf" if job.kind == ExportKind.PDF else "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+    return FileResponse(
+        LocalStorage(ctx.settings.storage_local_root).path(job.file_key),
+        filename=job.filename,
+        media_type="application/pdf"
+        if job.kind == ExportKind.PDF
+        else "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    )

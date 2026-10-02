@@ -212,6 +212,7 @@ class InvitationService:
     async def create(self, data: InvitationCreate) -> tuple[Invitation, str]:
         self.principal.require(Permission.MEMBER_MANAGE)
         from app.services.billing import enforce_limit
+
         await enforce_limit(self.db, self.principal.tenant_id, "members", reserve_invites=True)
         already = await self.db.execute(
             select(Membership.id)
@@ -352,6 +353,7 @@ async def accept_invitation(
     if existing is not None:
         raise ConflictError("Bạn đã là thành viên của doanh nghiệp này.", code="ALREADY_MEMBER")
     from app.services.billing import enforce_limit
+
     await enforce_limit(db, invitation.tenant_id, "members")
     membership = Membership(
         tenant_id=invitation.tenant_id,

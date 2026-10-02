@@ -7,10 +7,12 @@ vào đây — bắt buộc người viết endpoint nghĩ tới cô lập tenan
 
 from __future__ import annotations
 
+import time
 from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any
 
+import jwt
 import pytest
 from fastapi.routing import APIRoute
 
@@ -56,10 +58,54 @@ CASES: list[Case] = [
     ("POST", "/api/v1/workspaces/{workspace_id}/topics/reanalyze", lambda b: None),
 ]
 
+CASES += [
+    ("GET", "/api/v1/surveys/{survey_id}", lambda b: None),
+    ("PUT", "/api/v1/surveys/{survey_id}", lambda b: {"title": "B", "questions": []}),
+    *[
+        ("POST", "/api/v1/surveys/{survey_id}/" + action, lambda b: None)
+        for action in ("publish", "close", "duplicate")
+    ],
+    ("DELETE", "/api/v1/surveys/{survey_id}?confirm_title=B", lambda b: None),
+    ("GET", "/api/v1/surveys/{survey_id}/share", lambda b: None),
+    ("GET", "/api/v1/surveys/{survey_id}/qr", lambda b: None),
+    ("GET", "/api/v1/surveys/{survey_id}/email-invitations", lambda b: None),
+    ("POST", "/api/v1/surveys/{survey_id}/email-invitations", lambda b: {"recipients": ["x@a.vn"]}),
+    ("GET", "/api/v1/responses/{analysis_id}", lambda b: None),
+    ("GET", "/api/v1/analyses/{analysis_id}/corrections", lambda b: None),
+    ("POST", "/api/v1/analyses/{analysis_id}/corrections", lambda b: {"sentiment": "positive"}),
+    ("POST", "/api/v1/corrections/{correction_id}/undo", lambda b: None),
+    ("POST", "/api/v1/corrections/{correction_id}/review?approved=true", lambda b: None),
+    ("GET", "/api/v1/imports/{job_id}", lambda b: None),
+    ("GET", "/api/v1/imports/{job_id}/errors", lambda b: None),
+    ("POST", "/api/v1/imports/{job_id}/start", lambda b: {"columns": {"comment": "comment"}}),
+    ("GET", "/api/v1/exports/{job_id}", lambda b: None),
+    ("GET", "/api/v1/exports/{job_id}/download", lambda b: None),
+    ("GET", "/api/v1/tickets/{ticket_id}", lambda b: None),
+    ("PATCH", "/api/v1/tickets/{ticket_id}", lambda b: {"note": "x"}),
+    ("DELETE", "/api/v1/report-schedules/{schedule_id}", lambda b: None),
+    (
+        "DELETE",
+        "/api/v1/privacy/responses/{response_id}",
+        lambda b: {"confirm_response_id": b.ids["response_id"]},
+    ),
+    ("POST", "/api/v1/surveys/{survey_id}/assets", lambda b: None),
+    ("POST", "/api/v1/surveys/{survey_id}/questions/import", lambda b: None),
+]
+
 # Endpoint có tham số nhưng không định danh dữ liệu tenant (token công khai một lần).
 EXEMPT = {
     ("GET", "/api/v1/public/invitations/{token}"),
     ("POST", "/api/v1/public/invitations/{token}/accept"),
+    # Public slug is intentionally shared. Session/submission tokens are tested separately.
+    ("GET", "/api/v1/public/surveys/{slug}"),
+    ("POST", "/api/v1/public/surveys/{slug}/session"),
+    ("POST", "/api/v1/public/surveys/{slug}/responses"),
+    ("POST", "/api/v1/public/surveys/{slug}/uploads"),
+    ("GET", "/api/v1/public/assets/{token}"),
+    ("GET", "/api/v1/public/email/{token}/open"),
+    ("GET", "/api/v1/public/email/{token}/click"),
+    ("GET", "/api/v1/public/reports/{token}"),
+    ("POST", "/api/v1/templates/{code}/use"),
 }
 
 
@@ -87,14 +133,83 @@ async def _setup(api: Harness) -> tuple[Any, TenantB, Any]:
         "topic_id": topics_b[0]["id"],
         "topic2_id": topics_b[1]["id"],
     }
+
+    survey_res = await client_b.post(
+        "/api/v1/surveys",
+        json={
+            "workspace_id": ws_b["id"],
+            "title": "B",
+            "questions": [{"code": "comment", "type": "text", "title": {"vi": "Góp ý"}}],
+        },
+    )
+    assert survey_res.status_code == 201, survey_res.text
+    survey = survey_res.json()
+    pub = await client_b.post(f"/api/v1/surveys/{survey['id']}/publish")
+    assert pub.status_code == 200, pub.text
+    guest = api.client()
+    session = (await guest.post(f"/api/v1/public/surveys/{survey['slug']}/session")).json()
+    secret = api.app.state.settings.secret_key.get_secret_value()
+    claims = jwt.decode(session["token"], secret, algorithms=["HS256"], audience="survey-submit")
+    claims["iat"] = int(time.time()) - 3
+    token = jwt.encode(claims, secret, algorithm="HS256")
+    submitted = await guest.post(
+        f"/api/v1/public/surveys/{survey['slug']}/responses",
+        json={"token": token, "answers": {"comment": "rất tệ"}},
+    )
+    assert submitted.status_code == 201, submitted.text
+    feedback = (await client_b.get(f"/api/v1/responses?workspace_id={ws_b['id']}")).json()["items"][
+        0
+    ]
+    corrected = await client_b.post(
+        f"/api/v1/analyses/{feedback['id']}/corrections", json={"sentiment": "negative"}
+    )
+    assert corrected.status_code == 200, corrected.text
+    correction = (await client_b.get(f"/api/v1/analyses/{feedback['id']}/corrections")).json()[0]
+    ticket = (await client_b.get(f"/api/v1/tickets?workspace_id={ws_b['id']}")).json()["items"][0]
+    imported = await client_b.post(
+        f"/api/v1/imports?survey_id={survey['id']}",
+        files={"file": ("input.csv", b"comment\nhello\n", "text/csv")},
+    )
+    assert imported.status_code == 201, imported.text
+    exported = await client_b.post(
+        "/api/v1/exports", json={"kind": "xlsx", "filters": {"workspace_id": ws_b["id"]}}
+    )
+    assert exported.status_code == 202, exported.text
+    schedule = await client_b.post(
+        "/api/v1/report-schedules",
+        json={
+            "workspace_id": ws_b["id"],
+            "recipients": ["b@b.vn"],
+            "cadence": "week",
+            "next_run_at": "2027-01-01T00:00:00Z",
+            "filters": {"workspace_id": ws_b["id"]},
+        },
+    )
+    assert schedule.status_code == 201, schedule.text
+    ids.update(
+        survey_id=survey["id"],
+        analysis_id=feedback["id"],
+        response_id=submitted.json()["response_id"],
+        correction_id=correction["id"],
+        ticket_id=ticket["id"],
+        import_id=imported.json()["id"],
+        export_id=exported.json()["id"],
+        schedule_id=schedule.json()["id"],
+    )
     return client_a, TenantB(ids), client_b
 
 
 async def test_tenant_a_cannot_touch_tenant_b_resources(api: Harness) -> None:
     client_a, b, client_b = await _setup(api)
     for method, template, body in CASES:
-        path = template.format(**b.ids)
-        res = await client_a.request(method, path, json=body(b))
+        ids = {**b.ids, "job_id": b.ids["export_id" if "/exports/" in template else "import_id"]}
+        path = template.format(**ids)
+        if template.endswith(("/assets", "/questions/import")):
+            res = await client_a.request(
+                method, path, files={"file": ("image.png", b"invalid", "image/png")}
+            )
+        else:
+            res = await client_a.request(method, path, json=body(b))
         assert res.status_code == 404, f"{method} {path} → {res.status_code}: {res.text}"
         assert "WS B" not in res.text and "nv@b.vn" not in res.text
 
@@ -140,7 +255,7 @@ async def test_invite_cannot_reference_foreign_workspace(api: Harness) -> None:
 
 
 def test_every_parameterized_endpoint_is_covered(api_routes: list[tuple[str, str]]) -> None:
-    covered = {(m, p) for m, p, _ in CASES} | EXEMPT
+    covered = {(m, p.split("?")[0]) for m, p, _ in CASES} | EXEMPT
     missing = [r for r in api_routes if r not in covered]
     assert missing == [], f"Thêm các endpoint sau vào CASES/EXEMPT của test cô lập: {missing}"
 
