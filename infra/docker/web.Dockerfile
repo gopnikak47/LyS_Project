@@ -30,8 +30,11 @@ COPY apps/web apps/web
 # Biến NEXT_PUBLIC_* được nhúng lúc build.
 ARG NEXT_PUBLIC_APP_NAME="LyS Survey"
 ARG NEXT_PUBLIC_API_BASE_URL="/api"
+# Đích rewrite /api/* của Next.js (dự phòng khi request không qua nginx).
+ARG API_INTERNAL_URL="http://api:8000"
 ENV NEXT_PUBLIC_APP_NAME=$NEXT_PUBLIC_APP_NAME \
-    NEXT_PUBLIC_API_BASE_URL=$NEXT_PUBLIC_API_BASE_URL
+    NEXT_PUBLIC_API_BASE_URL=$NEXT_PUBLIC_API_BASE_URL \
+    API_INTERNAL_URL=$API_INTERNAL_URL
 RUN pnpm --filter @lys/web build
 
 # ---------------------------------------------------------------- runtime

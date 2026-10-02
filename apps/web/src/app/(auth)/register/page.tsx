@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
@@ -20,7 +21,9 @@ export default async function RegisterPage() {
         <CardDescription>{t("registerSubtitle")}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        <AuthForm mode="register" />
+        <Suspense>
+          <AuthForm mode="register" />
+        </Suspense>
         <p className="text-center text-sm text-muted-foreground">
           {t("hasAccount")}{" "}
           <Link href="/login" className="font-medium text-primary hover:underline">

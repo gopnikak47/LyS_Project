@@ -46,3 +46,21 @@
 - [x] Test: 16 test CSDL (RLS: đọc/ghi/sửa/xóa chéo tenant, đoán ID, thiếu ngữ cảnh, rò ngữ cảnh qua pool, quyền bảng auth, độ phủ RLS; migration; khớp model; seed; repository) + test ERD.
 
 **FR:** nền tảng cho FR-04 (lớp RLS) — hoàn thiện kiểm thử qua mọi endpoint ở GĐ 2.
+
+## Giai đoạn 2 — chi tiết
+
+**Tiêu chí hoàn thành:** test cô lập tenant xanh; đăng ký/đăng nhập/mời hoạt động.
+
+| FR    | Nội dung                                                                                                             | Trạng thái |
+| ----- | -------------------------------------------------------------------------------------------------------------------- | ---------- |
+| FR-01 | Đăng ký doanh nghiệp + admin, đăng nhập/đăng xuất, refresh xoay vòng, quên/đặt lại mật khẩu, điều hướng theo vai trò | ✅         |
+| FR-02 | CRUD workspace, bộ chủ đề mẫu theo ngành khi tạo, xóa mềm có xác nhận tên                                            | ✅         |
+| FR-03 | Mời qua email (link 7 ngày), vai trò + phạm vi workspace, ma trận quyền, đổi vai trò/xóa thành viên                  | ✅         |
+| FR-04 | Cô lập tenant 4 lớp + bộ test tự kiểm tra mọi endpoint có ID                                                         | ✅         |
+
+- Bảo mật: cookie httpOnly/SameSite, CSRF, rate limit, khóa tạm, audit log, chống dò tài khoản.
+- Giao diện: đăng nhập/đăng ký/quên/đặt lại mật khẩu/nhận lời mời, header theo quyền, chọn
+  workspace & doanh nghiệp, trang **Quản lý** (thành viên, lời mời, không gian, doanh nghiệp),
+  **Trang cá nhân** (hồ sơ, ngôn ngữ, đổi mật khẩu).
+- Test: backend 81 (gồm 2 test ghi đồng thời), Vitest 23, Playwright 30 (375/768/1280 + axe) +
+  15 ảnh chụp.

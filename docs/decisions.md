@@ -116,3 +116,52 @@ Mỗi mục: **bối cảnh → quyết định → hệ quả**. Bổ sung theo
 - Thư mục `app/db/migrations` được đóng gói cùng wheel nên image runtime chạy được
   `python -m app.cli migrate` (service `migrate` một lần trong Compose). ERD sinh tự động từ model
   (`python -m app.db.erd`), có test đảm bảo `docs/erd.md` luôn khớp.
+
+## Giai đoạn 2
+
+### D-019. Phiên đăng nhập bằng cookie httpOnly + CSRF double-submit
+
+- Access JWT (HS256, 15 phút) trong cookie `lys_access` (httpOnly, SameSite=Lax, Secure ở
+  production). Refresh token ngẫu nhiên lưu **băm** trong `refresh_tokens`, cookie `lys_refresh`
+  chỉ gửi tới `/api/v1/auth`. Xoay vòng mỗi lần làm mới; dùng lại token đã thu hồi → thu hồi
+  cả "họ" token (phát hiện bị đánh cắp).
+- CSRF: cookie `lys_csrf` (đọc được bằng JS) phải trùng header `X-CSRF-Token` cho mọi request ghi
+  dùng cookie. Client API có thể dùng `Authorization: Bearer` (không cần CSRF).
+- Vai trò/quyền luôn đọc lại từ CSDL ở mỗi request (đổi vai trò có hiệu lực ngay); đổi mật khẩu
+  tăng `token_version` để vô hiệu mọi access token cũ.
+
+### D-020. Chống dò tài khoản và tấn công đăng nhập
+
+- Thông điệp sai email/mật khẩu giống hệt nhau; email không tồn tại vẫn chạy bcrypt giả để thời
+  gian phản hồi như nhau. Quên mật khẩu luôn trả 202.
+- Rate limit Redis: theo IP và theo email (cấu hình `LOGIN_RATE_PER_MINUTE`,
+  `REGISTER_RATE_PER_HOUR`); khóa tạm 15 phút sau 5 lần sai (`ACCOUNT_LOCKED`, HTTP 423).
+- Audit log: đăng ký, đăng nhập (thành công/thất bại/bị khóa), mời/nhận lời mời, đổi vai trò,
+  xóa thành viên, tạo/sửa/xóa workspace.
+
+### D-021. Cô lập tenant 4 lớp có test bắt buộc
+
+1. Dependency `get_context` lấy tenant từ token và nạp quyền từ CSDL.
+2. Service/repository luôn lọc `tenant_id` tường minh.
+3. RLS PostgreSQL (D-014).
+4. `tests/api/test_tenant_isolation.py`: tenant A thử mọi endpoint có ID với dữ liệu tenant B →
+   404, dữ liệu B không đổi. Test tự liệt kê route: endpoint mới có tham số ID mà chưa thêm vào
+   bộ test cô lập sẽ làm CI đỏ.
+
+- Truy cập workspace ngoài phạm vi trả **404** (không tiết lộ sự tồn tại).
+
+### D-022. Email giao dịch qua hàng đợi
+
+- API chỉ đẩy job `worker.tasks.email.send_email` (gửi theo tên task, không import code worker);
+  worker gửi SMTP với retry + exponential backoff. Nội dung tiếng Việt, escape HTML.
+
+### D-023. Next.js proxy chỉ kiểm tra "có phiên"
+
+- `src/proxy.ts` chuyển hướng về `/login?next=…` khi thiếu cookie `lys_csrf` (sống cùng refresh
+  token). Xác thực thật do API; client tự gọi `/auth/refresh` khi gặp 401 (gộp request đồng thời).
+- `?next=` chỉ nhận đường dẫn nội bộ (chống open redirect).
+
+### D-024. Lỗi ghi đồng thời
+
+- Tạo tenant/người dùng trong SAVEPOINT; trùng slug → thử lại với hậu tố ngẫu nhiên; trùng email
+  → 409. Mọi `IntegrityError` còn sót được chuyển thành 409 `CONFLICT` (không lộ SQL).

@@ -24,6 +24,7 @@ def settings() -> Settings:
     return Settings(
         _env_file=None,
         app_env="test",
+        secret_key="test-secret-key-0123456789-abcdefghijklmnop",
         log_level="WARNING",
         cors_origins="http://localhost:3000",
         postgres_host="127.0.0.1",

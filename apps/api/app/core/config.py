@@ -33,6 +33,14 @@ class Settings(BaseSettings):
     refresh_token_ttl_days: int = Field(default=14, ge=1, le=90)
     bcrypt_rounds: int = Field(default=12, ge=12, le=16)
     cors_origins: Annotated[list[str], NoDecode] = Field(default_factory=list)
+    # Cookie Secure: mặc định bật ở production (HTTPS); dev chạy http://localhost nên tắt.
+    cookie_secure: bool | None = None
+    login_max_attempts: int = Field(default=5, ge=1)
+    login_lock_minutes: int = Field(default=15, ge=1)
+    login_rate_per_minute: int = Field(default=10, ge=1)
+    register_rate_per_hour: int = Field(default=20, ge=1)
+    invite_ttl_days: int = Field(default=7, ge=1)
+    reset_token_ttl_minutes: int = Field(default=60, ge=5)
 
     # --- PostgreSQL ---
     postgres_db: str = "lys"
@@ -93,6 +101,10 @@ class Settings(BaseSettings):
     @property
     def is_production(self) -> bool:
         return self.app_env == "production"
+
+    @property
+    def secure_cookies(self) -> bool:
+        return self.is_production if self.cookie_secure is None else self.cookie_secure
 
 
 @lru_cache

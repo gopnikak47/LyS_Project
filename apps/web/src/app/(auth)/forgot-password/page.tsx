@@ -1,28 +1,29 @@
-import Link from "next/link";
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { ComingSoonState } from "@/components/feedback/states";
-import { Button } from "@/components/ui/button";
+import { ForgotPasswordForm } from "@/components/auth/password-forms";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("auth");
-  return { title: t("forgotPassword") };
+  return { title: t("forgotTitle") };
 }
 
 export default async function ForgotPasswordPage() {
-  const t = await getTranslations();
+  const t = await getTranslations("auth");
   return (
-    <div className="space-y-4">
-      <h1 className="text-2xl font-semibold">{t("auth.forgotPassword")}</h1>
-      <ComingSoonState
-        title={t("states.comingSoonTitle")}
-        description={t("states.comingSoonDescription", { stage: 2 })}
-        action={
-          <Button variant="outline" asChild>
-            <Link href="/login">{t("auth.loginTitle")}</Link>
-          </Button>
-        }
-      />
-    </div>
+    <Card className="p-2 sm:p-4">
+      <CardHeader>
+        <CardTitle className="text-2xl">
+          <h1>{t("forgotTitle")}</h1>
+        </CardTitle>
+        <CardDescription>{t("forgotSubtitle")}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Suspense>
+          <ForgotPasswordForm />
+        </Suspense>
+      </CardContent>
+    </Card>
   );
 }

@@ -24,7 +24,17 @@
       "toggle": "Toggle light/dark theme",
       "light": "Light",
       "dark": "Dark"
-    }
+    },
+    "saved": "Changes saved",
+    "saving": "Saving…",
+    "confirm": "Confirm",
+    "back": "Back",
+    "copy": "Copy",
+    "copied": "Copied",
+    "errorGeneric": "Something went wrong, please try again.",
+    "never": "Never",
+    "actions": "Actions",
+    "optional": "Optional"
   },
   "states": {
     "emptyTitle": "No data yet",
@@ -181,13 +191,18 @@
     "workspace": {
       "label": "Survey workspace",
       "switch": "Switch workspace",
-      "create": "Create new workspace"
+      "create": "Create new workspace",
+      "empty": "No survey workspaces yet"
     },
     "user": {
       "menu": "Account",
       "profile": "Profile",
-      "logout": "Log out"
-    }
+      "logout": "Log out",
+      "switchTenant": "Switch company",
+      "currentTenant": "Working in"
+    },
+    "loadingSession": "Loading your session…",
+    "sessionExpired": "Your session has expired, please log in again."
   },
   "surveys": {
     "title": "My surveys",
@@ -282,7 +297,29 @@
     "submitRegister": "Create account",
     "noAccount": "Don't have an account?",
     "hasAccount": "Already have an account?",
-    "notReady": "Login/registration will work starting in stage 2."
+    "industry": "Industry",
+    "industryPlaceholder": "Choose an industry (for a starter topic set)",
+    "forgotTitle": "Forgot password",
+    "forgotSubtitle": "Enter your email and we will send you a reset link.",
+    "forgotSubmit": "Send link",
+    "forgotSent": "If the email exists, you will receive a password reset link within a few minutes.",
+    "resetTitle": "Reset password",
+    "resetSubtitle": "Create a new password for your account.",
+    "newPassword": "New password",
+    "confirmPassword": "Confirm password",
+    "passwordMismatch": "Passwords do not match.",
+    "resetSubmit": "Update password",
+    "resetDone": "Password reset. Please log in with your new password.",
+    "missingToken": "Missing reset token. Please open the link from your email.",
+    "passwordHint": "At least 8 characters, including letters and numbers.",
+    "backToLogin": "Back to log in",
+    "inviteTitle": "Invitation",
+    "inviteSubtitle": "{inviter} invited you to join {tenant} as {role}.",
+    "inviteSubtitleNoInviter": "You are invited to join {tenant} as {role}.",
+    "inviteExisting": "{email} already has an account. Enter your current password to confirm.",
+    "inviteNew": "Create an account for {email} to get started.",
+    "inviteAccept": "Join",
+    "inviteInvalid": "This invitation is invalid or expired. Please ask the inviter to send a new one."
   },
   "validation": {
     "required": "This field is required.",
@@ -290,5 +327,89 @@
     "minLength": "At least {min} characters required.",
     "maxLength": "Maximum {max} characters.",
     "select": "Please choose an option."
+  },
+  "roles": {
+    "ADMIN": "Administrator",
+    "ANALYST": "Analyst",
+    "VIEWER": "Viewer"
+  },
+  "admin": {
+    "title": "Management",
+    "subtitle": "Members, permissions, survey workspaces and company information.",
+    "tabs": {
+      "members": "Members",
+      "invitations": "Invitations",
+      "workspaces": "Workspaces",
+      "company": "Company"
+    },
+    "members": {
+      "name": "Member",
+      "role": "Role",
+      "scope": "Scope",
+      "status": "Status",
+      "lastLogin": "Last login",
+      "allWorkspaces": "All workspaces",
+      "someWorkspaces": "{count} workspaces",
+      "active": "Active",
+      "disabled": "Disabled",
+      "you": "(you)",
+      "remove": "Remove from company",
+      "removeTitle": "Remove {name}?",
+      "removeDescription": "They will be logged out and lose access to this company's data.",
+      "removed": "Member removed",
+      "roleUpdated": "Role updated",
+      "scopeTitle": "Access scope",
+      "scopeAll": "Access all workspaces",
+      "scopeSome": "Only selected workspaces",
+      "disable": "Disable",
+      "enable": "Enable"
+    },
+    "invite": {
+      "title": "Invite a member",
+      "email": "Email",
+      "role": "Role",
+      "submit": "Send invitation",
+      "sent": "Invitation sent to {email}",
+      "linkHint": "You can also share this link directly (expires in 7 days):",
+      "pending": "Pending invitations",
+      "none": "No pending invitations.",
+      "expires": "Expires {date}",
+      "revoke": "Revoke",
+      "revoked": "Invitation revoked"
+    },
+    "workspaces": {
+      "create": "Create workspace",
+      "name": "Workspace name",
+      "namePlaceholder": "e.g. District 3 branch",
+      "description": "Description",
+      "color": "Color",
+      "created": "Workspace created",
+      "surveys": "{count, plural, =0 {No surveys} one {# survey} other {# surveys}}",
+      "rename": "Rename",
+      "delete": "Delete",
+      "deleteTitle": "Delete workspace “{name}”?",
+      "deleteDescription": "All surveys and responses in this workspace will be hidden. Type the exact workspace name to confirm.",
+      "deleteConfirmLabel": "Type “{name}” to confirm",
+      "deleted": "Workspace deleted",
+      "edit": "Edit workspace"
+    },
+    "company": {
+      "name": "Company name",
+      "slug": "Company code",
+      "plan": "Plan"
+    }
+  },
+  "profile": {
+    "title": "Profile",
+    "subtitle": "Account information and security.",
+    "info": "Personal information",
+    "fullName": "Full name",
+    "email": "Email",
+    "language": "Interface language",
+    "security": "Change password",
+    "currentPassword": "Current password",
+    "changePassword": "Change password",
+    "passwordChanged": "Password changed. Other devices have been logged out.",
+    "memberships": "Your companies"
   }
 }

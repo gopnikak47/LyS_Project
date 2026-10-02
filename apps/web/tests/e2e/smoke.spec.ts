@@ -1,24 +1,5 @@
-import AxeBuilder from "@axe-core/playwright";
-import { expect, test, type Page } from "@playwright/test";
-
-/** Không được có thanh cuộn ngang ở bất kỳ kích thước màn hình nào. */
-async function expectNoHorizontalScroll(page: Page) {
-  const overflow = await page.evaluate(
-    () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
-  );
-  expect(overflow).toBeLessThanOrEqual(0);
-}
-
-/** Không có lỗi a11y mức nghiêm trọng (mục tiêu Lighthouse Accessibility ≥ 90). */
-async function expectNoSeriousA11yViolations(page: Page) {
-  const results = await new AxeBuilder({ page }).analyze();
-  const serious = results.violations.filter(
-    (v) => v.impact === "serious" || v.impact === "critical",
-  );
-  expect(
-    serious.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(" ")).join(", ")}`),
-  ).toEqual([]);
-}
+import { expect, test } from "@playwright/test";
+import { expectNoHorizontalScroll, expectNoSeriousA11yViolations, registerViaApi } from "./helpers";
 
 test("landing page: hero, tính năng, FAQ", async ({ page }) => {
   await page.goto("/");
@@ -36,18 +17,19 @@ test("landing page: hero, tính năng, FAQ", async ({ page }) => {
   await expectNoSeriousA11yViolations(page);
 });
 
+test("khu quản trị yêu cầu đăng nhập", async ({ page }) => {
+  await page.goto("/surveys");
+  await expect(page).toHaveURL(/\/login\?next=%2Fsurveys/);
+});
+
 test("khu quản trị: khảo sát của tôi", async ({ page, isMobile }) => {
+  await registerViaApi(page);
   await page.goto("/surveys");
   await expect(page.getByRole("heading", { level: 1, name: "Khảo sát của tôi" })).toBeVisible();
-  await expect(
-    page.getByRole("link", { name: "Khảo sát hài lòng – Chi nhánh Quận 1" }),
-  ).toBeVisible();
 
   if (isMobile) {
     await page.getByRole("button", { name: "Mở menu" }).click();
-    await expect(
-      page.getByRole("dialog").getByRole("link", { name: "Gói & Thanh toán" }),
-    ).toBeVisible();
+    await expect(page.getByRole("dialog").getByRole("link", { name: "Quản lý" })).toBeVisible();
     await page.keyboard.press("Escape");
   }
 
@@ -56,9 +38,9 @@ test("khu quản trị: khảo sát của tôi", async ({ page, isMobile }) => {
 });
 
 test("thư viện giao diện: biểu mẫu validate tiếng Việt", async ({ page }) => {
+  await registerViaApi(page);
   await page.goto("/ui-kit");
   await expect(page.getByRole("heading", { name: "Bảng phản hồi" })).toBeVisible();
-  // Phản hồi khẩn cấp được ghim ở dòng đầu.
   await expect(page.locator("tbody tr").first()).toHaveAttribute("data-urgent", "true");
 
   await page.getByRole("button", { name: "Lưu thử" }).click();

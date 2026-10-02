@@ -1,23 +1,13 @@
-"""Dependency FastAPI dùng chung."""
+"""Dependency FastAPI dùng chung (ngoài xác thực — xem `app.core.auth`)."""
 
 from __future__ import annotations
 
 from typing import Annotated
 
-from fastapi import Depends, Request
+from fastapi import Depends
 
-from app.core.config import Settings, get_settings
-from app.core.resources import Resources
+from app.core.auth import ResourcesDep, SettingsDep
 from app.services.health import HealthService
-
-
-def get_resources(request: Request) -> Resources:
-    resources: Resources = request.app.state.resources
-    return resources
-
-
-SettingsDep = Annotated[Settings, Depends(get_settings)]
-ResourcesDep = Annotated[Resources, Depends(get_resources)]
 
 
 def get_health_service(resources: ResourcesDep, settings: SettingsDep) -> HealthService:

@@ -23,7 +23,7 @@ export function AppNav({ items, label }: { items: AppNavItem[]; label: string })
           href={item.href}
           aria-current={item.href === active ? "page" : undefined}
           className={cn(
-            "rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground",
+            "rounded-lg px-3 py-2 text-sm font-medium whitespace-nowrap text-muted-foreground transition-colors hover:bg-accent hover:text-foreground",
             "aria-[current=page]:bg-primary-soft aria-[current=page]:text-primary",
           )}
         >

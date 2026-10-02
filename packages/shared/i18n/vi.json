@@ -24,7 +24,17 @@
       "toggle": "Đổi giao diện sáng/tối",
       "light": "Sáng",
       "dark": "Tối"
-    }
+    },
+    "saved": "Đã lưu thay đổi",
+    "saving": "Đang lưu…",
+    "confirm": "Xác nhận",
+    "back": "Quay lại",
+    "copy": "Sao chép",
+    "copied": "Đã sao chép",
+    "errorGeneric": "Có lỗi xảy ra, vui lòng thử lại.",
+    "never": "Chưa bao giờ",
+    "actions": "Thao tác",
+    "optional": "Không bắt buộc"
   },
   "states": {
     "emptyTitle": "Chưa có dữ liệu",
@@ -181,13 +191,18 @@
     "workspace": {
       "label": "Không gian khảo sát",
       "switch": "Chuyển không gian",
-      "create": "Tạo không gian mới"
+      "create": "Tạo không gian mới",
+      "empty": "Chưa có không gian khảo sát"
     },
     "user": {
       "menu": "Tài khoản",
       "profile": "Trang cá nhân",
-      "logout": "Đăng xuất"
-    }
+      "logout": "Đăng xuất",
+      "switchTenant": "Chuyển doanh nghiệp",
+      "currentTenant": "Đang làm việc tại"
+    },
+    "loadingSession": "Đang tải phiên làm việc…",
+    "sessionExpired": "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại."
   },
   "surveys": {
     "title": "Khảo sát của tôi",
@@ -282,7 +297,29 @@
     "submitRegister": "Tạo tài khoản",
     "noAccount": "Chưa có tài khoản?",
     "hasAccount": "Đã có tài khoản?",
-    "notReady": "Đăng nhập/đăng ký sẽ hoạt động từ Giai đoạn 2."
+    "industry": "Ngành",
+    "industryPlaceholder": "Chọn ngành (để có bộ chủ đề mẫu)",
+    "forgotTitle": "Quên mật khẩu",
+    "forgotSubtitle": "Nhập email đăng ký, chúng tôi sẽ gửi liên kết đặt lại mật khẩu.",
+    "forgotSubmit": "Gửi liên kết",
+    "forgotSent": "Nếu email tồn tại trong hệ thống, bạn sẽ nhận được liên kết đặt lại mật khẩu trong vài phút.",
+    "resetTitle": "Đặt lại mật khẩu",
+    "resetSubtitle": "Tạo mật khẩu mới cho tài khoản của bạn.",
+    "newPassword": "Mật khẩu mới",
+    "confirmPassword": "Nhập lại mật khẩu",
+    "passwordMismatch": "Mật khẩu nhập lại không khớp.",
+    "resetSubmit": "Cập nhật mật khẩu",
+    "resetDone": "Đã đặt lại mật khẩu. Vui lòng đăng nhập bằng mật khẩu mới.",
+    "missingToken": "Thiếu mã đặt lại mật khẩu. Hãy mở đúng liên kết trong email.",
+    "passwordHint": "Tối thiểu 8 ký tự, gồm cả chữ và số.",
+    "backToLogin": "Quay lại đăng nhập",
+    "inviteTitle": "Lời mời tham gia",
+    "inviteSubtitle": "{inviter} mời bạn tham gia {tenant} với vai trò {role}.",
+    "inviteSubtitleNoInviter": "Bạn được mời tham gia {tenant} với vai trò {role}.",
+    "inviteExisting": "Email {email} đã có tài khoản. Nhập mật khẩu hiện tại để xác nhận tham gia.",
+    "inviteNew": "Tạo tài khoản cho {email} để bắt đầu.",
+    "inviteAccept": "Tham gia",
+    "inviteInvalid": "Lời mời không hợp lệ hoặc đã hết hạn. Hãy liên hệ người mời để được gửi lại."
   },
   "validation": {
     "required": "Vui lòng nhập trường này.",
@@ -290,5 +327,89 @@
     "minLength": "Cần tối thiểu {min} ký tự.",
     "maxLength": "Tối đa {max} ký tự.",
     "select": "Vui lòng chọn một mục."
+  },
+  "roles": {
+    "ADMIN": "Quản trị viên",
+    "ANALYST": "Nhân viên phân tích",
+    "VIEWER": "Người xem"
+  },
+  "admin": {
+    "title": "Quản lý",
+    "subtitle": "Thành viên, phân quyền, không gian khảo sát và thông tin doanh nghiệp.",
+    "tabs": {
+      "members": "Thành viên",
+      "invitations": "Lời mời",
+      "workspaces": "Không gian",
+      "company": "Doanh nghiệp"
+    },
+    "members": {
+      "name": "Thành viên",
+      "role": "Vai trò",
+      "scope": "Phạm vi",
+      "status": "Trạng thái",
+      "lastLogin": "Đăng nhập gần nhất",
+      "allWorkspaces": "Mọi không gian",
+      "someWorkspaces": "{count} không gian",
+      "active": "Đang hoạt động",
+      "disabled": "Tạm khóa",
+      "you": "(bạn)",
+      "remove": "Xóa khỏi doanh nghiệp",
+      "removeTitle": "Xóa {name}?",
+      "removeDescription": "Người này sẽ bị đăng xuất và không còn truy cập dữ liệu của doanh nghiệp.",
+      "removed": "Đã xóa thành viên",
+      "roleUpdated": "Đã cập nhật vai trò",
+      "scopeTitle": "Phạm vi truy cập",
+      "scopeAll": "Truy cập mọi không gian",
+      "scopeSome": "Chỉ các không gian được chọn",
+      "disable": "Tạm khóa",
+      "enable": "Mở khóa"
+    },
+    "invite": {
+      "title": "Mời thành viên",
+      "email": "Email",
+      "role": "Vai trò",
+      "submit": "Gửi lời mời",
+      "sent": "Đã gửi lời mời tới {email}",
+      "linkHint": "Bạn cũng có thể gửi trực tiếp liên kết này (hết hạn sau 7 ngày):",
+      "pending": "Lời mời đang chờ",
+      "none": "Không có lời mời nào đang chờ.",
+      "expires": "Hết hạn {date}",
+      "revoke": "Thu hồi",
+      "revoked": "Đã thu hồi lời mời"
+    },
+    "workspaces": {
+      "create": "Tạo không gian",
+      "name": "Tên không gian",
+      "namePlaceholder": "Ví dụ: Chi nhánh Quận 3",
+      "description": "Mô tả",
+      "color": "Màu nhận diện",
+      "created": "Đã tạo không gian",
+      "surveys": "{count, plural, =0 {Chưa có khảo sát} other {# khảo sát}}",
+      "rename": "Đổi tên",
+      "delete": "Xóa",
+      "deleteTitle": "Xóa không gian “{name}”?",
+      "deleteDescription": "Toàn bộ khảo sát và phản hồi trong không gian sẽ bị ẩn. Nhập chính xác tên không gian để xác nhận.",
+      "deleteConfirmLabel": "Nhập “{name}” để xác nhận",
+      "deleted": "Đã xóa không gian",
+      "edit": "Sửa không gian"
+    },
+    "company": {
+      "name": "Tên doanh nghiệp",
+      "slug": "Mã doanh nghiệp",
+      "plan": "Gói dịch vụ"
+    }
+  },
+  "profile": {
+    "title": "Trang cá nhân",
+    "subtitle": "Thông tin tài khoản và bảo mật.",
+    "info": "Thông tin cá nhân",
+    "fullName": "Họ và tên",
+    "email": "Email",
+    "language": "Ngôn ngữ giao diện",
+    "security": "Đổi mật khẩu",
+    "currentPassword": "Mật khẩu hiện tại",
+    "changePassword": "Đổi mật khẩu",
+    "passwordChanged": "Đã đổi mật khẩu. Các thiết bị khác đã được đăng xuất.",
+    "memberships": "Doanh nghiệp của bạn"
   }
 }

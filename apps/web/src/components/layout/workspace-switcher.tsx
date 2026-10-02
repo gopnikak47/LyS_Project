@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { Check, ChevronsUpDown, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -12,16 +12,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
-// Dữ liệu minh họa — danh sách workspace thật lấy từ API ở Giai đoạn 2.
-const DEMO_WORKSPACES = [
-  { id: "w1", name: "Nhà hàng Quận 1", color: "bg-amber-500" },
-  { id: "w2", name: "Ứng dụng đặt bàn", color: "bg-sky-500" },
-];
+import { Skeleton } from "@/components/ui/skeleton";
+import { setSelectedWorkspace, useCan, useCurrentWorkspace } from "@/lib/api/hooks";
 
 export function WorkspaceSwitcher() {
   const t = useTranslations("app.workspace");
-  const [current, setCurrent] = useState(DEMO_WORKSPACES[0]!);
+  const canManage = useCan("workspace:manage");
+  const { workspace, workspaces, isLoading } = useCurrentWorkspace();
+
+  if (isLoading) return <Skeleton className="h-9 w-44" />;
 
   return (
     <DropdownMenu>
@@ -31,25 +30,39 @@ export function WorkspaceSwitcher() {
           className="h-9 max-w-[14rem] justify-between gap-2 px-2.5"
           aria-label={t("switch")}
         >
-          <span aria-hidden className={`size-2.5 shrink-0 rounded-full ${current.color}`} />
-          <span className="truncate text-sm">{current.name}</span>
+          <span
+            aria-hidden
+            className="size-2.5 shrink-0 rounded-full"
+            style={{ backgroundColor: workspace?.color ?? "var(--muted-foreground)" }}
+          />
+          <span className="truncate text-sm">{workspace?.name ?? t("empty")}</span>
           <ChevronsUpDown className="size-3.5 opacity-60" aria-hidden />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-64">
         <DropdownMenuLabel>{t("label")}</DropdownMenuLabel>
-        {DEMO_WORKSPACES.map((ws) => (
-          <DropdownMenuItem key={ws.id} onSelect={() => setCurrent(ws)}>
-            <span aria-hidden className={`size-2.5 rounded-full ${ws.color}`} />
+        {workspaces.map((ws) => (
+          <DropdownMenuItem key={ws.id} onSelect={() => setSelectedWorkspace(ws.id)}>
+            <span
+              aria-hidden
+              className="size-2.5 rounded-full"
+              style={{ backgroundColor: ws.color }}
+            />
             <span className="flex-1 truncate">{ws.name}</span>
-            {ws.id === current.id && <Check aria-hidden />}
+            {ws.id === workspace?.id && <Check aria-hidden />}
           </DropdownMenuItem>
         ))}
-        <DropdownMenuSeparator />
-        <DropdownMenuItem disabled>
-          <Plus aria-hidden />
-          {t("create")}
-        </DropdownMenuItem>
+        {canManage && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild>
+              <Link href="/admin?tab=workspaces">
+                <Plus aria-hidden />
+                {t("create")}
+              </Link>
+            </DropdownMenuItem>
+          </>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );

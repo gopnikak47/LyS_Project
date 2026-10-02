@@ -17,6 +17,9 @@ export const SENTIMENTS = sentiments.map((s) => s.value) as Sentiment[];
 /** Vai trò người dùng trong một doanh nghiệp (tenant). */
 export const ROLES = ["SUPER_ADMIN", "ADMIN", "ANALYST", "VIEWER"] as const;
 export type Role = (typeof ROLES)[number];
+/** Vai trò gán được trong một doanh nghiệp (SUPER_ADMIN là vai trò cấp nền tảng). */
+export const TENANT_ROLES = ["ADMIN", "ANALYST", "VIEWER"] as const;
+export type TenantRole = (typeof TENANT_ROLES)[number];
 
 /** Trạng thái vòng đời khảo sát. */
 export const SURVEY_STATUSES = ["draft", "published", "closed", "archived"] as const;

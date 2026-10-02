@@ -37,6 +37,12 @@ const nextConfig: NextConfig = {
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },
+  // Dev (next dev :3000) và khi không có nginx đứng trước: chuyển /api/* sang FastAPI để
+  // trình duyệt luôn gọi cùng origin (cookie phiên httpOnly + SameSite hoạt động).
+  async rewrites() {
+    const target = process.env.API_INTERNAL_URL || "http://localhost:8000";
+    return [{ source: "/api/:path*", destination: `${target}/api/:path*` }];
+  },
 };
 
 export default withNextIntl(nextConfig);

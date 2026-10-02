@@ -20,7 +20,7 @@ celery_app = Celery(
     "lys",
     broker=settings.celery_broker_url,
     backend=settings.celery_result_backend,
-    include=["worker.tasks.system"],
+    include=["worker.tasks.system", "worker.tasks.email"],
 )
 
 celery_app.conf.update(

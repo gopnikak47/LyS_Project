@@ -11,12 +11,14 @@ Không bao giờ trả stack trace ra ngoài.
 from __future__ import annotations
 
 from http import HTTPStatus
-from typing import Any, cast
+from typing import Any, TypeVar, cast
 
 from fastapi import FastAPI, Request
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+from pydantic import ValidationError
+from sqlalchemy.exc import IntegrityError
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.core.logging import get_logger
@@ -37,6 +39,12 @@ ERROR_MESSAGES: dict[str, str] = {
     "RATE_LIMITED": "Bạn thao tác quá nhanh, vui lòng thử lại sau ít phút.",
     "SERVICE_UNAVAILABLE": "Dịch vụ tạm thời không khả dụng.",
     "INTERNAL_ERROR": "Đã xảy ra lỗi hệ thống. Vui lòng thử lại sau.",
+    "INVALID_CREDENTIALS": "Email hoặc mật khẩu không đúng.",
+    "ACCOUNT_LOCKED": "Tài khoản tạm khóa do đăng nhập sai nhiều lần. Vui lòng thử lại sau.",
+    "CSRF_FAILED": "Phiên làm việc không hợp lệ, vui lòng tải lại trang.",
+    "TOKEN_INVALID": "Liên kết không hợp lệ hoặc đã hết hạn.",
+    "LAST_ADMIN": "Doanh nghiệp phải còn ít nhất một quản trị viên.",
+    "NO_TENANT": "Tài khoản chưa thuộc doanh nghiệp nào.",
 }
 
 _STATUS_TO_CODE: dict[int, str] = {
@@ -96,6 +104,16 @@ class ConflictError(AppError):
     code = "CONFLICT"
 
 
+T = TypeVar("T")
+
+
+def found(value: T | None, message: str | None = None) -> T:
+    """Trả về giá trị hoặc ném NotFoundError (thay cho assert trong code chạy thật)."""
+    if value is None:
+        raise NotFoundError(message)
+    return value
+
+
 def error_payload(code: str, message: str, details: Any = None) -> dict[str, Any]:
     body: dict[str, Any] = {"code": code, "message": message, "request_id": get_request_id()}
     if details is not None:
@@ -152,6 +170,26 @@ async def _validation_error_handler(_: Request, exc: Exception) -> JSONResponse:
     return _response(422, "VALIDATION_ERROR", ERROR_MESSAGES["VALIDATION_ERROR"], details)
 
 
+async def _pydantic_error_handler(_: Request, exc: Exception) -> JSONResponse:
+    # ValidationError phát sinh trong service (không phải ở biên request) — vẫn trả 422 chuẩn.
+    exc = cast(ValidationError, exc)
+    details = [
+        {
+            "field": ".".join(str(part) for part in err.get("loc", ())),
+            "type": err.get("type"),
+            "message": err.get("msg"),
+        }
+        for err in exc.errors()
+    ]
+    return _response(422, "VALIDATION_ERROR", ERROR_MESSAGES["VALIDATION_ERROR"], details)
+
+
+async def _integrity_error_handler(_: Request, exc: Exception) -> JSONResponse:
+    # Vi phạm ràng buộc CSDL (thường do 2 request ghi đồng thời): 409, không lộ chi tiết SQL.
+    logger.warning("integrity_error", error=str(getattr(exc, "orig", exc))[:300])
+    return _response(409, "CONFLICT", ERROR_MESSAGES["CONFLICT"])
+
+
 async def _unhandled_error_handler(request: Request, exc: Exception) -> JSONResponse:
     logger.exception(
         "unhandled_error",
@@ -166,4 +204,6 @@ def register_error_handlers(app: FastAPI) -> None:
     app.add_exception_handler(AppError, _app_error_handler)
     app.add_exception_handler(StarletteHTTPException, _http_error_handler)
     app.add_exception_handler(RequestValidationError, _validation_error_handler)
+    app.add_exception_handler(ValidationError, _pydantic_error_handler)
+    app.add_exception_handler(IntegrityError, _integrity_error_handler)
     app.add_exception_handler(Exception, _unhandled_error_handler)

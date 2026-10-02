@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
@@ -21,7 +22,9 @@ export default async function LoginPage() {
         <CardDescription>{t("loginSubtitle", { appName: APP_NAME })}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        <AuthForm mode="login" />
+        <Suspense>
+          <AuthForm mode="login" />
+        </Suspense>
         <div className="flex flex-wrap items-center justify-between gap-2 text-sm">
           <Link href="/forgot-password" className="text-primary hover:underline">
             {t("forgotPassword")}

@@ -7,6 +7,7 @@ import "./globals.css";
 import type { Metadata, Viewport } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getTranslations } from "next-intl/server";
+import { Providers } from "@/components/providers";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { APP_NAME } from "@/lib/config";
 
@@ -48,7 +49,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           {t("skipToContent")}
         </a>
         <NextIntlClientProvider>
-          <TooltipProvider delayDuration={200}>{children}</TooltipProvider>
+          <Providers>
+            <TooltipProvider delayDuration={200}>{children}</TooltipProvider>
+          </Providers>
         </NextIntlClientProvider>
       </body>
     </html>
