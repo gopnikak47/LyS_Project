@@ -685,7 +685,13 @@
       "sentiment": "Sentiment",
       "topics": "Topics",
       "urgent": "Urgent"
-    }
+    },
+    "savedFilters": "Filters saved on this device",
+    "selectFilter": "Select a filter",
+    "filterName": "Filter name",
+    "saveFilter": "Save filter",
+    "deleteFilter": "Delete filter",
+    "filterStorageError": "Your browser could not save the filter."
   },
   "dashboard": {
     "title": "Analytics & reports",

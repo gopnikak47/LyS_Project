@@ -11,6 +11,13 @@ pytestmark = pytest.mark.db
 async def test_idempotent_submission_analytics_and_erasure(api: Harness) -> None:
     client_a, b, owner = await _setup(api)
     workspace = b.ids["workspace_id"]
+    guest = api.client()
+    retry_submission = await guest.post(
+        f"/api/v1/public/surveys/{b.ids['slug']}/responses",
+        json={"token": b.ids["submit_token"], "answers": {"comment": "retry"}},
+    )
+    assert retry_submission.status_code == 201, retry_submission.text
+    assert retry_submission.json()["response_id"] == b.ids["response_id"]
     for endpoint in (
         "overview",
         "trends",

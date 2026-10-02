@@ -685,7 +685,13 @@
       "sentiment": "Cảm xúc",
       "topics": "Chủ đề",
       "urgent": "Khẩn cấp"
-    }
+    },
+    "savedFilters": "Bộ lọc đã lưu trên máy này",
+    "selectFilter": "Chọn bộ lọc",
+    "filterName": "Tên bộ lọc",
+    "saveFilter": "Lưu bộ lọc",
+    "deleteFilter": "Xóa bộ lọc",
+    "filterStorageError": "Trình duyệt không cho phép lưu bộ lọc."
   },
   "dashboard": {
     "title": "Thống kê & báo cáo",

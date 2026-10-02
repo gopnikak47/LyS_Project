@@ -84,6 +84,8 @@ jobs:
       DATABASE_URL: postgresql+asyncpg://lys:lys@localhost:5432/lys_test_web
       APP_ENV: test
       SECRET_KEY: ci-test-secret-0123456789-abcdefghijklmnop
+      REGISTER_RATE_PER_HOUR: 1000
+      LOGIN_RATE_PER_MINUTE: 1000
       API_INTERNAL_URL: http://localhost:8000
     steps:
       - uses: actions/checkout@v7.0.1

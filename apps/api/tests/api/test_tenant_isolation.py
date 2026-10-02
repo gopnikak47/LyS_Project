@@ -187,6 +187,8 @@ async def _setup(api: Harness) -> tuple[Any, TenantB, Any]:
     )
     assert schedule.status_code == 201, schedule.text
     ids.update(
+        submit_token=token,
+        slug=survey["slug"],
         survey_id=survey["id"],
         analysis_id=feedback["id"],
         response_id=submitted.json()["response_id"],

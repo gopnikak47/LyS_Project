@@ -4,11 +4,13 @@ import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { api, apiUrl } from "@/lib/api/client";
-import { useCan, useCurrentWorkspace } from "@/lib/api/hooks";
+import { useCan, useCurrentWorkspace, useSession } from "@/lib/api/hooks";
 import type { Page } from "@/lib/api/surveys";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+
+import { SavedFilters } from "./saved-filters";
 
 type Feedback = {
   id: string;
@@ -39,6 +41,7 @@ type History = {
 
 export function FeedbackManager() {
   const t = useTranslations("feedbackManager");
+  const { data: session } = useSession();
   const { workspace } = useCurrentWorkspace();
   const client = useQueryClient();
   const canEdit = useCan("label:edit");
@@ -321,6 +324,25 @@ export function FeedbackManager() {
           {t("next")}
         </Button>
       </div>
+      {session && workspace && (
+        <SavedFilters
+          key={`${session.tenant.id}:${workspace.id}`}
+          scope={`${session.user.id}:${session.tenant.id}:${workspace.id}`}
+          values={{ search, sentiment, urgent: String(urgent), topic, channel, start, end, sort }}
+          apply={(value) => {
+            setSearch(value.search || "");
+            setSentiment(value.sentiment || "");
+            setUrgent(value.urgent === "true");
+            setTopic(value.topic || "");
+            setChannel(value.channel || "");
+            setStart(value.start || "");
+            setEnd(value.end || "");
+            setSort(value.sort || "urgent");
+            setPage(1);
+            setChecked([]);
+          }}
+        />
+      )}
       <section className="space-y-3 rounded-xl border p-5">
         <h2 className="text-xl font-semibold">{t("quality")}</h2>
         <p>{t("qualityNote")}</p>

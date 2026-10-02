@@ -99,6 +99,7 @@ class TicketService:
             if ticket.status == TicketStatus.DONE
             else None
         )
+        ticket.updated_at = datetime.now(UTC)
         await audit(
             self.db,
             tenant_id=self.principal.tenant_id,

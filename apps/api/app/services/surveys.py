@@ -152,6 +152,7 @@ class SurveyService:
         survey.status = SurveyStatus.PUBLISHED
         survey.published_at = datetime.now(UTC)
         survey.closed_at = None
+        survey.updated_at = datetime.now(UTC)
         await audit(
             self.db,
             tenant_id=self.principal.tenant_id,
@@ -169,6 +170,7 @@ class SurveyService:
         survey = await self.get(survey_id, lock=True)
         survey.status = SurveyStatus.CLOSED
         survey.closed_at = datetime.now(UTC)
+        survey.updated_at = datetime.now(UTC)
         await self.db.flush()
         return await self.describe(survey)
 
